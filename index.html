@@ -66,6 +66,59 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; }
 .mockup-url, .prompt-text, .code-snippet { font-family: var(--font-display); letter-spacing: 0.03em; }
 #platform { font-family: var(--font-body); }
 
+/* Laboratório — fonte legível (site principal mantém Jost/Orbitron/etc.) */
+#platform {
+ --lab-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+ --lab-font-mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
+ font-family: var(--lab-font);
+}
+#platform h1, #platform h2, #platform h3, #platform h4,
+#platform .step-title, #platform .content-card-title,
+#platform .plat-logo, #platform .plat-tab, #platform .sidebar-item,
+#platform .step-phase, #platform .saas-onboard-panel h3,
+#platform .option-name, #platform .ai-tool-card h4 {
+ font-family: var(--lab-font);
+ font-weight: 600;
+ letter-spacing: normal;
+}
+#platform .step-subtitle, #platform p, #platform li,
+#platform .guide-steps, #platform .info-box, #platform .check-item,
+#platform .option-desc, #platform .ai-tool-card p {
+ font-family: var(--lab-font);
+ line-height: 1.75;
+}
+#platform .code-snippet, #platform .prompt-text {
+ font-family: var(--lab-font-mono);
+ font-size: 0.82rem;
+ letter-spacing: 0;
+}
+#platform .prompt-text { white-space: pre-wrap; line-height: 1.65; }
+.lab-screenshot {
+ width: 100%;
+ max-width: 720px;
+ border-radius: 10px;
+ border: 1px solid var(--learn-border);
+ margin: 0.85rem 0;
+ display: block;
+ box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+.lab-path {
+ background: var(--learn-blue-light);
+ border-left: 3px solid var(--learn-blue);
+ padding: 0.5rem 0.85rem;
+ margin: 0.5rem 0 0.75rem;
+ border-radius: 0 8px 8px 0;
+ font-size: 0.88rem;
+ color: var(--learn-text);
+ line-height: 1.6;
+}
+.lab-path code {
+ background: #fff;
+ padding: 2px 6px;
+ border-radius: 4px;
+ font-size: 0.85em;
+}
+
 /* Landing — fundo preto + azul escuro */
 #landing {
  background: #000000;
@@ -1760,11 +1813,7 @@ body.admin-dash-open { overflow: hidden; }
    <span class="brand-logo__text">SaaS <span>Academy</span></span>
   </div>
   <h3 id="access-gate-title">Acesso ao laboratório</h3>
-  <p>Somente clientes com <strong>compra confirmada</strong>. Use o <strong>mesmo e-mail do pagamento</strong> (Gmail ou senha).</p>
-  <div class="access-tabs">
-   <button type="button" class="access-tab active" data-tab="login" onclick="switchAccessTab('login')">Entrar</button>
-   <button type="button" class="access-tab" data-tab="register" onclick="switchAccessTab('register')">Criar conta</button>
-  </div>
+  <p>Já comprou? <strong>Entre</strong> com o mesmo e-mail do pagamento. Sem cadastro público.</p>
   <div class="access-auth-msg" id="access-auth-msg" role="status"></div>
   <div class="access-panel" data-panel="login">
    <div class="access-field"><label for="access-email">E-mail</label><input type="email" id="access-email" autocomplete="email" placeholder="seu@email.com"></div>
@@ -1784,25 +1833,7 @@ body.admin-dash-open { overflow: hidden; }
     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.203 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
     Entrar com Google
    </button>
-   <p class="access-hint" style="margin-top:0.65rem;margin-bottom:0">O Gmail precisa ser o <strong>mesmo da compra</strong>. Caso contrário, o acesso é negado.</p>
-  </div>
-  <div class="access-panel" data-panel="register" hidden>
-   <div class="access-field"><label for="access-reg-email">E-mail</label><input type="email" id="access-reg-email" autocomplete="email"></div>
-   <div class="access-field">
-    <label for="access-reg-password">Criar senha</label>
-    <div class="access-password-wrap">
-     <input type="password" id="access-reg-password" autocomplete="new-password" minlength="6">
-     <button type="button" class="access-toggle-pw" onclick="toggleAccessPassword('access-reg-password', this)" aria-label="Mostrar senha">Ver</button>
-    </div>
-   </div>
-   <label class="access-remember" style="margin-bottom:0.85rem"><input type="checkbox" id="access-remember-reg"> Lembrar de mim</label>
-   <button type="button" class="access-btn-primary" onclick="accessRegister()">Criar conta</button>
-   <div class="access-divider">ou</div>
-   <button type="button" class="access-btn-google" onclick="accessLoginWithGoogle()">
-    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.203 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-    Continuar com Google
-   </button>
-   <p class="access-hint" style="margin-top:0.65rem;margin-bottom:0">Use o Gmail da compra — validamos no sistema antes de liberar.</p>
+   <p class="access-hint" style="margin-top:0.65rem;margin-bottom:0">Primeira vez? Use o e-mail da compra e defina a senha aqui, ou entre com Google.</p>
   </div>
  </div>
 </div>
@@ -1855,12 +1886,12 @@ body.admin-dash-open { overflow: hidden; }
  <a href="#pain">Por que aprender?</a>
  <a href="#preview">O que você cria</a>
  <a href="#pricing">Planos</a>
- <a href="#" onclick="openAccessGate('login'); return false;">Entrar</a>
+ <a href="#" onclick="openAccessGate(); return false;">Entrar</a>
  <a href="#" id="nav-admin-link" style="display:none" onclick="openAdminDashboard(); return false;">Painel admin</a>
  <a href="#" class="nav-links-cta" onclick="requestPlatformAccess(); return false;">Laboratório →</a>
  </div>
  <div class="nav-auth-group">
-  <button type="button" class="nav-login-btn" id="nav-login-btn" onclick="openAccessGate('login')">Entrar</button>
+  <button type="button" class="nav-login-btn" id="nav-login-btn" onclick="openAccessGate()">Entrar</button>
   <button type="button" class="nav-admin-btn" id="nav-admin-btn" hidden onclick="openAdminDashboard()">Painel admin</button>
   <button type="button" class="nav-user-btn" id="nav-user-btn" hidden onclick="accessLogout()" title="Sair da conta">Conta</button>
  </div>
@@ -2345,7 +2376,8 @@ const SAAS_STORAGE_BRIEF = 'saaslab_brief';
 const SAAS_STORAGE_ONBOARDED = 'saaslab_onboarded';
 let completedSteps = new Set();
 let selectedDeployTarget = 'vercel';
-let selectedDb = 'supabase';
+let selectedDb = 'firebase';
+let selectedPayment = 'hotmart';
 let selectedAuth = 'firebase';
 const SAAS_STORAGE_AUTH = 'saaslab_auth';
 let isAnnual = false;
@@ -2458,12 +2490,24 @@ function enterPlatformCore() {
  scheduleScrollToTop();
  maybeShowSaasOnboarding();
 }
-window.enterPlatformCore = enterPlatformCore;
+if (typeof window.registerLabEnterCallback === 'function') {
+ window.registerLabEnterCallback(enterPlatformCore);
+}
+window.enterPlatformCore = async function enterPlatformCoreGuarded() {
+ if (typeof window.verifyLabAccessBeforeEnter === 'function') {
+  const ok = await window.verifyLabAccessBeforeEnter();
+  if (!ok) return;
+ }
+ enterPlatformCore();
+ if (typeof window.onLabEntered === 'function') window.onLabEntered();
+};
 function enterPlatform() {
  if (typeof window.requestPlatformAccess === 'function') window.requestPlatformAccess();
+ else if (typeof window.enterPlatformCore === 'function') window.enterPlatformCore();
  else enterPlatformCore();
 }
 function exitPlatform() {
+ if (typeof window.onLabExited === 'function') window.onLabExited();
  dismissSaasOnboarding();
  document.getElementById('platform').style.display = 'none';
  document.getElementById('landing').style.display = 'block';
@@ -2568,6 +2612,12 @@ function selectDb(t) {
  document.querySelectorAll('.opt-db').forEach(b=>b.classList.toggle('selected',b.dataset.val===t));
  renderDbPrompt();
 }
+function selectPayment(t) {
+ selectedPayment = t;
+ document.querySelectorAll('.opt-payment').forEach(b => b.classList.toggle('selected', b.dataset.val === t));
+ renderPaymentContent();
+}
+
 function selectAuth(t) {
  selectedAuth = t;
  localStorage.setItem(SAAS_STORAGE_AUTH, t);
@@ -2630,9 +2680,24 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
  <span class="tech-pill">Node.js</span>
  <span class="tech-pill">IA (Cursor, Claude…)</span>
  <span class="tech-pill">GitHub</span>
- <span class="tech-pill">Next.js + SaaS</span>
- <span class="tech-pill">Stripe + Deploy</span>
+ <span class="tech-pill">Next.js ou HTML</span>
+ <span class="tech-pill">Hotmart</span>
+ <span class="tech-pill">Firebase</span>
+ <span class="tech-pill">Vercel</span>
  </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Modelo real: como montamos o <strong>SaaS Academy</strong></div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Este curso não é só teoria — você replica o mesmo caminho que usamos aqui:</p>
+ <ol class="guide-steps">
+ <li><strong>Landing</strong> em HTML/CSS/JS na <strong>Vercel</strong></li>
+ <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo — sem API na Vercel)</li>
+ <li><strong>Login</strong> com <strong>Firebase Auth</strong> (e-mail/senha + Google)</li>
+ <li><strong>Banco</strong> <strong>Firestore</strong> com regras que bloqueiam alterações pelo navegador</li>
+ <li><strong>Acesso ao produto</strong> só se o e-mail estiver liberado após a compra</li>
+ </ol>
+ <div class="info-box success"><strong>Nos passos 5 a 10</strong> você encontra o tutorial completo: Firebase, Hotmart, Vercel, segurança e deploy.</div>
 </div>
 
 <div class="step-nav">
@@ -2845,7 +2910,19 @@ Explique em português simples:
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Stack recomendada <span class="content-tag">Padrão 2025</span></div>
+ <div class="content-card-title">Caminho A — Igual ao SaaS Academy (HTML + Vercel + Firebase + Hotmart)</div>
+ <ol class="guide-steps">
+ <li><strong>index.html</strong> — landing + laboratório protegido por login</li>
+ <li><strong>js/</strong> — firebase-config.js, auth-access.js, checkout-config.js, admin-dashboard.js</li>
+ <li><strong>firestore.rules</strong> — publicar no Firebase Console</li>
+ <li><strong>Vercel</strong> — deploy estático (sem build)</li>
+ <li><strong>Hotmart</strong> — link de pagamento + retorno <code>?acesso=1</code></li>
+ </ol>
+ <div class="info-box success">É o modelo deste site. Passos 5–10 têm o tutorial completo com caminhos no console.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Caminho B — Stack recomendada <span class="content-tag">Padrão 2025</span></div>
  <div class="tech-pills">
  <span class="tech-pill">Next.js 15</span>
  <span class="tech-pill">TypeScript</span>
@@ -2973,67 +3050,21 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 ()=>`
 <div class="step-header">
  <div class="step-phase">Fase 2 — Produto</div>
- <div class="step-title">Pagamentos com Stripe</div>
- <div class="step-subtitle">Integre planos, trials e cobranças recorrentes no <strong>${saasName}</strong>.</div>
+ <div class="step-title">Pagamentos e liberação de acesso</div>
+ <div class="step-subtitle">Como no <strong>SaaS Academy</strong>: venda na <strong>Hotmart</strong>, cliente volta ao seu site e entra com o e-mail da compra.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Fluxo de pagamento SaaS</div>
- <div class="info-box success"><strong>Fluxo recomendado:</strong> Usuário escolhe plano → Stripe Checkout → Webhook confirma pagamento → Banco atualiza plano → Acesso liberado.</div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Prompt para integração Stripe completa</div>
- <div class="prompt-box">
- <div class="prompt-label">Prompt — Stripe + Planos + Trial</div>
- <div class="prompt-text" id="prompt-stripe">Implemente integração completa com Stripe no SaaS "<span class="prompt-saas-name">${saasName}</span>".
-
-Inclua:
-1. Produtos e preços no Stripe (mensal + anual)
-2. Trial de 14 dias grátis automático
-3. Checkout Session com success_url e cancel_url
-4. Webhook handler em /api/webhooks/stripe para eventos:
- - checkout.session.completed
- - customer.subscription.updated
- - customer.subscription.deleted
- - invoice.payment_failed
-5. Portal do cliente (gerenciar/cancelar assinatura)
-6. Middleware verificando se plano está ativo
-7. Validação de assinatura em cada request protegida
-
-Mostre o código completo com validação de webhook via stripe-signature.</div>
- <button class="copy-btn" onclick="copyPrompt('prompt-stripe')">Copiar</button>
+ <div class="content-card-title">Escolha como cobrar</div>
+ <div class="option-grid">
+ <div class="option-btn opt-payment selected" data-val="hotmart" onclick="selectPayment('hotmart')"><div class="option-name">Hotmart</div>
+ <div class="option-desc">Recomendado BR — sem API na Vercel</div></div>
+ <div class="option-btn opt-payment" data-val="stripe" onclick="selectPayment('stripe')"><div class="option-name">Stripe</div>
+ <div class="option-desc">Checkout + webhook (Next.js)</div></div>
  </div>
 </div>
 
-<div class="content-card">
- <div class="content-card-title">Webhook seguro — código essencial <span class="content-tag security">Segurança</span></div>
- <div class="code-snippet"><span class="cm">// app/api/webhooks/stripe/route.ts</span>
-<span class="kw">import</span> Stripe <span class="kw">from</span> <span class="str">'stripe'</span>
-
-<span class="kw">export async function</span> <span class="fn">POST</span>(req: Request) {
- <span class="kw">const</span> <span class="var">body</span> = <span class="kw">await</span> req.<span class="fn">text</span>()
- <span class="kw">const</span> <span class="var">sig</span> = req.headers.<span class="fn">get</span>(<span class="str">'stripe-signature'</span>)!
-
- <span class="cm">// SEMPRE validar a assinatura do webhook!</span>
- <span class="kw">const</span> <span class="var">event</span> = stripe.webhooks.<span class="fn">constructEvent</span>(
- <span class="var">body</span>, <span class="var">sig</span>, process.env.<span class="var">STRIPE_WEBHOOK_SECRET</span>!
- )
- <span class="cm">// Processar event.type...</span>
-}</div>
- <div class="info-box danger"><strong>Nunca</strong> confie no payload do webhook sem validar a assinatura com STRIPE_WEBHOOK_SECRET. Qualquer um pode enviar POSTs falsos.</div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Checklist de pagamentos</div>
- <div class="checklist">
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Produtos e preços criados no Stripe Dashboard</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Checkout funcionando (modo teste)</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Webhook validando assinatura Stripe</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Banco atualizado após pagamento confirmado</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Portal do cliente funcionando</label>
- </div>
-</div>
+<div id="payment-content-area"></div>
 
 <div class="step-nav">
  <button class="btn-prev" onclick="gotoStep(6)">← Banco de Dados</button>
@@ -3044,81 +3075,82 @@ Mostre o código completo com validação de webhook via stripe-signature.</div>
 ()=>`
 <div class="step-header">
  <div class="step-phase">Fase 2 — Produto</div>
- <div class="step-title">Segurança</div>
- <div class="step-subtitle">Proteja o <strong>${saasName}</strong> contra os ataques mais comuns em aplicações SaaS.</div>
+ <div class="step-title">Segurança (não confie no front)</div>
+ <div class="step-subtitle">No <strong>SaaS Academy</strong> a segurança real está no <strong>Firestore Rules</strong> + <strong>Firebase Auth</strong>. O F12 não pode liberar acesso nem virar admin.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Os 5 pilares de segurança SaaS <span class="content-tag security">Segurança</span></div>
- <div class="info-box info">Este módulo cobre as vulnerabilidades mais exploradas em SaaS — implemente tudo antes de ir para produção.</div>
+ <div class="content-card-title">Regra de ouro</div>
+ <div class="info-box danger"><strong>O navegador sempre perde.</strong> Qualquer um pode abrir o DevTools (F12), mudar variáveis JavaScript ou chamar funções. Por isso: <strong>nunca</strong> coloque segredo no front; <strong>nunca</strong> confie em flags tipo <code>isAdmin: true</code> só no JS. Quem manda é o Firestore no servidor do Google.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — Headers HTTP de segurança</div>
- <div class="prompt-box">
- <div class="prompt-label">Prompt — Security Headers</div>
- <div class="prompt-text" id="prompt-headers">Configure headers de segurança HTTP no Next.js para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
+ <div class="content-card-title">Coleções do SaaS Academy</div>
+ <ol class="guide-steps">
+ <li><strong>users/{uid}</strong> — perfil: <code>email</code>, <code>role</code> (user/admin), <code>libraryAccess</code> (true/false). O cliente <strong>não pode</strong> se auto-liberar nem virar admin.</li>
+ <li><strong>email_access/{email}</strong> — liberação da compra: <code>active: true</code>. Só <strong>admin</strong> escreve aqui (painel ou Console).</li>
+ </ol>
+ <div class="lab-path"><strong>Caminho no Console:</strong> Firebase → <code>Build → Firestore Database → Regras</code> → cole o arquivo <code>firestore.rules</code> do projeto → <strong>Publicar</strong>.</div>
+</div>
 
-No next.config.ts, adicione:
-1. Content-Security-Policy (CSP) — bloquear XSS
-2. X-Frame-Options: DENY — bloquear clickjacking
-3. X-Content-Type-Options: nosniff
-4. Strict-Transport-Security (HSTS) — forçar HTTPS
-5. Permissions-Policy — limitar APIs do browser
-6. Referrer-Policy: strict-origin-when-cross-origin
+<div class="content-card">
+ <div class="content-card-title">Arquivo firestore.rules (modelo SaaS Academy)</div>
+ <div class="code-snippet">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /email_access/{email} {
+      allow read: if request.auth != null
+        && (request.auth.token.email.lower() == email || isAdmin());
+      allow write: if isAdmin();
+    }
+    match /users/{userId} {
+      allow get: if isSelf(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSelf(userId)
+        && request.resource.data.role == 'user'
+        && request.resource.data.libraryAccess == false;
+      allow update: if isSelf(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.libraryAccess == resource.data.libraryAccess;
+      allow update: if isAdmin();
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}</div>
+ <div class="info-box warning">Depois de editar as regras, clique em <strong>Publicar</strong>. Sem isso, o site em produção continua com regras antigas.</div>
+</div>
 
-Mostre a configuração completa e explique o que cada header protege.</div>
- <button class="copy-btn" onclick="copyPrompt('prompt-headers')">Copiar</button>
+<div class="content-card">
+ <div class="content-card-title">Fluxo de acesso seguro</div>
+ <ol class="guide-steps">
+ <li>Cliente compra na Hotmart → você libera o e-mail em <code>email_access</code> (manual ou automação futura).</li>
+ <li>Cliente clica <strong>Entrar</strong> no site (sem aba “Criar conta” pública).</li>
+ <li>Primeira vez: mesmo e-mail da compra + senha (ou Google).</li>
+ <li><code>userHasLabAccess()</code> lê o Firestore — se não tiver compra, <strong>logout</strong>.</li>
+ <li>Admin: só quem tem <code>role: admin</code> no Firestore (definido por você no Console).</li>
+ </ol>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Tornar-se admin (só você, dono do projeto)</div>
+ <ol class="guide-steps">
+ <li>Faça login uma vez no seu site para criar <code>users/{uid}</code>.</li>
+ <li>Firebase Console → Firestore → coleção <strong>users</strong> → seu documento (uid).</li>
+ <li>Edite o campo <code>role</code> para <strong>admin</strong> (string).</li>
+ <li>Recarregue o site — aparece o <strong>Painel admin</strong> para liberar clientes.</li>
+ </ol>
+ <div class="info-box danger"><strong>Nunca</strong> coloque lista de e-mails admin no JavaScript. Qualquer um veria no código-fonte.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist de segurança</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> firestore.rules publicadas no Console</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Cliente não consegue alterar role/libraryAccess pelo F12</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sem cadastro público — só entrar após compra</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Domínios autorizados no Firebase Auth (localhost + Vercel)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Chave privada Admin SDK NUNCA no GitHub</label>
  </div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Prompt — Rate Limiting + Input Validation</div>
- <div class="prompt-box">
- <div class="prompt-label">Prompt — Rate Limiting com Upstash Redis</div>
- <div class="prompt-text" id="prompt-ratelimit">Implemente rate limiting e validação de input no SaaS "<span class="prompt-saas-name">${saasName}</span>".
-
-1. Rate limiting com Upstash Redis:
- - 10 requests/minuto em /api/auth/login
- - 100 requests/minuto em /api/* para usuários autenticados
- - 20 requests/minuto em /api/* para usuários não autenticados
-
-2. Validação de todos os inputs com Zod:
- - Schemas para todos os endpoints POST/PUT
- - Sanitização de strings (trim, lowercase onde necessário)
- - Rejeição de payloads malformados com erro 400
-
-3. SQL Injection — mostrar por que Prisma protege automaticamente
-
-Mostre código completo com middleware reutilizável.</div>
- <button class="copy-btn" onclick="copyPrompt('prompt-ratelimit')">Copiar</button>
- </div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Prompt — Variáveis de ambiente seguras</div>
- <div class="prompt-box">
- <div class="prompt-label">Prompt — Env Vars + Secrets</div>
- <div class="prompt-text" id="prompt-env">Configure gerenciamento seguro de variáveis de ambiente no "${saasName}".
-
-1. Validação de env vars no startup com Zod (env.mjs pattern do T3)
-2. Separação de vars server-only vs client (NEXT_PUBLIC_*)
-3. Checklist completo de .gitignore para não expor secrets
-4. Como configurar secrets na Vercel e em VPS com dotenv-vault
-5. Rotação de API keys sem downtime
-
-Mostre o código de validação de env e o .env.example completo.</div>
- <button class="copy-btn" onclick="copyPrompt('prompt-env')">Copiar</button>
- </div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Top 5 erros de segurança em SaaS</div>
- <div class="info-box danger"><strong>IDOR:</strong> Sempre verifique se o usuário autenticado é dono do recurso antes de retorná-lo.</div>
- <div class="info-box danger"><strong>Secrets no Git:</strong> Use git-secrets ou gitleaks no CI para bloquear commits com chaves expostas.</div>
- <div class="info-box warning"><strong>Logs com dados sensíveis:</strong> Nunca logue senhas, tokens ou dados de cartão — nem em desenvolvimento.</div>
- <div class="info-box warning"><strong>Dependências desatualizadas:</strong> Execute npm audit weekly e configure Dependabot no GitHub.</div>
- <div class="info-box warning"><strong>CORS aberto:</strong> Defina origins explícitas — nunca use Access-Control-Allow-Origin: *</div>
 </div>
 
 <div class="step-nav">
@@ -3225,6 +3257,19 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
  </div>
 </div>
 
+<div class="content-card">
+ <div class="content-card-title">Deploy estático — caminho exato (SaaS Academy)</div>
+ <ol class="guide-steps">
+ <li><strong>github.com</strong> → New repository → envie index.html, pasta js/, assets/, firestore.rules</li>
+ <li><strong>vercel.com</strong> → Add New → Project → importe o repositório</li>
+ <li>Framework: <strong>Other</strong> · Build Command: <strong>vazio</strong> · Output Directory: <strong>.</strong></li>
+ <li>Deploy → URL <code>https://seu-projeto.vercel.app</code></li>
+ <li>Firebase → Auth → Authorized domains → adicione essa URL</li>
+ <li>Hotmart → obrigado → <code>https://seu-projeto.vercel.app/?acesso=1</code></li>
+ </ol>
+ <div class="info-box success">Push na <strong>main</strong> do GitHub pode disparar deploy automático na Vercel.</div>
+</div>
+
 <div id="deploy-prompt-area"></div>
 
 <div class="content-card">
@@ -3293,20 +3338,104 @@ Mostre passo a passo para Namecheap/GoDaddy + Vercel/DigitalOcean.</div>
 
 ];
 
+
+function renderPaymentContent() {
+ const area = document.getElementById('payment-content-area');
+ if (!area) return;
+ const name = saasName;
+ const slug = (name || 'meu-saas').toLowerCase().replace(/\s+/g, '-');
+
+ if (selectedPayment === 'hotmart') {
+  area.innerHTML = `
+<div class="content-card">
+ <div class="content-card-title">Tutorial — Hotmart do zero (conta + produto + link)</div>
+ <div class="info-box success"><strong>Modelo SaaS Academy:</strong> o pagamento acontece na Hotmart. Seu site só redireciona para o link de checkout e, depois da compra, o cliente volta para <code>?acesso=1</code> para entrar.</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Criar conta na Hotmart</strong></p>
+ <ol class="guide-steps">
+ <li>Acesse <strong>https://www.hotmart.com</strong> → <strong>Criar conta</strong> (produtor/afiliado conforme seu modelo).</li>
+ <li>Complete cadastro, documentos e dados bancários para receber.</li>
+ </ol>
+ <div class="lab-path"><strong>Caminho:</strong> após login → painel do produtor Hotmart.</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>2. Criar o produto</strong></p>
+ <ol class="guide-steps">
+ <li>Menu <strong>Produtos</strong> → <strong>Criar produto</strong>.</li>
+ <li>Tipo: <strong>Assinatura</strong> ou <strong>Curso/Área de membros</strong> (o que combinar com seu SaaS).</li>
+ <li>Defina preço (ex.: R$ 50/mês), nome e descrição do <strong>${name}</strong>.</li>
+ <li>Publique o produto quando estiver pronto para vender.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Pegar o link de pagamento</strong></p>
+ <ol class="guide-steps">
+ <li>No produto → <strong>Links de divulgação</strong> (ou Página de pagamento).</li>
+ <li>Copie o link que começa com <strong>https://pay.hotmart.com/...</strong></li>
+ <li>Cole em <strong>js/checkout-config.js</strong> no seu projeto:</li>
+ </ol>
+ <div class="code-snippet">window.CHECKOUT_LINKS = {
+  starter: "https://pay.hotmart.com/SEU_CODIGO",
+  pro: "https://pay.hotmart.com/SEU_CODIGO",
+};
+
+window.goToCheckout = function goToCheckout(plan) {
+  const url = window.CHECKOUT_LINKS[plan] || window.CHECKOUT_LINKS.pro;
+  window.location.href = url;
+};</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>4. Página de obrigado (volta ao seu site)</strong></p>
+ <ol class="guide-steps">
+ <li>Na Hotmart, configure a URL de redirecionamento após compra aprovada:</li>
+ <li><strong>https://SEU-DOMINIO.vercel.app/?acesso=1</strong> (troque pelo seu domínio real).</li>
+ <li>Quando o cliente voltar com <code>?acesso=1</code>, o site abre o modal <strong>Entrar</strong> automaticamente.</li>
+ <li>Ele usa o <strong>mesmo e-mail da compra</strong> (Google ou senha).</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. Liberar acesso no Firestore</strong></p>
+ <ol class="guide-steps">
+ <li>Opção A — <strong>Painel admin</strong> do seu site (você com <code>role: admin</code>) → Liberar cliente.</li>
+ <li>Opção B — Console: Firestore → coleção <strong>email_access</strong> → documento ID = e-mail em minúsculas → campo <code>active: true</code>.</li>
+ </ol>
+ <div class="info-box warning"><strong>Sem liberar o e-mail</strong>, o login até funciona no Firebase Auth, mas o laboratório nega acesso e faz logout.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist — Hotmart + acesso</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Conta Hotmart criada e produto publicado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Link pay.hotmart.com em checkout-config.js</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> URL de obrigado com ?acesso=1</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Testei compra e liberação do e-mail no Firestore</label>
+ </div>
+</div>`;
+  area.innerHTML = area.innerHTML.replace(/motion\.div/g, 'div').replace(/motion\.div/g, 'div');
+  return;
+ }
+
+ area.innerHTML = `
+<div class="content-card">
+ <div class="content-card-title">Stripe (avançado — Next.js com API)</div>
+ <div class="info-box info">Use Stripe se quiser checkout embutido + webhooks na Vercel. Exige rotas <code>/api</code> e validação de assinatura do webhook.</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Stripe completo</div>
+ <div class="prompt-text" id="prompt-stripe">Implemente Stripe no SaaS "${name}": produtos, Checkout, webhook com stripe-signature, atualizar plano no Firestore/Supabase.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-stripe')">Copiar</button>
+ </div>
+</div>`;
+}
+
 function renderDeployPrompt() {
  const area = document.getElementById('deploy-prompt-area');
  if (!area) return;
  const prompts = {
- vercel: { title: '▲ Deploy na Vercel (recomendado para começar)', text: `Faça o deploy do SaaS "${saasName}" na Vercel do zero.
+ vercel: { title: '▲ Deploy na Vercel — SaaS Academy (HTML estático)', text: `Deploy do "${saasName}" na Vercel (site estático como o SaaS Academy):
 
-1. Conectar repositório GitHub na Vercel
-2. Configurar todas as environment variables no painel Vercel (as mesmas do .env.local: Firebase, Supabase, Stripe, NextAuth, etc.)
-3. Configurar o projeto como Next.js (auto-detectado)
-4. Domínio personalizado no painel
-5. Banco externo (Firebase, Supabase ou Vercel Postgres) — copie as chaves do passo Banco de Dados
-6. Configurar VERCEL_URL e fazer redirect HTTP→HTTPS
-
-Mostre o vercel.json se necessário e como verificar o deploy com vercel --prod.` },
+1. vercel.com → Add New → Project → repositório GitHub
+2. Framework: Other · Build Command: VAZIO · Output: .
+3. Deploy → copie https://seu-projeto.vercel.app
+4. Firebase Auth → Authorized domains → adicione a URL da Vercel
+5. Hotmart → obrigado → https://seu-projeto.vercel.app/?acesso=1
+6. HTML + js/firebase-config.js: NÃO precisa env vars na Vercel
+7. Domínio próprio: Settings → Domains na Vercel` },
  vps: { title: ' Deploy em VPS com Docker + Nginx', text: `Faça o deploy do SaaS "${saasName}" em um VPS Ubuntu 22.04 (DigitalOcean Droplet $12/mês).
 
 1. Configurar VPS: atualizar pacotes, criar usuário não-root, SSH key
@@ -3351,84 +3480,35 @@ function renderAuthContent() {
  if (selectedAuth === 'firebase') {
   area.innerHTML = `
 <div class="content-card">
- <div class="content-card-title">Tutorial — Firebase Auth (criar logins no console)</div>
- <div class="info-box warning"><strong>Não é só código.</strong> Primeiro você liga os métodos de login no Firebase Console; depois usa as chaves NEXT_PUBLIC_* no projeto e na Vercel.</div>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Abrir Authentication</strong></p>
- <ol class="guide-steps">
- <li>No <strong>Firebase Console</strong> → seu projeto → <strong>Build → Authentication</strong>.</li>
- <li>Clique em <strong>Começar</strong> (primeira vez).</li>
- <li>Aba <strong>Users</strong>: aqui aparecem os usuários cadastrados.</li>
- </ol>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>2. Ativar Email e senha</strong></p>
- <ol class="guide-steps">
- <li>Aba <strong>Sign-in method</strong> → <strong>Email/Password</strong>.</li>
- <li>Ative o primeiro interruptor → <strong>Salvar</strong>.</li>
- </ol>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Ativar Google (opcional)</strong></p>
- <ol class="guide-steps">
- <li><strong>Sign-in method</strong> → <strong>Google</strong> → Ativar → e-mail de suporte → Salvar.</li>
- </ol>
-
+ <div class="content-card-title">Tutorial — Firebase Auth (passo a passo no Console)</div>
+ <div class="info-box warning"><strong>Modelo SaaS Academy:</strong> não há aba Criar conta pública. O cliente só <strong>entra</strong> depois da compra (Hotmart).</div>
+ <div class="lab-path"><strong>Caminho:</strong> console.firebase.google.com → seu projeto → Build → Authentication</div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Começar Authentication</strong></p>
+ <ol class="guide-steps"><li>Clique em <strong>Começar</strong>.</li><li>Aba <strong>Users</strong>: quem já fez login.</li></ol>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>2. E-mail e senha</strong></p>
+ <ol class="guide-steps"><li>Sign-in method → Email/Password → ativar → Salvar.</li></ol>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Google</strong></p>
+ <ol class="guide-steps"><li>Sign-in method → Google → Ativar → Salvar.</li></ol>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>4. Domínios autorizados</strong></p>
- <ol class="guide-steps">
- <li>Authentication → <strong>Settings</strong> → <strong>Authorized domains</strong>.</li>
- <li>Deve ter <strong>localhost</strong>. Adicione seu domínio da Vercel após o deploy.</li>
- </ol>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. Variáveis no .env.local</strong></p>
- <div class="code-snippet">NEXT_PUBLIC_FIREBASE_API_KEY=...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${slug}.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
-NEXT_PUBLIC_FIREBASE_APP_ID=...</div>
- <div class="info-box info">No terminal do projeto: npm install firebase</div>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>6. Colar na Vercel</strong></p>
- <ol class="guide-steps">
- <li>Vercel → Settings → Environment Variables → mesmas NEXT_PUBLIC_FIREBASE_* → Redeploy.</li>
- </ol>
-
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>7. Ligar ao Firestore</strong></p>
- <div class="info-box success">Use o <strong>uid</strong> do usuário logado em users/{uid} e regras com request.auth.uid.</div>
+ <ol class="guide-steps"><li>Settings → Authorized domains → localhost + seu-projeto.vercel.app</li></ol>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. js/firebase-config.js</strong></p>
+ <div class="code-snippet">window.FIREBASE_CONFIG = { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId };</div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>6. Vercel</strong></p>
+ <ol class="guide-steps"><li>HTML estático: não precisa env vars se usar firebase-config.js</li><li>Next.js: NEXT_PUBLIC_FIREBASE_* em Settings → Environment Variables</li></ol>
 </div>
-
-<div class="content-card">
- <div class="content-card-title">Prompt para a IA — login Firebase</div>
- <div class="prompt-box">
- <div class="prompt-label">Prompt — Firebase Authentication + Next.js</div>
- <div class="prompt-text" id="prompt-auth">Implemente autenticação com Firebase Auth no SaaS "${name}" (Next.js App Router).${ctx}
-
-Já ativei: Email/Password e Google no console. Domínios: localhost e Vercel.
-
-Inclua:
-1. lib/firebase/client.ts com variáveis NEXT_PUBLIC_FIREBASE_*
-2. Páginas /login e /register (email+senha)
-3. Botão Entrar com Google
-4. Hook useAuth() com user, loading, logout
-5. Proteger /dashboard/* (redirect se não logado)
-6. Criar users/{uid} no Firestore após cadastro (plan: free)
-7. Erros em português
-8. Variáveis .env necessárias
-
-Explique em português simples.</div>
- <button class="copy-btn" onclick="copyPrompt('prompt-auth')">Copiar</button>
- </div>
-</div>
-
-<div class="content-card">
- <div class="content-card-title">Checklist — login funcionando</div>
+<div class="content-card"><div class="content-card-title">Checklist</div>
  <div class="checklist">
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Email/senha ativado no Console</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Google ativado (se usar)</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> localhost em Authorized domains</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> NEXT_PUBLIC_FIREBASE_* no .env.local</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Variáveis na Vercel + redeploy</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Cadastro e login no localhost OK</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> /dashboard bloqueado sem login</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Usuário em Authentication → Users</label>
- </div>
+ <label class="check-item"><input type="checkbox"> Email/senha e Google no Console</label>
+ <label class="check-item"><input type="checkbox"> Domínios autorizados OK</label>
+ <label class="check-item"><input type="checkbox"> firebase-config.js preenchido</label>
+ </div></div>
+<div class="content-card">
+ <div class="content-card-title">Arquivos de referência (SaaS Academy)</div>
+ <ul class="guide-steps" style="list-style:disc">
+ <li><strong>js/auth-access.js</strong> — login, Google, verifica Firestore</li>
+ <li><strong>js/admin-dashboard.js</strong> — liberar clientes após Hotmart</li>
+ <li><strong>firestore.rules</strong> — publicar no Console</li>
+ </ul>
 </div>`;
   return;
  }
@@ -3535,8 +3615,17 @@ function renderDbPrompt() {
  <ol class="guide-steps">
  <li>Firestore → aba <strong>Regras</strong>.</li>
  <li>Comece restrito: só usuário autenticado acessa o próprio <strong>uid</strong> (a IA gera o arquivo de regras).</li>
- <li>Clique em <strong>Publicar</strong> após revisar com a IA.</li>
+ <li>Clique em <strong>Publicar</strong> (use firestore.rules do projeto).</li>
  </ol>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>8. Limites do plano Spark (grátis)</strong></p>
+ <img class="lab-screenshot" src="assets/firebase-spark-limites.png" alt="Cotas do Firebase no plano Spark" loading="lazy">
+ <ul class="guide-steps" style="list-style:disc;margin-top:0.75rem">
+ <li><strong>Gravações:</strong> ~20 mil/dia · <strong>Leituras:</strong> ~50 mil/dia · <strong>Exclusões:</strong> ~20 mil/dia</li>
+ <li><strong>Armazenamento:</strong> ~1 GB · <strong>Banda:</strong> ~10 GB/mês</li>
+ </ul>
+ <div class="lab-path"><strong>Caminho:</strong> Configurações do projeto → Uso e faturamento → Cotas do projeto</div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>9. Vercel (HTML estático)</strong></p>
+ <ol class="guide-steps"><li>Chaves em js/firebase-config.js — sem env vars na Vercel</li><li>Next.js: NEXT_PUBLIC_FIREBASE_* na Vercel</li></ol>
 </div>` : '';
  const supabaseTutorial = selectedDb === 'supabase' ? `
 <div class="content-card">
@@ -3620,6 +3709,7 @@ function renderStep(n) {
  if (n === 10) renderDeployPrompt();
  if (n === 5) renderAuthContent();
  if (n === 6) renderDbPrompt();
+ if (n === 7) renderPaymentContent();
  requestAnimationFrame(() => {
  animatePlatformStep();
  scheduleScrollToTop();

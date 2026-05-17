@@ -8,7 +8,5 @@ window.FIREBASE_CONFIG = {
   appId: "1:627408482482:web:4bba0444b9c71c174919ab",
 };
 
-// Fallback: e-mail admin (principal é users/{uid}.role === "admin" no Firestore)
-window.ADMIN_EMAILS = [
-  "ale@gmail.com",
-];
+// Admin: defina SOMENTE no Firestore Console → users/{uid} → role: "admin"
+// Não use lista no front — regras do Firestore não confiam no navegador.

@@ -15,25 +15,45 @@ service cloud.firestore {
         );
     }
 
-    match /email_access/{email} {
-      allow read: if request.auth != null
-        && (
-          (request.auth.token.email != null && request.auth.token.email.lower() == email)
-          || isAdmin()
-        );
-      allow write: if isAdmin();
+    function isSelf(userId) {
+      return request.auth != null && request.auth.uid == userId;
     }
 
+    function authEmailLower() {
+      return request.auth.token.email.lower();
+    }
+
+    // Liberação de compra — somente admin escreve; cliente só lê o próprio e-mail
+    match /email_access/{email} {
+      allow read: if request.auth != null
+        && (authEmailLower() == email || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Perfil — cliente não pode virar admin nem se auto-liberar
     match /users/{userId} {
-      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
-      allow create: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.role == 'user';
-      allow update: if request.auth != null
-        && request.auth.uid == userId
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])
-            || request.resource.data.role == resource.data.role);
+      allow get: if isSelf(userId) || isAdmin();
+      allow list: if isAdmin();
+
+      allow create: if isSelf(userId)
+        && request.resource.data.role == 'user'
+        && request.resource.data.libraryAccess == false
+        && request.resource.data.email == authEmailLower();
+
+      allow update: if isSelf(userId)
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.libraryAccess == resource.data.libraryAccess
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['email', 'authProvider', 'updatedAt']);
+
       allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Bloqueia qualquer outra coleção
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

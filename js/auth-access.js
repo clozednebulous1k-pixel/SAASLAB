@@ -1,183 +1,136 @@
 /**
-
- * Login Firebase + acesso ao laboratório
-
- * Admin: users/{uid}.role === "admin" (Firestore)
-
+ * Autenticação + acesso ao laboratório.
+ * Segurança: Firestore Rules são a fonte da verdade (não confiar no front).
+ * Admin: apenas users/{uid}.role === "admin" no Firestore (definido no Console).
  * Cliente: email_access/{email}.active === true OU users/{uid}.libraryAccess === true
-
  */
-
 (function () {
-
   let firebaseReady = false;
-
   let auth = null;
-
   let db = null;
+  let labAccessWatchId = null;
+  let enterLabCallback = null;
 
-
-
-  function showAuthMsg(text, type) {
-
-    const el = document.getElementById("access-auth-msg");
-
-    if (!el) return;
-
-    el.textContent = text || "";
-
-    el.className = "access-auth-msg" + (type ? " access-auth-msg--" + type : "");
-
-  }
-
-
-
-  function normalizeEmail(email) {
-
-    return String(email || "")
-
-      .trim()
-
-      .toLowerCase();
-
-  }
-
-
-
-  function normalizeRole(role) {
-
-    return String(role || "")
-
-      .trim()
-
-      .toLowerCase();
-
-  }
-
-
-
-  function isConfiguredAdmin(email) {
-
-    const key = normalizeEmail(email);
-
-    const list = (window.ADMIN_EMAILS || []).map(normalizeEmail).filter(Boolean);
-
-    return list.includes(key);
-
-  }
-
-
-
-  window.isLabAdmin = function isLabAdmin(user) {
-
-    if (!user?.email) return false;
-
-    if (isConfiguredAdmin(user.email)) return true;
-
-    return normalizeRole(window.__labUserProfile?.role) === "admin";
-
+  window.registerLabEnterCallback = function registerLabEnterCallback(fn) {
+    if (typeof fn === "function") enterLabCallback = fn;
   };
 
+  function enterLabIfAllowed() {
+    if (typeof enterLabCallback === "function") enterLabCallback();
+  }
 
+  function stopLabAccessWatch() {
+    if (labAccessWatchId) {
+      clearInterval(labAccessWatchId);
+      labAccessWatchId = null;
+    }
+  }
+
+  function startLabAccessWatch() {
+    stopLabAccessWatch();
+    labAccessWatchId = setInterval(async () => {
+      const user = auth?.currentUser;
+      if (!user) return;
+      const ok = await userHasLabAccess(user);
+      if (!ok) {
+        stopLabAccessWatch();
+        if (typeof window.exitPlatform === "function") window.exitPlatform();
+        await auth.signOut();
+        window.__labUserProfile = null;
+        updateAccessNav(null);
+        openAccessGate();
+        showAuthMsg("Seu acesso foi encerrado ou ainda não está liberado.", "warn");
+      }
+    }, 60000);
+  }
+
+  window.onLabEntered = function onLabEntered() {
+    startLabAccessWatch();
+  };
+
+  window.onLabExited = function onLabExited() {
+    stopLabAccessWatch();
+  };
+
+  function showAuthMsg(text, type) {
+    const el = document.getElementById("access-auth-msg");
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "access-auth-msg" + (type ? " access-auth-msg--" + type : "");
+  }
+
+  function normalizeEmail(email) {
+    return String(email || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  function normalizeRole(role) {
+    return String(role || "")
+      .trim()
+      .toLowerCase();
+  }
+
+  window.isLabAdmin = function isLabAdmin(user) {
+    if (!user?.email) return false;
+    return normalizeRole(window.__labUserProfile?.role) === "admin";
+  };
 
   async function refreshLabUserProfile(user) {
-
     if (!user || !db) {
-
       window.__labUserProfile = null;
-
       return null;
-
     }
-
     try {
-
       const snap = await db.collection("users").doc(user.uid).get();
-
       window.__labUserProfile = snap.exists ? snap.data() : null;
-
       return window.__labUserProfile;
-
     } catch (e) {
-
       console.error("refreshLabUserProfile", e);
-
       window.__labUserProfile = null;
-
       return null;
-
     }
-
   }
 
-
+  async function emailHasPurchaseAccess(email) {
+    if (!db || !email) return false;
+    try {
+      const key = normalizeEmail(email);
+      const snap = await db.collection("email_access").doc(key).get();
+      return snap.exists && snap.data()?.active === true;
+    } catch (e) {
+      console.error("emailHasPurchaseAccess", e);
+      return false;
+    }
+  }
 
   async function ensureUserDoc(user) {
-
-    if (!user || !db) return;
-
+    if (!user || !db || !user.email) return;
     const ref = db.collection("users").doc(user.uid);
-
     const snap = await ref.get();
-
     const email = normalizeEmail(user.email);
-
     const now = firebase.firestore.FieldValue.serverTimestamp();
-    const configuredAdmin = isConfiguredAdmin(user.email);
+    const providerId = user.providerData?.[0]?.providerId || "password";
 
     if (!snap.exists) {
-
-      const providerId = user.providerData?.[0]?.providerId || "password";
-
       await ref.set({
-
         email,
-
-        role: configuredAdmin ? "admin" : "user",
-
-        libraryAccess: !!configuredAdmin,
-
-        authProvider: providerId,
-
-        createdAt: now,
-
-        updatedAt: now,
-
-      });
-
-      window.__labUserProfile = {
-
-        email,
-
         role: "user",
-
         libraryAccess: false,
-
-      };
-
+        authProvider: providerId,
+        createdAt: now,
+        updatedAt: now,
+      });
+      window.__labUserProfile = { email, role: "user", libraryAccess: false };
       return;
-
     }
 
-
-
     const data = snap.data() || {};
-
     const patch = { updatedAt: now };
-
     if (!data.email && email) patch.email = email;
-
-    if (!data.role) patch.role = "user";
-
-    if (typeof data.libraryAccess !== "boolean") patch.libraryAccess = false;
-
     if (Object.keys(patch).length > 1) await ref.set(patch, { merge: true });
-
     await refreshLabUserProfile(user);
-
   }
-
-
 
   function setNavVisible(el, show) {
     if (!el) return;
@@ -213,234 +166,145 @@
       }
     }
 
-    if (adminLink) {
-      adminLink.style.display = isAdmin ? "block" : "none";
-    }
+    if (adminLink) adminLink.style.display = isAdmin ? "block" : "none";
 
     if (userBtn) {
       const name = user?.email ? user.email.split("@")[0] : "Conta";
       userBtn.textContent = isAdmin ? name + " (admin)" : name;
-      userBtn.title = isAdmin ? "Logado como admin — use Painel admin ou o botão Admin no canto" : "Sair da conta";
     }
   }
 
+  window.userHasLabAccess = async function userHasLabAccess(user) {
+    if (!user?.email || !db) return false;
 
+    try {
+      const profile =
+        window.__labUserProfile ||
+        (await db.collection("users").doc(user.uid).get()).data();
+
+      if (normalizeRole(profile?.role) === "admin") return true;
+      if (profile?.libraryAccess === true) return true;
+
+      return await emailHasPurchaseAccess(user.email);
+    } catch (e) {
+      console.error("userHasLabAccess", e);
+      return false;
+    }
+  };
+
+  window.verifyLabAccessBeforeEnter = async function verifyLabAccessBeforeEnter() {
+    initFirebaseAccess();
+    const user = auth?.currentUser;
+    if (!user) {
+      sessionStorage.setItem("saaslab_pending_enter", "1");
+      openAccessGate();
+      showAuthMsg("Faça login com o e-mail da compra.", "warn");
+      return false;
+    }
+    const ok = await userHasLabAccess(user);
+    if (!ok) {
+      await auth.signOut();
+      window.__labUserProfile = null;
+      updateAccessNav(null);
+      sessionStorage.setItem("saaslab_pending_enter", "1");
+      openAccessGate();
+      showAuthMsg(
+        "Acesso negado. Este e-mail não tem compra liberada no sistema.",
+        "warn"
+      );
+      return false;
+    }
+    return true;
+  };
 
   window.initFirebaseAccess = function initFirebaseAccess() {
-
     if (firebaseReady || typeof firebase === "undefined" || !window.FIREBASE_CONFIG) {
-
       return !!firebaseReady;
-
     }
-
     firebase.initializeApp(window.FIREBASE_CONFIG);
-
     auth = firebase.auth();
-
     db = firebase.firestore();
-
     firebaseReady = true;
 
-
-
     auth.onAuthStateChanged(async (user) => {
-
       if (user) {
-
         await ensureUserDoc(user);
-
         await refreshLabUserProfile(user);
-
       } else {
-
         window.__labUserProfile = null;
-
       }
-
       updateAccessNav(user);
 
       if (user) {
-
-        const ok = await window.userHasLabAccess(user);
-
+        const ok = await userHasLabAccess(user);
         if (ok && sessionStorage.getItem("saaslab_pending_enter") === "1") {
-
           sessionStorage.removeItem("saaslab_pending_enter");
-
-          window.enterPlatformCore();
-
+          enterLabIfAllowed();
+          window.onLabEntered?.();
+        } else if (!ok) {
+          await auth.signOut();
+          updateAccessNav(null);
         }
-
       }
-
     });
-
-
 
     handleReturnAfterPayment();
-
     return true;
-
   };
 
-
-
-  window.openAccessGate = function openAccessGate(tab) {
-
+  window.openAccessGate = function openAccessGate() {
     const gate = document.getElementById("access-gate");
-
     if (!gate) return;
-
     gate.hidden = false;
-
     gate.setAttribute("aria-hidden", "false");
-
     requestAnimationFrame(() => gate.classList.add("is-open"));
-
-    switchAccessTab(tab === "activate" ? "login" : tab || "login");
-
     showAuthMsg("");
-
     initFirebaseAccess();
-
     loadRememberedEmail();
-
   };
-
-
 
   window.closeAccessGate = function closeAccessGate() {
-
     const gate = document.getElementById("access-gate");
-
     if (!gate) return;
-
     gate.classList.remove("is-open");
-
     gate.setAttribute("aria-hidden", "true");
-
     setTimeout(() => {
-
       gate.hidden = true;
-
     }, 260);
-
   };
 
-
-
-  window.switchAccessTab = function switchAccessTab(tab) {
-
-    document.querySelectorAll(".access-tab").forEach((btn) => {
-
-      btn.classList.toggle("active", btn.dataset.tab === tab);
-
-    });
-
-    document.querySelectorAll(".access-panel").forEach((panel) => {
-
-      panel.hidden = panel.dataset.panel !== tab;
-
-    });
-
+  window.switchAccessTab = function switchAccessTab() {
+    /* aba única: só entrar */
   };
-
-
-
-  window.userHasLabAccess = async function userHasLabAccess(user) {
-
-    if (!user?.email || !db) return false;
-
-
-
-    if (isConfiguredAdmin(user.email)) return true;
-
-
-
-    try {
-
-      const profile =
-
-        window.__labUserProfile ||
-
-        (await db.collection("users").doc(user.uid).get()).data();
-
-      const role = normalizeRole(profile?.role);
-
-      if (role === "admin") return true;
-
-      if (profile?.libraryAccess === true) return true;
-
-
-
-      const key = normalizeEmail(user.email);
-
-      const snap = await db.collection("email_access").doc(key).get();
-
-      return snap.exists && snap.data()?.active === true;
-
-    } catch (e) {
-
-      console.error("userHasLabAccess", e);
-
-      return false;
-
-    }
-
-  };
-
-
 
   window.requestPlatformAccess = async function requestPlatformAccess() {
-
     initFirebaseAccess();
-
     if (!auth) {
-
       alert("Firebase não carregou. Recarregue a página.");
-
       return;
-
     }
-
     if (!auth.currentUser) {
-
       sessionStorage.setItem("saaslab_pending_enter", "1");
-
-      openAccessGate("login");
-
+      openAccessGate();
       showAuthMsg("Faça login com o e-mail usado na compra.", "info");
-
       return;
-
     }
-
     const ok = await userHasLabAccess(auth.currentUser);
-
     if (!ok) {
-
+      await auth.signOut();
+      window.__labUserProfile = null;
+      updateAccessNav(null);
       sessionStorage.setItem("saaslab_pending_enter", "1");
-
-      openAccessGate("login");
-
+      openAccessGate();
       showAuthMsg(
-
-        "Compra não liberada para este e-mail. Use o mesmo e-mail do pagamento ou aguarde a confirmação.",
-
+        "Compra não liberada para este e-mail. Use o mesmo e-mail do pagamento.",
         "warn"
-
       );
-
       return;
-
     }
-
-    window.enterPlatformCore();
-
+    enterLabIfAllowed();
+    window.onLabEntered?.();
   };
-
-
 
   async function afterAuthSuccess(user, options) {
     const signOutIfDenied = options?.signOutIfDenied === true;
@@ -450,12 +314,12 @@
     updateAccessNav(user);
 
     const ok = await userHasLabAccess(user);
-
     if (ok) {
       closeAccessGate();
       if (sessionStorage.getItem("saaslab_pending_enter") === "1") {
         sessionStorage.removeItem("saaslab_pending_enter");
-        window.enterPlatformCore();
+        enterLabIfAllowed();
+        window.onLabEntered?.();
       }
       return true;
     }
@@ -466,16 +330,12 @@
       updateAccessNav(null);
     }
 
-    switchAccessTab("login");
-
-    const email = normalizeEmail(user?.email);
     showAuthMsg(
       signOutIfDenied
-        ? `O Gmail ${email} não tem compra liberada. Use o mesmo e-mail do pagamento ou aguarde a confirmação.`
-        : "Conta criada, mas o laboratório ainda não está liberado. Aguarde a confirmação da compra ou fale no WhatsApp.",
+        ? `O e-mail ${normalizeEmail(user?.email)} não tem compra liberada. Aguarde a confirmação ou fale no WhatsApp.`
+        : "Este e-mail ainda não tem acesso ao laboratório.",
       "warn"
     );
-
     return false;
   }
 
@@ -497,21 +357,12 @@
       if (!user?.email) {
         await auth.signOut();
         updateAccessNav(null);
-        showAuthMsg(
-          "Não foi possível ler o e-mail do Google. Use login com e-mail e senha.",
-          "error"
-        );
+        showAuthMsg("Não foi possível ler o e-mail do Google.", "error");
         return;
       }
 
       saveRememberedEmail(user.email);
-
-      if (window.isLabAdmin(user)) {
-        showAuthMsg("Bem-vindo, admin!", "success");
-      } else {
-        showAuthMsg("Verificando se este Gmail tem compra liberada…", "info");
-      }
-
+      showAuthMsg("Verificando compra liberada no servidor…", "info");
       await afterAuthSuccess(user, { signOutIfDenied: true });
     } catch (e) {
       const code = e?.code || "";
@@ -519,211 +370,112 @@
         showAuthMsg("", "");
         return;
       }
-      if (code === "auth/account-exists-with-different-credential") {
-        showAuthMsg(
-          "Este e-mail já foi cadastrado com senha. Entre com e-mail e senha na aba Entrar.",
-          "warn"
-        );
-        return;
-      }
-      if (code === "auth/operation-not-allowed") {
-        showAuthMsg(
-          "Login com Google não está ativo no Firebase. Ative em Authentication → Google.",
-          "error"
-        );
-        return;
-      }
       showAuthMsg(friendlyAuthError(e), "error");
     }
   };
 
-
-
   window.accessLogin = async function accessLogin() {
-
     initFirebaseAccess();
-
     const email = document.getElementById("access-email")?.value?.trim();
-
     const pass = document.getElementById("access-password")?.value;
 
     if (!email || !pass) {
-
       showAuthMsg("Preencha e-mail e senha.", "warn");
-
       return;
-
-    }
-
-    try {
-
-      showAuthMsg("Entrando…", "info");
-
-      await auth.signInWithEmailAndPassword(email, pass);
-      saveRememberedEmail(email);
-      await refreshLabUserProfile(auth.currentUser);
-      updateAccessNav(auth.currentUser);
-
-      if (window.isLabAdmin(auth.currentUser)) {
-        showAuthMsg(
-          "Bem-vindo, admin! Clique em Painel admin ou no botão Admin (canto inferior direito).",
-          "success"
-        );
-      } else {
-        showAuthMsg("Login ok! Verificando acesso…", "success");
-      }
-
-      await afterAuthSuccess(auth.currentUser);
-
-    } catch (e) {
-
-      showAuthMsg(friendlyAuthError(e), "error");
-
-    }
-
-  };
-
-
-
-  window.accessRegister = async function accessRegister() {
-
-    initFirebaseAccess();
-
-    const email = document.getElementById("access-reg-email")?.value?.trim();
-
-    const pass = document.getElementById("access-reg-password")?.value;
-
-    if (!email || !pass) {
-
-      showAuthMsg("Preencha e-mail e senha.", "warn");
-
-      return;
-
     }
 
     if (pass.length < 6) {
-
       showAuthMsg("Senha com no mínimo 6 caracteres.", "warn");
-
       return;
-
     }
 
     try {
-
-      showAuthMsg("Criando conta…", "info");
-
-      await auth.createUserWithEmailAndPassword(email, pass);
+      showAuthMsg("Entrando…", "info");
+      await auth.signInWithEmailAndPassword(email, pass);
       saveRememberedEmail(email);
-
-      showAuthMsg("Conta criada! Verificando acesso…", "success");
-
-      await afterAuthSuccess(auth.currentUser);
-
+      await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
     } catch (e) {
+      const code = e?.code || "";
+
+      if (
+        (code === "auth/user-not-found" || code === "auth/invalid-credential") &&
+        (await emailHasPurchaseAccess(email))
+      ) {
+        try {
+          showAuthMsg("Primeiro acesso: criando senha com e-mail da compra…", "info");
+          await auth.createUserWithEmailAndPassword(email, pass);
+          saveRememberedEmail(email);
+          await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+          return;
+        } catch (e2) {
+          if (e2?.code === "auth/email-already-in-use") {
+            showAuthMsg("Senha incorreta para este e-mail. Tente de novo ou use Esqueci a senha.", "warn");
+            return;
+          }
+          showAuthMsg(friendlyAuthError(e2), "error");
+          return;
+        }
+      }
 
       showAuthMsg(friendlyAuthError(e), "error");
-
     }
-
   };
-
-
 
   window.accessLogout = async function accessLogout() {
-
     if (typeof closeAdminDashboard === "function") closeAdminDashboard();
-
     if (auth) await auth.signOut();
-
     window.__labUserProfile = null;
-
     if (typeof window.exitPlatform === "function") window.exitPlatform();
-
-    showAuthMsg("Você saiu da conta.", "info");
-
   };
-
-
 
   function friendlyAuthError(e) {
-
     const code = e?.code || "";
-
     const map = {
-
-      "auth/invalid-credential": "E-mail ou senha incorretos.",
-
-      "auth/user-not-found": "Usuário não encontrado. Crie uma conta.",
-
+      "auth/invalid-credential": "E-mail ou senha incorretos. Se é sua primeira vez, use o mesmo e-mail da compra.",
+      "auth/user-not-found":
+        "Sem conta ainda. Use o e-mail da compra (primeira vez define a senha aqui) ou Entrar com Google.",
       "auth/wrong-password": "Senha incorreta.",
-
-      "auth/email-already-in-use": "Este e-mail já tem conta. Use Entrar.",
-
+      "auth/email-already-in-use": "Este e-mail já tem conta. Use Entrar ou Esqueci a senha.",
       "auth/weak-password": "Senha muito fraca (mín. 6 caracteres).",
-
       "auth/too-many-requests": "Muitas tentativas. Aguarde um pouco.",
-      "auth/popup-blocked": "O navegador bloqueou a janela do Google. Permita pop-ups e tente de novo.",
-      "auth/cancelled-popup-request": "Aguarde a janela do Google e tente novamente.",
-
+      "auth/popup-blocked": "Permita pop-ups para usar o Google.",
+      "auth/cancelled-popup-request": "Aguarde a janela do Google.",
+      "auth/unauthorized-domain":
+        "Domínio não autorizado no Firebase (Authentication → Domínios autorizados).",
+      "auth/operation-not-allowed": "Login com Google desativado no Firebase.",
     };
-
     return map[code] || e?.message || "Erro de autenticação.";
-
   }
-
-
 
   function handleReturnAfterPayment() {
-
     const params = new URLSearchParams(window.location.search);
-
     if (params.get("acesso") === "1" || params.get("checkout") === "success") {
-
       sessionStorage.setItem("saaslab_pending_enter", "1");
-
-      setTimeout(() => openAccessGate("register"), 400);
-
-      showAuthMsg(
-
-        "Pagamento recebido! Crie sua senha com o MESMO e-mail usado no pagamento.",
-
-        "success"
-
-      );
-
+      setTimeout(() => {
+        openAccessGate();
+        showAuthMsg(
+          "Pagamento recebido! Entre com o MESMO e-mail da compra (Google ou senha).",
+          "success"
+        );
+      }, 400);
       window.history.replaceState({}, "", window.location.pathname + window.location.hash);
-
     }
-
   }
 
-
-
   window.getFirebaseDb = function getFirebaseDb() {
-
     initFirebaseAccess();
-
     return db;
-
   };
 
-
-
   window.getFirebaseAuth = function getFirebaseAuth() {
-
     initFirebaseAccess();
-
     return auth;
-
   };
 
   const REMEMBER_EMAIL_KEY = "saaslab_remember_email";
 
   function saveRememberedEmail(email) {
-    const remember =
-      document.getElementById("access-remember")?.checked ||
-      document.getElementById("access-remember-reg")?.checked;
+    const remember = document.getElementById("access-remember")?.checked;
     if (remember && email) {
       localStorage.setItem(REMEMBER_EMAIL_KEY, normalizeEmail(email));
     } else {
@@ -735,13 +487,9 @@
     const saved = localStorage.getItem(REMEMBER_EMAIL_KEY);
     if (!saved) return;
     const loginEmail = document.getElementById("access-email");
-    const regEmail = document.getElementById("access-reg-email");
     const remember = document.getElementById("access-remember");
-    const rememberReg = document.getElementById("access-remember-reg");
     if (loginEmail) loginEmail.value = saved;
-    if (regEmail) regEmail.value = saved;
     if (remember) remember.checked = true;
-    if (rememberReg) rememberReg.checked = true;
   };
 
   window.toggleAccessPassword = function toggleAccessPassword(inputId, btn) {
@@ -750,37 +498,32 @@
     const show = input.type === "password";
     input.type = show ? "text" : "password";
     btn.textContent = show ? "Ocultar" : "Ver";
-    btn.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
   };
 
   window.accessForgotPassword = async function accessForgotPassword() {
     initFirebaseAccess();
-    const email =
-      document.getElementById("access-email")?.value?.trim() ||
-      document.getElementById("access-reg-email")?.value?.trim();
+    const email = document.getElementById("access-email")?.value?.trim();
     if (!email) {
-      showAuthMsg("Digite seu e-mail acima para receber o link de redefinição.", "warn");
-      switchAccessTab("login");
+      showAuthMsg("Digite o e-mail da compra para receber o link.", "warn");
       return;
     }
     if (!auth) {
-      showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
+      showAuthMsg("Firebase não carregou.", "error");
       return;
     }
     try {
-      showAuthMsg("Enviando link para seu e-mail…", "info");
+      showAuthMsg("Enviando link…", "info");
       await auth.sendPasswordResetEmail(email);
-      showAuthMsg("Link enviado! Verifique sua caixa de entrada e o spam.", "success");
+      showAuthMsg("Link enviado! Verifique e-mail e spam.", "success");
     } catch (e) {
-      const code = e?.code || "";
-      if (code === "auth/user-not-found") {
-        showAuthMsg("Nenhuma conta com este e-mail. Crie uma conta na aba Criar conta.", "warn");
+      if (e?.code === "auth/user-not-found") {
+        showAuthMsg(
+          "Nenhuma conta com este e-mail. Use Entrar com Google ou o e-mail exato da compra.",
+          "warn"
+        );
       } else {
-        showAuthMsg(e?.message || "Não foi possível enviar o e-mail.", "error");
+        showAuthMsg(e?.message || "Erro ao enviar e-mail.", "error");
       }
     }
   };
-
 })();
-
-
