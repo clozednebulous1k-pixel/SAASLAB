@@ -1,8 +1,8 @@
-// Cole aqui os links do seu gateway externo (Stripe Payment Link, Hotmart, Kirvano, etc.)
-// URL de sucesso do gateway: https://SEU-DOMINIO.vercel.app/?acesso=1
+// Hotmart — links de checkout (Produtos → Links de divulgação)
+// Página de obrigado na Hotmart: https://SEU-DOMINIO.vercel.app/?acesso=1
 window.CHECKOUT_LINKS = {
-  starter: "COLOQUE_SEU_LINK_STARTER_AQUI",
-  pro: "COLOQUE_SEU_LINK_PRO_AQUI",
+  starter: "https://pay.hotmart.com/R105874305C",
+  pro: "https://pay.hotmart.com/R105874305C",
 };
 
 window.goToCheckout = function goToCheckout(plan) {
