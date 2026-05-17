@@ -9,4 +9,5 @@ window.FIREBASE_CONFIG = {
 };
 
 // Admin: defina SOMENTE no Firestore Console → users/{uid} → role: "admin"
-// Não use lista no front — regras do Firestore não confiam no navegador.
+// Não use lista de e-mails admin no front — regras do Firestore são a proteção real.
+// Recomendado no Console: Authentication → App Check (bloqueia scripts não autorizados).

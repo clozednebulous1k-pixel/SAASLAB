@@ -1,59 +1,159 @@
 rules_version = '2';
+
 service cloud.firestore {
+
   match /databases/{database}/documents {
 
+
+
     function userDoc() {
+
       return get(/databases/$(database)/documents/users/$(request.auth.uid));
+
     }
+
+
 
     function isAdmin() {
+
       return request.auth != null
+
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && (
-          userDoc().data.role == 'admin'
-          || userDoc().data.role == 'admin '
-        );
+
+        && userDoc().data.role == 'admin';
+
     }
+
+
 
     function isSelf(userId) {
+
       return request.auth != null && request.auth.uid == userId;
+
     }
+
+
 
     function authEmailLower() {
+
       return request.auth.token.email.lower();
+
     }
 
-    // Liberação de compra — somente admin escreve; cliente só lê o próprio e-mail
-    match /email_access/{email} {
-      allow read: if request.auth != null
-        && (authEmailLower() == email || isAdmin());
-      allow create, update, delete: if isAdmin();
-    }
 
-    // Perfil — cliente não pode virar admin nem se auto-liberar
-    match /users/{userId} {
-      allow get: if isSelf(userId) || isAdmin();
-      allow list: if isAdmin();
 
-      allow create: if isSelf(userId)
+    function validUserCreate() {
+
+      return request.resource.data.keys().hasOnly(
+
+          ['email', 'role', 'libraryAccess', 'authProvider', 'createdAt', 'updatedAt']
+
+        )
+
         && request.resource.data.role == 'user'
-        && request.resource.data.libraryAccess == false
-        && request.resource.data.email == authEmailLower();
 
-      allow update: if isSelf(userId)
-        && request.resource.data.role == resource.data.role
+        && request.resource.data.libraryAccess == false
+
+        && request.resource.data.email == authEmailLower()
+
+        && request.resource.data.libraryAccess is bool;
+
+    }
+
+
+
+    function validUserSelfPatch() {
+
+      return request.resource.data.role == resource.data.role
+
         && request.resource.data.libraryAccess == resource.data.libraryAccess
+
         && request.resource.data.email == resource.data.email
+
         && request.resource.data.diff(resource.data).affectedKeys()
+
             .hasOnly(['email', 'authProvider', 'updatedAt']);
 
-      allow update: if isAdmin();
-      allow delete: if false;
     }
 
-    // Bloqueia qualquer outra coleção
-    match /{document=**} {
-      allow read, write: if false;
+
+
+    function validEmailAccessWrite() {
+
+      return request.resource.data.keys().hasOnly(['active', 'email', 'updatedAt'])
+
+        && request.resource.data.active is bool
+
+        && request.resource.data.email == email;
+
     }
+
+
+
+    function validAdminUserPatch() {
+
+      return request.resource.data.role in ['user', 'admin']
+
+        && request.resource.data.libraryAccess is bool
+
+        && request.resource.data.diff(resource.data).affectedKeys()
+
+            .hasOnly(['libraryAccess', 'role', 'email', 'authProvider', 'updatedAt']);
+
+    }
+
+
+
+    match /email_access/{email} {
+
+      allow read: if request.auth != null
+
+        && (authEmailLower() == email || isAdmin());
+
+      allow create, update: if isAdmin() && validEmailAccessWrite();
+
+      allow delete: if isAdmin();
+
+    }
+
+
+
+    match /users/{userId} {
+
+      allow get: if isSelf(userId) || isAdmin();
+
+      allow list: if isAdmin();
+
+
+
+      allow create: if isSelf(userId) && validUserCreate();
+
+
+
+      allow update: if isSelf(userId) && validUserSelfPatch();
+
+
+
+      allow update: if isAdmin()
+        && validAdminUserPatch()
+        && (!isSelf(userId) || request.resource.data.role == resource.data.role);
+
+
+
+      allow delete: if false;
+
+    }
+
+
+
+    match /{document=**} {
+
+      allow read, write: if false;
+
+    }
+
   }
+
 }
+
+

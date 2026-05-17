@@ -71,10 +71,44 @@
       .toLowerCase();
   }
 
+  /** UI rápida — decisões críticas usam assertLabAdminFromServer (Firestore). */
   window.isLabAdmin = function isLabAdmin(user) {
-    if (!user?.email) return false;
+    if (!user?.uid) return false;
     return normalizeRole(window.__labUserProfile?.role) === "admin";
   };
+
+  async function assertLabAdminFromServer(user) {
+    if (!user?.uid || !db) return false;
+    try {
+      const snap = await db.collection("users").doc(user.uid).get();
+      const data = snap.exists ? snap.data() : null;
+      window.__labUserProfile = data;
+      return normalizeRole(data?.role) === "admin";
+    } catch (e) {
+      console.error("assertLabAdminFromServer", e);
+      return false;
+    }
+  }
+  window.assertLabAdminFromServer = assertLabAdminFromServer;
+
+  function checkAuthRateLimit() {
+    const rl = window.saasLabRateLimit;
+    if (!rl) return true;
+    const r = rl.check("auth");
+    if (!r.allowed) {
+      showAuthMsg(rl.message(r.retryAfterSec), "warn");
+      return false;
+    }
+    return true;
+  }
+
+  function recordAuthFailure() {
+    window.saasLabRateLimit?.record("auth");
+  }
+
+  function clearAuthFailures() {
+    window.saasLabRateLimit?.clear("auth");
+  }
 
   async function refreshLabUserProfile(user) {
     if (!user || !db) {
@@ -178,9 +212,9 @@
     if (!user?.email || !db) return false;
 
     try {
-      const profile =
-        window.__labUserProfile ||
-        (await db.collection("users").doc(user.uid).get()).data();
+      const snap = await db.collection("users").doc(user.uid).get();
+      const profile = snap.exists ? snap.data() : null;
+      window.__labUserProfile = profile;
 
       if (normalizeRole(profile?.role) === "admin") return true;
       if (profile?.libraryAccess === true) return true;
@@ -224,6 +258,9 @@
     firebase.initializeApp(window.FIREBASE_CONFIG);
     auth = firebase.auth();
     db = firebase.firestore();
+    try {
+      db.settings({ ignoreUndefinedProperties: true });
+    } catch (_) {}
     firebaseReady = true;
 
     auth.onAuthStateChanged(async (user) => {
@@ -345,6 +382,7 @@
       showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
       return;
     }
+    if (!checkAuthRateLimit()) return;
 
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: "select_account" });
@@ -363,13 +401,15 @@
 
       saveRememberedEmail(user.email);
       showAuthMsg("Verificando compra liberada no servidor…", "info");
-      await afterAuthSuccess(user, { signOutIfDenied: true });
+      const ok = await afterAuthSuccess(user, { signOutIfDenied: true });
+      if (ok) clearAuthFailures();
     } catch (e) {
       const code = e?.code || "";
       if (code === "auth/popup-closed-by-user") {
         showAuthMsg("", "");
         return;
       }
+      if (code !== "auth/too-many-requests") recordAuthFailure();
       showAuthMsg(friendlyAuthError(e), "error");
     }
   };
@@ -389,11 +429,14 @@
       return;
     }
 
+    if (!checkAuthRateLimit()) return;
+
     try {
       showAuthMsg("Entrando…", "info");
       await auth.signInWithEmailAndPassword(email, pass);
       saveRememberedEmail(email);
-      await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+      const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+      if (ok) clearAuthFailures();
     } catch (e) {
       const code = e?.code || "";
 
@@ -405,18 +448,21 @@
           showAuthMsg("Primeiro acesso: criando senha com e-mail da compra…", "info");
           await auth.createUserWithEmailAndPassword(email, pass);
           saveRememberedEmail(email);
-          await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+          const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+          if (ok) clearAuthFailures();
           return;
         } catch (e2) {
           if (e2?.code === "auth/email-already-in-use") {
             showAuthMsg("Senha incorreta para este e-mail. Tente de novo ou use Esqueci a senha.", "warn");
             return;
           }
+          recordAuthFailure();
           showAuthMsg(friendlyAuthError(e2), "error");
           return;
         }
       }
 
+      if (code !== "auth/too-many-requests") recordAuthFailure();
       showAuthMsg(friendlyAuthError(e), "error");
     }
   };
@@ -511,11 +557,20 @@
       showAuthMsg("Firebase não carregou.", "error");
       return;
     }
+    const rl = window.saasLabRateLimit;
+    if (rl) {
+      const r = rl.check("forgot");
+      if (!r.allowed) {
+        showAuthMsg(rl.message(r.retryAfterSec), "warn");
+        return;
+      }
+    }
     try {
       showAuthMsg("Enviando link…", "info");
       await auth.sendPasswordResetEmail(email);
       showAuthMsg("Link enviado! Verifique e-mail e spam.", "success");
     } catch (e) {
+      rl?.record("forgot");
       if (e?.code === "auth/user-not-found") {
         showAuthMsg(
           "Nenhuma conta com este e-mail. Use Entrar com Google ou o e-mail exato da compra.",

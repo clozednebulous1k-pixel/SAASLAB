@@ -535,7 +535,19 @@ h1 .highlight {
  .about-energy-path { animation: none; }
 }
 @media (max-width: 1024px) {
- .about-energy-svg { display: none; }
+ .about-energy-path {
+ stroke-width: 2;
+ stroke: rgba(74, 111, 165, 0.58);
+ }
+ .about-energy-path--trunk {
+ stroke-width: 2.5;
+ stroke: rgba(126, 179, 232, 0.72);
+ }
+ #about-photo-card {
+ box-shadow:
+  0 0 0 1px rgba(42, 68, 112, 0.65),
+  0 16px 40px rgba(0, 0, 0, 0.45);
+ }
 }
 @media (min-width: 1025px) {
  #about-photo-card {
@@ -549,6 +561,15 @@ h1 .highlight {
 @media (prefers-reduced-motion: reduce) {
  #about-photo-card { animation: none; }
 }
+.about-photo-frame {
+ position: relative;
+ width: 100%;
+ max-width: 280px;
+ margin: 0 auto;
+ --bracket-len: 40px;
+ --bracket-w: 2px;
+ overflow: visible;
+}
 .about-photo {
  width: 100%;
  border-radius: 20px;
@@ -559,6 +580,11 @@ h1 .highlight {
  overflow: hidden;
  text-align: center;
  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+ position: relative;
+ z-index: 2;
+}
+#about .about-photo-frame .dot-card-corner {
+ --bracket-len: 36px;
 }
 .about-photo-media {
  position: relative;
@@ -781,6 +807,16 @@ h1 .highlight {
 #landing .dot-card-frame--sm .dot-card-corner--tr { top: -4px; right: -4px; }
 #landing .dot-card-frame--sm .dot-card-corner--bl { bottom: -4px; left: -4px; }
 #landing .dot-card-frame--sm .dot-card-corner--br { bottom: -4px; right: -4px; }
+#about .about-photo-frame .dot-card-corner {
+ width: 8px;
+ height: 8px;
+ background: var(--accent);
+ box-shadow: 0 0 8px rgba(20, 45, 85, 0.55);
+}
+#about .about-photo-frame .dot-card-corner--tl { top: -4px; left: -4px; }
+#about .about-photo-frame .dot-card-corner--tr { top: -4px; right: -4px; }
+#about .about-photo-frame .dot-card-corner--bl { bottom: -4px; left: -4px; }
+#about .about-photo-frame .dot-card-corner--br { bottom: -4px; right: -4px; }
 #landing .dot-card-frame > .pain-card,
 #landing .dot-card-frame > .price-card,
 #landing .dot-card-frame > .mock-card {
@@ -1502,7 +1538,7 @@ img, svg, video { max-width: 100%; height: auto; }
  .steps-grid { grid-template-columns: 1fr; gap: 1.25rem; }
  .steps-grid::before { display: none; }
  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
- .about-photo { max-width: 280px; margin: 0 auto; }
+ .about-photo-frame { max-width: 280px; }
  .about-content .section-label,
  .about-content .section-title { text-align: center; }
  .about-lead { text-align: center; }
@@ -1647,6 +1683,73 @@ img, svg, video { max-width: 100%; height: auto; }
 .gs-hidden { opacity: 0; visibility: hidden; }
 @media (prefers-reduced-motion: reduce) {
  .gs-hidden { opacity: 1; visibility: visible; }
+}
+
+/* ─── Conclusão do curso ───────────────────── */
+#course-complete-overlay {
+ position: fixed; inset: 0; z-index: 25000;
+ display: none; align-items: center; justify-content: center;
+ padding: 1rem; background: rgba(4, 6, 12, 0.78); backdrop-filter: blur(8px);
+}
+#course-complete-overlay.is-open { display: flex; }
+#course-complete-overlay[hidden] { display: none !important; }
+.course-complete-panel {
+ width: min(520px, 100%); background: #fff; border-radius: 18px;
+ border: 1px solid var(--learn-border); box-shadow: 0 28px 70px rgba(15, 23, 42, 0.28);
+ padding: 1.75rem 1.5rem 1.5rem; position: relative; color: var(--learn-text);
+ text-align: center;
+}
+.course-complete-close {
+ position: absolute; top: 0.65rem; right: 0.75rem; border: none; background: transparent;
+ font-size: 1.4rem; cursor: pointer; color: #64748b; width: 32px; height: 32px; border-radius: 8px;
+}
+.course-complete-close:hover { background: #eff6ff; color: #1d4ed8; }
+.course-complete-badge {
+ display: inline-flex; align-items: center; gap: 0.35rem;
+ font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+ color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe;
+ padding: 0.35rem 0.75rem; border-radius: 999px; margin-bottom: 0.85rem;
+}
+.course-complete-panel h3 {
+ font-size: 1.45rem; font-weight: 700; margin: 0 0 0.5rem; color: var(--learn-text);
+}
+.course-complete-panel > p {
+ font-size: 0.92rem; color: var(--learn-muted); line-height: 1.7; margin: 0 0 1.1rem;
+}
+.course-complete-clients {
+ background: linear-gradient(145deg, #f0fdf4 0%, #ecfdf5 45%, #eff6ff 100%);
+ border: 1px solid #bbf7d0; border-radius: 14px; padding: 1.1rem 1rem; margin-bottom: 1.15rem;
+ text-align: left;
+}
+.course-complete-clients h4 {
+ font-size: 0.95rem; font-weight: 700; color: #14532d; margin: 0 0 0.45rem;
+ display: flex; align-items: center; gap: 0.45rem;
+}
+.course-complete-clients p {
+ font-size: 0.88rem; color: #166534; line-height: 1.65; margin: 0 0 0.85rem;
+}
+.course-complete-wa {
+ display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+ width: 100%; padding: 0.85rem 1rem; border-radius: 10px; border: none;
+ background: #25d366; color: #fff; font-size: 0.92rem; font-weight: 600;
+ text-decoration: none; font-family: var(--font-body); transition: background 0.2s, transform 0.2s;
+ box-shadow: 0 6px 22px rgba(37, 211, 102, 0.35);
+}
+.course-complete-wa:hover { background: #20bd5a; color: #fff; transform: translateY(-1px); }
+.course-complete-wa svg { width: 20px; height: 20px; fill: currentColor; flex-shrink: 0; }
+.course-complete-ghost {
+ margin-top: 0.75rem; background: transparent; border: none; color: var(--learn-muted);
+ font-size: 0.85rem; cursor: pointer; font-family: var(--font-body); text-decoration: underline;
+}
+.course-complete-ghost:hover { color: var(--learn-blue); }
+#platform .course-complete-inline {
+ border: 1px solid #bbf7d0;
+ background: linear-gradient(145deg, #f0fdf4 0%, #fafafa 100%);
+}
+#platform .course-complete-inline .course-complete-wa {
+ display: inline-flex;
+ font-size: 0.88rem;
+ padding: 0.7rem 1rem;
 }
 
 /* ─── LOGIN / ACESSO PAGO ─────────────────── */
@@ -2000,6 +2103,11 @@ body.admin-dash-open { overflow: hidden; }
  <div class="about-stage">
  <svg id="about-energy-svg" class="about-energy-svg" aria-hidden="true"></svg>
  <div class="about-grid">
+ <div class="about-photo-frame">
+ <span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span>
+ <span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span>
+ <span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span>
+ <span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span>
  <div class="about-photo" id="about-photo-card">
  <div class="about-photo-media">
  <img src="assets/alessandro.png" alt="Alessandro Silva Cardoso, desenvolvedor" width="560" height="420" loading="lazy" decoding="async">
@@ -2007,6 +2115,7 @@ body.admin-dash-open { overflow: hidden; }
  <div class="about-photo-caption">
  <div class="about-name">Alessandro Silva Cardoso</div>
  <div class="about-age">21 anos · Desenvolvedor</div>
+ </div>
  </div>
  </div>
  <div class="about-content">
@@ -2355,6 +2464,27 @@ MVP: ...</div>
  </div>
 </div>
 
+<div id="course-complete-overlay" hidden aria-hidden="true">
+ <div class="course-complete-panel" role="dialog" aria-labelledby="course-complete-title">
+  <button type="button" class="course-complete-close" onclick="closeCourseComplete()" aria-label="Fechar">×</button>
+  <div class="course-complete-badge">Curso concluído</div>
+  <h3 id="course-complete-title">Parabéns! Você chegou ao fim 🎉</h3>
+  <p id="course-complete-desc">Você concluiu todos os módulos do laboratório. Agora é testar em produção, vender e iterar com clientes reais.</p>
+  <div class="course-complete-clients">
+   <h4>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Próximo passo: encontrar clientes
+   </h4>
+   <p>Seu SaaS está no ar, mas falta quem paga? Eu também tenho um <strong>sistema e método</strong> para ajudar você a conseguir clientes — não é só código, é venda de verdade.</p>
+   <a class="course-complete-wa" id="course-complete-wa-link" href="https://wa.me/5511952025568" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.882 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Quero ajuda para achar clientes
+   </a>
+  </div>
+  <button type="button" class="course-complete-ghost" onclick="closeCourseComplete()">Continuar explorando o laboratório</button>
+ </div>
+</div>
+
 </div><!-- /platform -->
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
@@ -2364,6 +2494,7 @@ MVP: ...</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
 <script src="js/checkout-config.js"></script>
+<script src="js/security-rate-limit.js"></script>
 <script src="js/auth-access.js"></script>
 <script src="js/admin-dashboard.js"></script>
 <script>
@@ -2380,6 +2511,9 @@ let selectedDb = 'firebase';
 let selectedPayment = 'hotmart';
 let selectedAuth = 'firebase';
 const SAAS_STORAGE_AUTH = 'saaslab_auth';
+const SAAS_STORAGE_COURSE_DONE = 'saaslab_course_complete';
+const WA_PHONE = '5511952025568';
+const WA_MSG_CLIENTS = encodeURIComponent('Olá! Concluí o SaaS Academy e quero ajuda para encontrar clientes para o meu SaaS.');
 let isAnnual = false;
 
 // ─── BILLING TOGGLE ──────────────────────────
@@ -2587,7 +2721,33 @@ function completeStep(n) {
  completedSteps.add(n);
  updateProgress();
  if (n < steps.length - 1) gotoStep(n + 1);
- else alert('Parabéns! Você concluiu todos os módulos do ' + saasName + '!');
+ else showCourseComplete();
+}
+function showCourseComplete() {
+ const overlay = document.getElementById('course-complete-overlay');
+ const desc = document.getElementById('course-complete-desc');
+ const wa = document.getElementById('course-complete-wa-link');
+ if (desc) desc.textContent = 'Você concluiu todos os módulos do ' + saasName + '. Agora é testar em produção, vender e iterar com clientes reais.';
+ initWaClientLinks();
+ if (!overlay) return;
+ overlay.hidden = false;
+ overlay.setAttribute('aria-hidden', 'false');
+ overlay.classList.add('is-open');
+ try { localStorage.setItem(SAAS_STORAGE_COURSE_DONE, '1'); } catch (e) {}
+}
+function closeCourseComplete() {
+ const overlay = document.getElementById('course-complete-overlay');
+ if (!overlay) return;
+ overlay.classList.remove('is-open');
+ overlay.hidden = true;
+ overlay.setAttribute('aria-hidden', 'true');
+}
+function initWaClientLinks() {
+ const url = 'https://wa.me/' + WA_PHONE + '?text=' + WA_MSG_CLIENTS;
+ ['course-complete-wa-link', 'course-complete-wa-inline'].forEach(function (id) {
+  const el = document.getElementById(id);
+  if (el) el.href = url;
+ });
 }
 
 // ─── COPY PROMPT ─────────────────────────────
@@ -2671,6 +2831,16 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
  <li><strong>Teste</strong> no navegador: se funcionou, avance. Se travou, volte um passo ou chame no WhatsApp.</li>
  </ol>
  <div class="info-box info"><strong>Dica de ouro:</strong> Erro é normal. Programador profissional também erra — a diferença é saber pesquisar e pedir ajuda à IA com clareza.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Ordem certa: localhost primeiro, produção depois</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não publique na internet no primeiro dia. O fluxo que usamos no <strong>SaaS Academy</strong> é este:</p>
+ <ol class="guide-steps">
+ <li><strong>Fase local (localhost)</strong> — rode o projeto na sua máquina, configure Firebase/Hotmart em modo teste e valide login, telas e regras do Firestore.</li>
+ <li><strong>Só quando estiver do jeito que você quer</strong> — suba para a Vercel (produção), atualize domínios no Firebase Auth e o link de obrigado na Hotmart.</li>
+ </ol>
+ <div class="info-box success"><strong>Regra prática:</strong> se ainda quebra no <code>localhost</code>, não faz sentido colocar no ar — corrija local, depois faça deploy.</div>
 </div>
 
 <div class="content-card">
@@ -3239,7 +3409,33 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
 <div class="step-header">
  <div class="step-phase">Fase 3 — Lançamento</div>
  <div class="step-title">Deploy & CI/CD</div>
- <div class="step-subtitle">Lance o <strong>${saasName}</strong> em produção com deploy automático e zero downtime.</div>
+ <div class="step-subtitle">Primeiro teste tudo no <strong>localhost</strong>; quando estiver redondo, coloque o <strong>${saasName}</strong> em produção na Vercel.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Fase 1 — Desenvolvimento local (localhost)</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Antes de GitHub e Vercel, rode na sua máquina. O Firebase Auth <strong>não funciona</strong> abrindo o arquivo com duplo clique — use um servidor local.</p>
+ <ol class="guide-steps">
+ <li>Na pasta do projeto, no terminal: <code>npx serve -p 3000</code> (ou extensão <strong>Live Server</strong> no Cursor/VS Code)</li>
+ <li>Abra <code>http://localhost:3000</code> (ou a porta que o Live Server mostrar, ex.: 5500)</li>
+ <li>Firebase Console → Authentication → Settings → <strong>Authorized domains</strong> → confirme <code>localhost</code></li>
+ <li>Teste: landing, login, laboratório, regras do Firestore (sem <code>permission-denied</code> inesperado)</li>
+ <li>Hotmart: use link de <strong>teste/sandbox</strong> até validar o fluxo pós-compra</li>
+ </ol>
+ <div class="info-box info"><strong>Next.js:</strong> use <code>npm run dev</code> → normalmente <code>http://localhost:3000</code>. O restante do fluxo é o mesmo: local primeiro, produção depois.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Fase 2 — Produção (quando estiver pronto)</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Só faça deploy quando login, pagamento e telas principais funcionarem no localhost.</p>
+ <ol class="guide-steps">
+ <li>Commit no GitHub → importe na Vercel → pegue <code>https://seu-projeto.vercel.app</code></li>
+ <li>Firebase Auth → Authorized domains → adicione a URL da Vercel</li>
+ <li>Hotmart → página de obrigado → <code>https://seu-projeto.vercel.app/?acesso=1</code></li>
+ <li>Firebase Console → Firestore → publique o <code>firestore.rules</code> do repositório</li>
+ <li>Teste de ponta a ponta em produção (compra real ou sandbox, conforme sua etapa)</li>
+ </ol>
+ <div class="info-box success"><strong>Checklist mental:</strong> localhost OK → deploy → domínios Firebase → link Hotmart → teste final no ar.</div>
 </div>
 
 <div class="content-card">
@@ -3318,17 +3514,20 @@ Mostre passo a passo para Namecheap/GoDaddy + Vercel/DigitalOcean.</div>
 <div class="content-card">
  <div class="content-card-title">Checklist final antes do lançamento</div>
  <div class="checklist">
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Build de produção sem erros ou warnings</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Todas as variáveis de ambiente configuradas no host</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Migrations rodadas em produção</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Stripe em modo live (não teste)</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Emails transacionais funcionando (Resend/SendGrid)</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sentry configurado e monitorando</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Domínio personalizado com SSL ativo</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Rate limiting ativo em produção</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Backup automático do banco configurado</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Fluxo de pagamento testado de ponta a ponta</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Tudo validado no localhost (login, laboratório, Firestore)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Deploy na Vercel sem erro (URL .vercel.app abrindo)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Domínios autorizados no Firebase (localhost + Vercel)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> firestore.rules publicadas no Firebase Console</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Hotmart: link de checkout + URL de obrigado com ?acesso=1</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Fluxo pós-compra testado (e-mail liberado em email_access)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Teste final em produção (não só no localhost)</label>
  </div>
+</div>
+
+<div class="content-card course-complete-inline">
+ <div class="content-card-title">Depois do deploy: clientes</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.85rem">Quando clicar em <strong>Concluir curso</strong>, vamos celebrar — e, se quiser, você pode falar comigo no WhatsApp: tenho um <strong>sistema para ajudar a encontrar clientes</strong> para o seu SaaS.</p>
+ <a class="course-complete-wa" style="max-width:320px" href="https://wa.me/5511952025568" id="course-complete-wa-inline" target="_blank" rel="noopener noreferrer">Falar sobre conseguir clientes</a>
 </div>
 
 <div class="step-nav">
@@ -3407,7 +3606,6 @@ window.goToCheckout = function goToCheckout(plan) {
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Testei compra e liberação do e-mail no Firestore</label>
  </div>
 </div>`;
-  area.innerHTML = area.innerHTML.replace(/motion\.div/g, 'div').replace(/motion\.div/g, 'div');
   return;
  }
 
@@ -3427,15 +3625,21 @@ function renderDeployPrompt() {
  const area = document.getElementById('deploy-prompt-area');
  if (!area) return;
  const prompts = {
- vercel: { title: '▲ Deploy na Vercel — SaaS Academy (HTML estático)', text: `Deploy do "${saasName}" na Vercel (site estático como o SaaS Academy):
+ vercel: { title: '▲ Deploy na Vercel — SaaS Academy (HTML estático)', text: `Deploy do "${saasName}" na Vercel (site estático como o SaaS Academy).
 
-1. vercel.com → Add New → Project → repositório GitHub
-2. Framework: Other · Build Command: VAZIO · Output: .
-3. Deploy → copie https://seu-projeto.vercel.app
-4. Firebase Auth → Authorized domains → adicione a URL da Vercel
-5. Hotmart → obrigado → https://seu-projeto.vercel.app/?acesso=1
-6. HTML + js/firebase-config.js: NÃO precisa env vars na Vercel
-7. Domínio próprio: Settings → Domains na Vercel` },
+ANTES (localhost — obrigatório):
+1. npx serve -p 3000 ou Live Server → testar login, Firestore e Hotmart em sandbox
+2. Só avance para produção quando tudo funcionar localmente
+
+DEPOIS (produção):
+3. vercel.com → Add New → Project → repositório GitHub
+4. Framework: Other · Build Command: VAZIO · Output: .
+5. Deploy → copie https://seu-projeto.vercel.app
+6. Firebase Auth → Authorized domains → adicione a URL da Vercel (além de localhost)
+7. Hotmart → obrigado → https://seu-projeto.vercel.app/?acesso=1
+8. Publicar firestore.rules no Firebase Console
+9. HTML + js/firebase-config.js: NÃO precisa env vars na Vercel
+10. Domínio próprio: Settings → Domains na Vercel` },
  vps: { title: ' Deploy em VPS com Docker + Nginx', text: `Faça o deploy do SaaS "${saasName}" em um VPS Ubuntu 22.04 (DigitalOcean Droplet $12/mês).
 
 1. Configurar VPS: atualizar pacotes, criar usuário não-root, SSH key
@@ -3706,7 +3910,7 @@ function renderStep(n) {
  if (!main || typeof steps[n] !== 'function') return;
  try {
  main.innerHTML = steps[n]();
- if (n === 10) renderDeployPrompt();
+ if (n === 10) { renderDeployPrompt(); initWaClientLinks(); }
  if (n === 5) renderAuthContent();
  if (n === 6) renderDbPrompt();
  if (n === 7) renderPaymentContent();
@@ -3793,15 +3997,15 @@ function initAboutEnergyLines() {
  const photo = document.getElementById("about-photo-card");
  const highlightsEl = document.querySelector(".about-highlights");
  const highlights = [...document.querySelectorAll(".about-highlight[data-energy]")];
- const desktop = window.matchMedia("(min-width: 1025px)").matches;
+ const mobile = window.matchMedia("(max-width: 1024px)").matches;
  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
  aboutEnergyTweens.forEach((t) => t.kill());
  aboutEnergyTweens = [];
 
- if (!stage || !svg || !photo || !highlightsEl || highlights.length < 4 || !desktop) {
- if (svg) svg.innerHTML = "";
- return;
+ if (!stage || !svg || !photo || !highlightsEl || highlights.length < 4) {
+  if (svg) svg.innerHTML = "";
+  return;
  }
 
  if (!aboutEnergyInView()) {
@@ -3831,13 +4035,26 @@ function initAboutEnergyLines() {
  const y2 = zoneLocal.bottom + pad;
  const cr = Math.min(20, Math.max(12, Math.min(zoneLocal.width, zoneLocal.height) * 0.06));
 
- const hubX = x1;
- const hubY = (y1 + y2) / 2;
-
- const photoAttachX = photoLocal.right;
- const photoAttachY = photoLocal.top + photoLocal.height / 2;
+ let hubX, hubY, photoAttachX, photoAttachY, dTrunk;
 
  const dLoop = aboutEnergyRoundedLoop(x1, y1, x2, y2, cr);
+
+ if (mobile) {
+  hubX = (x1 + x2) / 2;
+  hubY = y1 - 6;
+  photoAttachX = photoLocal.left + photoLocal.width / 2;
+  photoAttachY = photoLocal.bottom;
+  const bend = Math.min(90, Math.max(36, (hubY - photoAttachY) * 0.42));
+  dTrunk = `M ${photoAttachX} ${photoAttachY} C ${photoAttachX} ${photoAttachY + bend}, ${hubX} ${hubY - bend}, ${hubX} ${hubY}`;
+ } else {
+  hubX = x1;
+  hubY = (y1 + y2) / 2;
+  photoAttachX = photoLocal.right;
+  photoAttachY = photoLocal.top + photoLocal.height / 2;
+  const dist = Math.max(40, hubX - photoAttachX);
+  const bend = Math.min(120, dist * 0.45);
+  dTrunk = `M ${hubX} ${hubY} C ${hubX - bend} ${hubY}, ${photoAttachX + bend * 0.35} ${photoAttachY}, ${photoAttachX} ${photoAttachY}`;
+ }
 
  function addPath(d, extraClass, delayIdx) {
  const glow = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -3885,11 +4102,8 @@ function initAboutEnergyLines() {
  }
 
  const loop = addPath(dLoop, "about-energy-path--loop", 0);
- animateDotOnPath(loop, 0, 5.5, 3);
+ animateDotOnPath(loop, 0, mobile ? 6.5 : 5.5, mobile ? 3.5 : 3);
 
- const dist = Math.max(40, hubX - photoAttachX);
- const bend = Math.min(120, dist * 0.45);
- const dTrunk = `M ${hubX} ${hubY} C ${hubX - bend} ${hubY}, ${photoAttachX + bend * 0.35} ${photoAttachY}, ${photoAttachX} ${photoAttachY}`;
  const trunk = addPath(dTrunk, "about-energy-path--trunk", 0);
  animateDotOnPath(trunk, 0.35, 2.2, 4.5);
 
@@ -4343,9 +4557,17 @@ document.addEventListener("DOMContentLoaded", () => {
   dismissSaasOnboarding();
   if (typeof closeAccessGate === "function") closeAccessGate();
   if (typeof closeAdminDashboard === "function") closeAdminDashboard();
+  if (typeof closeCourseComplete === "function") closeCourseComplete();
  }
  });
  if (typeof initFirebaseAccess === "function") initFirebaseAccess();
+ initWaClientLinks();
+ try {
+  if (localStorage.getItem(SAAS_STORAGE_COURSE_DONE) === '1') {
+   const wa = document.getElementById('course-complete-wa-link');
+   if (wa) wa.href = 'https://wa.me/' + WA_PHONE + '?text=' + WA_MSG_CLIENTS;
+  }
+ } catch (e) {}
  setTimeout(() => {
  initHeroFloatIcons();
  ensureHeroButtonsVisible();

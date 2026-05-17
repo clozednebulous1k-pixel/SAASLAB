@@ -60,13 +60,35 @@
 
 
 
+  async function requireServerAdmin() {
+    const auth = window.getFirebaseAuth?.();
+    const user = auth?.currentUser;
+    if (!user) return false;
+    if (typeof window.assertLabAdminFromServer === "function") {
+      return window.assertLabAdminFromServer(user);
+    }
+    return window.isLabAdmin?.(user);
+  }
+
+  function checkAdminWriteRateLimit() {
+    const rl = window.saasLabRateLimit;
+    if (!rl) return true;
+    const r = rl.check("adminWrite");
+    if (!r.allowed) {
+      alert(rl.message(r.retryAfterSec));
+      return false;
+    }
+    rl.record("adminWrite");
+    return true;
+  }
+
   window.openAdminDashboard = async function openAdminDashboard() {
 
     const auth = window.getFirebaseAuth?.();
 
     const user = auth?.currentUser;
 
-    if (!user || !window.isLabAdmin(user)) {
+    if (!user || !(await requireServerAdmin())) {
 
       alert("Acesso restrito ao administrador.");
 
@@ -117,6 +139,14 @@
 
 
   async function loadAdminDashboard() {
+
+    if (!(await requireServerAdmin())) {
+
+      closeAdminDashboard();
+
+      return;
+
+    }
 
     const db = window.getFirebaseDb?.();
 
@@ -267,7 +297,9 @@
 
     const auth = window.getFirebaseAuth?.();
 
-    if (!db || !auth?.currentUser || !window.isLabAdmin(auth.currentUser)) return;
+    if (!db || !auth?.currentUser || !(await requireServerAdmin())) return;
+
+    if (!checkAdminWriteRateLimit()) return;
 
     if (!email || email === "—") {
 
@@ -293,7 +325,7 @@
 
       await db.collection("email_access").doc(key).set(
 
-        { active: true, email: key, role: "user", updatedAt: now },
+        { active: true, email: key, updatedAt: now },
 
         { merge: true }
 
@@ -317,7 +349,9 @@
 
     const auth = window.getFirebaseAuth?.();
 
-    if (!db || !auth?.currentUser || !window.isLabAdmin(auth.currentUser)) return;
+    if (!db || !auth?.currentUser || !(await requireServerAdmin())) return;
+
+    if (!checkAdminWriteRateLimit()) return;
 
     if (!confirm("Revogar acesso ao laboratório deste usuário?")) return;
 
