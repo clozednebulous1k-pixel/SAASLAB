@@ -127,6 +127,8 @@
 
     if (!snap.exists) {
 
+      const providerId = user.providerData?.[0]?.providerId || "password";
+
       await ref.set({
 
         email,
@@ -134,6 +136,8 @@
         role: configuredAdmin ? "admin" : "user",
 
         libraryAccess: !!configuredAdmin,
+
+        authProvider: providerId,
 
         createdAt: now,
 
@@ -438,45 +442,100 @@
 
 
 
-  async function afterAuthSuccess(user) {
+  async function afterAuthSuccess(user, options) {
+    const signOutIfDenied = options?.signOutIfDenied === true;
 
     await ensureUserDoc(user);
-
     await refreshLabUserProfile(user);
-
     updateAccessNav(user);
 
     const ok = await userHasLabAccess(user);
 
     if (ok) {
-
       closeAccessGate();
-
       if (sessionStorage.getItem("saaslab_pending_enter") === "1") {
-
         sessionStorage.removeItem("saaslab_pending_enter");
-
         window.enterPlatformCore();
-
       }
-
       return true;
+    }
 
+    if (signOutIfDenied && auth) {
+      await auth.signOut();
+      window.__labUserProfile = null;
+      updateAccessNav(null);
     }
 
     switchAccessTab("login");
 
+    const email = normalizeEmail(user?.email);
     showAuthMsg(
-
-      "Conta criada, mas o laboratório ainda não está liberado. Aguarde a confirmação da compra ou fale no WhatsApp.",
-
+      signOutIfDenied
+        ? `O Gmail ${email} não tem compra liberada. Use o mesmo e-mail do pagamento ou aguarde a confirmação.`
+        : "Conta criada, mas o laboratório ainda não está liberado. Aguarde a confirmação da compra ou fale no WhatsApp.",
       "warn"
-
     );
 
     return false;
-
   }
+
+  window.accessLoginWithGoogle = async function accessLoginWithGoogle() {
+    initFirebaseAccess();
+    if (!auth) {
+      showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
+      return;
+    }
+
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
+    try {
+      showAuthMsg("Conectando com Google…", "info");
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+
+      if (!user?.email) {
+        await auth.signOut();
+        updateAccessNav(null);
+        showAuthMsg(
+          "Não foi possível ler o e-mail do Google. Use login com e-mail e senha.",
+          "error"
+        );
+        return;
+      }
+
+      saveRememberedEmail(user.email);
+
+      if (window.isLabAdmin(user)) {
+        showAuthMsg("Bem-vindo, admin!", "success");
+      } else {
+        showAuthMsg("Verificando se este Gmail tem compra liberada…", "info");
+      }
+
+      await afterAuthSuccess(user, { signOutIfDenied: true });
+    } catch (e) {
+      const code = e?.code || "";
+      if (code === "auth/popup-closed-by-user") {
+        showAuthMsg("", "");
+        return;
+      }
+      if (code === "auth/account-exists-with-different-credential") {
+        showAuthMsg(
+          "Este e-mail já foi cadastrado com senha. Entre com e-mail e senha na aba Entrar.",
+          "warn"
+        );
+        return;
+      }
+      if (code === "auth/operation-not-allowed") {
+        showAuthMsg(
+          "Login com Google não está ativo no Firebase. Ative em Authentication → Google.",
+          "error"
+        );
+        return;
+      }
+      showAuthMsg(friendlyAuthError(e), "error");
+    }
+  };
 
 
 
@@ -604,6 +663,8 @@
       "auth/weak-password": "Senha muito fraca (mín. 6 caracteres).",
 
       "auth/too-many-requests": "Muitas tentativas. Aguarde um pouco.",
+      "auth/popup-blocked": "O navegador bloqueou a janela do Google. Permita pop-ups e tente de novo.",
+      "auth/cancelled-popup-request": "Aguarde a janela do Google e tente novamente.",
 
     };
 

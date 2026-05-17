@@ -1629,6 +1629,20 @@ img, svg, video { max-width: 100%; height: auto; }
  font-weight: 600; cursor: pointer; font-family: var(--font-body); margin-top: 0.25rem;
 }
 .access-btn-primary:hover { background: #1e40af; }
+.access-divider {
+ display: flex; align-items: center; gap: 0.65rem; margin: 1rem 0 0.75rem;
+ color: #94a3b8; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+}
+.access-divider::before, .access-divider::after {
+ content: ""; flex: 1; height: 1px; background: #e2e8f0;
+}
+.access-btn-google {
+ width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+ padding: 0.7rem 1rem; border-radius: 10px; border: 1px solid #e2e8f0; background: #fff;
+ color: #1e293b; font-weight: 600; font-size: 0.88rem; cursor: pointer; font-family: var(--font-body);
+}
+.access-btn-google:hover { background: #f8fafc; border-color: #cbd5e1; }
+.access-btn-google svg { flex-shrink: 0; }
 .access-btn-ghost {
  width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
  font-weight: 500; cursor: pointer; font-family: var(--font-body); margin-top: 0.5rem;
@@ -1716,7 +1730,7 @@ body.admin-dash-open { overflow: hidden; }
  <div class="access-gate-panel" role="dialog" aria-labelledby="access-gate-title">
   <button type="button" class="access-gate-close" onclick="closeAccessGate()" aria-label="Fechar">×</button>
   <h3 id="access-gate-title">Acesso ao laboratório</h3>
-  <p>Somente clientes com <strong>compra confirmada</strong>. Use o mesmo e-mail do pagamento.</p>
+  <p>Somente clientes com <strong>compra confirmada</strong>. Use o <strong>mesmo e-mail do pagamento</strong> (Gmail ou senha).</p>
   <div class="access-tabs">
    <button type="button" class="access-tab active" data-tab="login" onclick="switchAccessTab('login')">Entrar</button>
    <button type="button" class="access-tab" data-tab="register" onclick="switchAccessTab('register')">Criar conta</button>
@@ -1735,6 +1749,12 @@ body.admin-dash-open { overflow: hidden; }
     <button type="button" class="access-forgot" onclick="accessForgotPassword()">Esqueci a senha</button>
    </div>
    <button type="button" class="access-btn-primary" onclick="accessLogin()">Entrar no laboratório</button>
+   <div class="access-divider">ou</div>
+   <button type="button" class="access-btn-google" onclick="accessLoginWithGoogle()">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.203 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+    Entrar com Google
+   </button>
+   <p class="access-hint" style="margin-top:0.65rem;margin-bottom:0">O Gmail precisa ser o <strong>mesmo da compra</strong>. Caso contrário, o acesso é negado.</p>
   </div>
   <div class="access-panel" data-panel="register" hidden>
    <div class="access-field"><label for="access-reg-email">E-mail</label><input type="email" id="access-reg-email" autocomplete="email"></div>
@@ -1747,6 +1767,12 @@ body.admin-dash-open { overflow: hidden; }
    </div>
    <label class="access-remember" style="margin-bottom:0.85rem"><input type="checkbox" id="access-remember-reg"> Lembrar de mim</label>
    <button type="button" class="access-btn-primary" onclick="accessRegister()">Criar conta</button>
+   <div class="access-divider">ou</div>
+   <button type="button" class="access-btn-google" onclick="accessLoginWithGoogle()">
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.203 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C33.64 6.053 28.991 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+    Continuar com Google
+   </button>
+   <p class="access-hint" style="margin-top:0.65rem;margin-bottom:0">Use o Gmail da compra — validamos no sistema antes de liberar.</p>
   </div>
  </div>
 </div>
