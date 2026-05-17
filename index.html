@@ -1623,6 +1623,58 @@ img, svg, video { max-width: 100%; height: auto; }
  background: transparent; color: var(--white); font-size: 0.85rem; cursor: pointer; font-family: var(--font-body);
 }
 .nav-login-btn:hover, .nav-user-btn:hover { background: rgba(255,255,255,0.08); }
+.nav-admin-btn {
+ padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid rgba(0, 212, 255, 0.45);
+ background: rgba(0, 212, 255, 0.12); color: var(--accent); font-size: 0.82rem; font-weight: 600;
+ cursor: pointer; font-family: var(--font-body); display: none;
+}
+.nav-admin-btn:hover { background: rgba(0, 212, 255, 0.22); }
+
+/* ─── PAINEL ADMIN ─────────────────────────── */
+#admin-dashboard {
+ position: fixed; inset: 0; z-index: 21000; display: none; align-items: flex-start; justify-content: center;
+ padding: 1.5rem 1rem; overflow-y: auto; background: rgba(4, 6, 12, 0.85); backdrop-filter: blur(8px);
+}
+#admin-dashboard.is-open { display: flex; }
+#admin-dashboard[hidden] { display: none !important; }
+body.admin-dash-open { overflow: hidden; }
+.admin-dashboard-panel {
+ width: min(960px, 100%); background: #fff; border-radius: 16px; color: #0f172a;
+ border: 1px solid rgba(29, 78, 216, 0.2); box-shadow: 0 24px 60px rgba(15, 23, 42, 0.4);
+ padding: 1.25rem 1.35rem 1.5rem; margin: auto;
+}
+.admin-dash-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.admin-dash-head h3 { font-family: var(--font-display); margin: 0; font-size: 1.25rem; }
+.admin-dash-head p { margin: 0.25rem 0 0; font-size: 0.85rem; color: #64748b; }
+.admin-dash-close {
+ border: none; background: #f1f5f9; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.3rem; color: #64748b;
+}
+.admin-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.65rem; margin-bottom: 1rem; }
+.admin-stat {
+ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem; text-align: center;
+}
+.admin-stat strong { display: block; font-size: 1.35rem; color: #1d4ed8; }
+.admin-stat span { font-size: 0.72rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+.admin-table-wrap { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+.admin-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.admin-table th, .admin-table td { padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid #f1f5f9; }
+.admin-table th { background: #f8fafc; font-weight: 600; color: #475569; font-size: 0.75rem; text-transform: uppercase; }
+.admin-table tr:last-child td { border-bottom: none; }
+.admin-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
+.admin-badge--admin { background: #fef3c7; color: #b45309; }
+.admin-badge--user { background: #eff6ff; color: #1d4ed8; }
+.admin-badge--ok { background: #d1fae5; color: #047857; }
+.admin-badge--pending { background: #fee2e2; color: #b91c1c; }
+.admin-btn { border: none; border-radius: 6px; padding: 0.35rem 0.55rem; font-size: 0.72rem; cursor: pointer; font-family: var(--font-body); margin-right: 0.25rem; }
+.admin-btn--grant { background: #1d4ed8; color: #fff; }
+.admin-btn--revoke { background: #f1f5f9; color: #64748b; }
+.admin-uid { font-family: var(--font-mono); font-size: 0.72rem; color: #94a3b8; }
+.admin-loading, .admin-error { text-align: center; color: #64748b; padding: 1.5rem !important; }
+.admin-muted { color: #94a3b8; }
+@media (max-width: 768px) {
+ .admin-stats { grid-template-columns: repeat(2, 1fr); }
+ .nav-admin-btn { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1656,6 +1708,34 @@ img, svg, video { max-width: 100%; height: auto; }
  </div>
 </div>
 
+<div id="admin-dashboard" hidden aria-hidden="true">
+ <div class="admin-dashboard-panel" role="dialog" aria-labelledby="admin-dash-title">
+  <div class="admin-dash-head">
+   <div>
+    <h3 id="admin-dash-title">Painel administrativo</h3>
+    <p>Contas criadas, acesso ao laboratório e liberação manual após compra.</p>
+   </div>
+   <button type="button" class="admin-dash-close" onclick="closeAdminDashboard()" aria-label="Fechar">×</button>
+  </div>
+  <div class="admin-stats" id="admin-stats"></div>
+  <div class="admin-table-wrap">
+   <table class="admin-table">
+    <thead>
+     <tr>
+      <th>E-mail</th>
+      <th>Perfil</th>
+      <th>Acesso</th>
+      <th>Criado em</th>
+      <th>UID</th>
+      <th>Ações</th>
+     </tr>
+    </thead>
+    <tbody id="admin-users-body"></tbody>
+   </table>
+  </div>
+ </div>
+</div>
+
 <!-- ═══════════════════════════════════════════ -->
 <!-- LANDING PAGE (DARK) -->
 <!-- ═══════════════════════════════════════════ -->
@@ -1677,6 +1757,7 @@ img, svg, video { max-width: 100%; height: auto; }
  <a href="#" class="nav-links-cta" onclick="requestPlatformAccess(); return false;">Laboratório →</a>
  </div>
  <button type="button" class="nav-login-btn" id="nav-login-btn" onclick="openAccessGate('login')">Entrar</button>
+ <button type="button" class="nav-admin-btn" id="nav-admin-btn" onclick="openAdminDashboard()">Painel admin</button>
  <button type="button" class="nav-user-btn" id="nav-user-btn" style="display:none" onclick="accessLogout()" title="Sair da conta">Conta</button>
  <button class="nav-cta" onclick="requestPlatformAccess()">Laboratório →</button>
 </nav>
@@ -2059,6 +2140,7 @@ img, svg, video { max-width: 100%; height: auto; }
  <input class="saas-name-input" id="saas-name" type="text" placeholder="Nome do SaaS" value="MeuSaaS" oninput="updateSaasProfile()" aria-label="Nome do seu SaaS">
  <button type="button" class="saas-edit-btn" id="saas-edit-btn" onclick="openSaasOnboarding(true)" title="Editar nome e visão do SaaS" aria-label="Editar perfil do SaaS">✎</button>
  </div>
+ <button type="button" class="nav-admin-btn" id="plat-admin-btn" style="display:none" onclick="openAdminDashboard()">Painel admin</button>
  <button class="back-btn" onclick="exitPlatform()">← Voltar</button>
  </div>
 </nav>
@@ -2161,6 +2243,7 @@ MVP: ...</div>
 <script src="js/firebase-config.js"></script>
 <script src="js/checkout-config.js"></script>
 <script src="js/auth-access.js"></script>
+<script src="js/admin-dashboard.js"></script>
 <script>
 // ─── STATE ───────────────────────────────────
 let currentStep = 0;
@@ -4083,6 +4166,7 @@ document.addEventListener("DOMContentLoaded", () => {
  if (e.key === "Escape") {
   dismissSaasOnboarding();
   if (typeof closeAccessGate === "function") closeAccessGate();
+  if (typeof closeAdminDashboard === "function") closeAdminDashboard();
  }
  });
  if (typeof initFirebaseAccess === "function") initFirebaseAccess();
