@@ -1569,9 +1569,92 @@ img, svg, video { max-width: 100%; height: auto; }
 @media (prefers-reduced-motion: reduce) {
  .gs-hidden { opacity: 1; visibility: visible; }
 }
+
+/* ─── LOGIN / ACESSO PAGO ─────────────────── */
+#access-gate {
+ position: fixed; inset: 0; z-index: 20000;
+ display: none; align-items: center; justify-content: center;
+ padding: 1rem; background: rgba(4, 6, 12, 0.72); backdrop-filter: blur(6px);
+}
+#access-gate.is-open { display: flex; }
+#access-gate[hidden] { display: none !important; }
+.access-gate-panel {
+ width: min(440px, 100%); background: #fff; border-radius: 16px;
+ border: 1px solid rgba(29, 78, 216, 0.15); box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+ padding: 1.5rem; position: relative; color: #0f172a;
+}
+.access-gate-close {
+ position: absolute; top: 0.65rem; right: 0.75rem; border: none; background: transparent;
+ font-size: 1.4rem; cursor: pointer; color: #64748b; width: 32px; height: 32px; border-radius: 8px;
+}
+.access-gate-close:hover { background: #eff6ff; color: #1d4ed8; }
+.access-gate-panel h3 { font-family: var(--font-display); font-size: 1.2rem; margin: 0 0 0.35rem; }
+.access-gate-panel > p { font-size: 0.88rem; color: #64748b; line-height: 1.55; margin: 0 0 1rem; }
+.access-tabs { display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.access-tab {
+ flex: 1; min-width: 90px; padding: 0.5rem 0.65rem; border-radius: 8px; border: 1px solid #e2e8f0;
+ background: #f8fafc; font-size: 0.78rem; font-weight: 600; cursor: pointer; font-family: var(--font-body);
+}
+.access-tab.active { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+.access-field { margin-bottom: 0.75rem; }
+.access-field label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.3rem; }
+.access-field input {
+ width: 100%; padding: 0.65rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px;
+ font-family: var(--font-body); font-size: 0.9rem;
+}
+.access-field input:focus { outline: none; border-color: #1d4ed8; box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12); }
+.access-btn-primary {
+ width: 100%; padding: 0.75rem; border: none; border-radius: 10px; background: #1d4ed8; color: #fff;
+ font-weight: 600; cursor: pointer; font-family: var(--font-body); margin-top: 0.25rem;
+}
+.access-btn-primary:hover { background: #1e40af; }
+.access-btn-ghost {
+ width: 100%; padding: 0.65rem; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
+ font-weight: 500; cursor: pointer; font-family: var(--font-body); margin-top: 0.5rem;
+}
+.access-auth-msg { font-size: 0.82rem; min-height: 1.2rem; margin: 0.5rem 0 0; color: #64748b; }
+.access-auth-msg--error { color: #b91c1c; }
+.access-auth-msg--warn { color: #b45309; }
+.access-auth-msg--success { color: #059669; }
+.access-auth-msg--info { color: #1d4ed8; }
+.access-hint { font-size: 0.8rem; color: #64748b; line-height: 1.55; margin: 0.75rem 0 0; }
+.nav-login-btn, .nav-user-btn {
+ padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+ background: transparent; color: var(--white); font-size: 0.85rem; cursor: pointer; font-family: var(--font-body);
+}
+.nav-login-btn:hover, .nav-user-btn:hover { background: rgba(255,255,255,0.08); }
 </style>
 </head>
 <body>
+
+<div id="access-gate" hidden aria-hidden="true">
+ <div class="access-gate-panel" role="dialog" aria-labelledby="access-gate-title">
+  <button type="button" class="access-gate-close" onclick="closeAccessGate()" aria-label="Fechar">×</button>
+  <h3 id="access-gate-title">Acesso ao laboratório</h3>
+  <p>Somente clientes com <strong>compra confirmada</strong>. Use o mesmo e-mail do pagamento.</p>
+  <div class="access-tabs">
+   <button type="button" class="access-tab active" data-tab="login" onclick="switchAccessTab('login')">Entrar</button>
+   <button type="button" class="access-tab" data-tab="register" onclick="switchAccessTab('register')">Criar conta</button>
+   <button type="button" class="access-tab" data-tab="activate" onclick="switchAccessTab('activate')">Ativar compra</button>
+  </div>
+  <div class="access-auth-msg" id="access-auth-msg" role="status"></div>
+  <div class="access-panel" data-panel="login">
+   <div class="access-field"><label for="access-email">E-mail</label><input type="email" id="access-email" autocomplete="email" placeholder="mesmo e-mail da compra"></div>
+   <div class="access-field"><label for="access-password">Senha</label><input type="password" id="access-password" autocomplete="current-password"></div>
+   <button type="button" class="access-btn-primary" onclick="accessLogin()">Entrar no laboratório</button>
+  </div>
+  <div class="access-panel" data-panel="register" hidden>
+   <div class="access-field"><label for="access-reg-email">E-mail da compra</label><input type="email" id="access-reg-email" autocomplete="email"></div>
+   <div class="access-field"><label for="access-reg-password">Criar senha</label><input type="password" id="access-reg-password" autocomplete="new-password" minlength="6"></div>
+   <button type="button" class="access-btn-primary" onclick="accessRegister()">Criar conta e verificar acesso</button>
+  </div>
+  <div class="access-panel" data-panel="activate" hidden>
+   <p class="access-hint">Pagou no gateway externo (Stripe Payment Link, Hotmart, Kirvano…)? Crie a conta com o <strong>mesmo e-mail</strong>.</p>
+   <p class="access-hint">Liberação: Firebase Console → Firestore → <code>email_access</code> → documento = e-mail → campo <code>active: true</code>.</p>
+   <button type="button" class="access-btn-ghost" onclick="switchAccessTab('register')">Criar conta agora</button>
+  </div>
+ </div>
+</div>
 
 <!-- ═══════════════════════════════════════════ -->
 <!-- LANDING PAGE (DARK) -->
@@ -1590,9 +1673,12 @@ img, svg, video { max-width: 100%; height: auto; }
  <a href="#pain">Por que aprender?</a>
  <a href="#preview">O que você cria</a>
  <a href="#pricing">Planos</a>
- <a href="#" class="nav-links-cta" onclick="enterPlatform(); return false;">Começar agora →</a>
+ <a href="#" onclick="openAccessGate('login'); return false;">Entrar</a>
+ <a href="#" class="nav-links-cta" onclick="requestPlatformAccess(); return false;">Laboratório →</a>
  </div>
- <button class="nav-cta" onclick="enterPlatform()">Começar agora →</button>
+ <button type="button" class="nav-login-btn" id="nav-login-btn" onclick="openAccessGate('login')">Entrar</button>
+ <button type="button" class="nav-user-btn" id="nav-user-btn" style="display:none" onclick="accessLogout()" title="Sair da conta">Conta</button>
+ <button class="nav-cta" onclick="requestPlatformAccess()">Laboratório →</button>
 </nav>
 
 <!-- HERO -->
@@ -1634,7 +1720,7 @@ img, svg, video { max-width: 100%; height: auto; }
  <h1>Construa seu <span class="highlight">SaaS do zero</span> sem enrolação</h1>
  <p class="hero-sub">Mesmo sem saber programar, você monta um SaaS completo em poucas horas. Uma IA constrói com você enquanto o passo a passo coloca login, pagamentos e deploy no ar, pronto para cobrar clientes de verdade.</p>
  <div class="hero-actions">
- <button class="btn-primary" onclick="enterPlatform()">Acessar plataforma gratuita →</button>
+ <button class="btn-primary" onclick="requestPlatformAccess()">Entrar no laboratório →</button>
  <button class="btn-ghost" onclick="document.getElementById('preview').scrollIntoView({behavior:'smooth'})">Ver o que você vai criar</button>
  </div>
  <div class="hero-stats">
@@ -1684,7 +1770,7 @@ img, svg, video { max-width: 100%; height: auto; }
  </article>
  </div>
  <div class="path-cta">
- <button class="btn-primary" onclick="enterPlatform()">Começar o passo 1 agora →</button>
+ <button class="btn-primary" onclick="requestPlatformAccess()">Começar o passo 1 agora →</button>
  </div>
 </section>
 
@@ -1914,7 +2000,7 @@ img, svg, video { max-width: 100%; height: auto; }
  <div class="price-feat">Comunidade no Discord</div>
  <div class="price-feat">Atualizações por 1 ano</div>
  </div>
- <button class="btn-price-ghost" onclick="enterPlatform()">Começar agora</button>
+ <button class="btn-price-ghost" onclick="goToCheckout('starter')">Comprar Starter</button>
 </div></div>
  <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-12" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-12)"/></svg><div class="price-card featured">
  <div class="popular-tag">Mais popular</div>
@@ -1929,7 +2015,7 @@ img, svg, video { max-width: 100%; height: auto; }
  <div class="price-feat">Templates premium exclusivos</div>
  <div class="price-feat">Certificado de conclusão</div>
  </div>
- <button class="btn-price-primary" onclick="enterPlatform()">Começar agora →</button>
+ <button class="btn-price-primary" onclick="goToCheckout('pro')">Comprar Pro →</button>
 </div></div>
  </div>
 </section>
@@ -2069,6 +2155,12 @@ MVP: ...</div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/checkout-config.js"></script>
+<script src="js/auth-access.js"></script>
 <script>
 // ─── STATE ───────────────────────────────────
 let currentStep = 0;
@@ -2189,13 +2281,18 @@ function maybeShowSaasOnboarding() {
  }
 }
 
-function enterPlatform() {
+function enterPlatformCore() {
  document.getElementById('landing').style.display = 'none';
  document.getElementById('platform').style.display = 'block';
  loadSaasProfile();
  renderStep(0);
  scheduleScrollToTop();
  maybeShowSaasOnboarding();
+}
+window.enterPlatformCore = enterPlatformCore;
+function enterPlatform() {
+ if (typeof window.requestPlatformAccess === 'function') window.requestPlatformAccess();
+ else enterPlatformCore();
 }
 function exitPlatform() {
  dismissSaasOnboarding();
@@ -3983,8 +4080,12 @@ document.addEventListener("DOMContentLoaded", () => {
  initDemoPlayer();
  window.addEventListener("resize", scheduleAboutEnergyRedraw);
  document.addEventListener("keydown", (e) => {
- if (e.key === "Escape") dismissSaasOnboarding();
+ if (e.key === "Escape") {
+  dismissSaasOnboarding();
+  if (typeof closeAccessGate === "function") closeAccessGate();
+ }
  });
+ if (typeof initFirebaseAccess === "function") initFirebaseAccess();
  setTimeout(() => {
  initHeroFloatIcons();
  ensureHeroButtonsVisible();
