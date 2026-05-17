@@ -1,0 +1,10 @@
+.env
+.env.local
+.env.*.local
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+_patch_*
+_test.js
+sections_insert_fixed.html

@@ -1,0 +1,4001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SaaS Academy — Do Zero ao Deploy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Goldman:wght@400;700&family=Italiana&family=Jost:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+<style>
+:root {
+ --black: #000000;
+ --deep: #000000;
+ --navy: #030508;
+ --blue-dark: #0a1220;
+ --blue-mid: #0f1e36;
+ --blue: #142a4d;
+ --blue-light: #1a3356;
+ --blue-glow: #243d66;
+ --accent: #2a4470;
+ --accent2: #1a2d4d;
+ --white: #e4e9f2;
+ --muted: #6e7d96;
+ --card-bg: #060a10;
+ --card-border: rgba(15, 35, 70, 0.45);
+
+ --learn-bg: #f8faff;
+ --learn-card: #ffffff;
+ --learn-blue: #1d4ed8;
+ --learn-blue-light: #eff6ff;
+ --learn-text: #0f172a;
+ --learn-muted: #64748b;
+ --learn-border: #e2e8f0;
+ --learn-accent: #2563eb;
+
+ --neon-cyan: #2a4470;
+ --neon-blue: #1a3356;
+ --neon-purple: #2a3558;
+ --neon-glow: rgba(20, 40, 75, 0.5);
+
+ --font-body: 'Jost', sans-serif;
+ --font-display: 'Orbitron', sans-serif;
+ --font-accent: 'Goldman', sans-serif;
+ --font-serif: 'Italiana', serif;
+ --font-impact: 'Boldonse', system-ui, sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; font-family: var(--font-body); }
+body {
+ font-family: var(--font-body);
+ background: var(--black);
+ color: var(--white);
+ overflow-x: hidden;
+ -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select { font-family: inherit; }
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; }
+#hero h1 { font-family: var(--font-impact); font-weight: 400; letter-spacing: 0.02em; }
+.section-label { font-family: var(--font-serif); font-weight: 400; letter-spacing: 0.14em; }
+.nav-logo, .plat-logo { font-family: var(--font-accent); }
+.section-title, .step-title, .mock-title { font-family: var(--font-display); }
+.stat-n, .price-amount, .mock-card-n, .pain-title { font-family: var(--font-accent); }
+.mockup-url, .prompt-text, .code-snippet { font-family: var(--font-display); letter-spacing: 0.03em; }
+#platform { font-family: var(--font-body); }
+
+/* Landing — fundo preto + azul escuro */
+#landing {
+ background: #000000;
+ color: var(--white);
+}
+
+/* ─── NAVIGATION ─────────────────────────────── */
+nav {
+ position: fixed; top:0; left:0; right:0; z-index:100;
+ display:flex; align-items:center; justify-content:space-between;
+ padding: 1rem 2.5rem;
+ background: rgba(0,0,0,0.92);
+ backdrop-filter: blur(16px);
+ border-bottom: 1px solid rgba(15,35,70,0.5);
+}
+.nav-logo { font-family:var(--font-accent); font-size:1.3rem; font-weight:700; letter-spacing:0.02em; color:var(--white); }
+.nav-logo span { color:var(--accent); }
+.nav-links { display:flex; gap:2rem; }
+.nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; font-weight:500; transition:color 0.2s; }
+.nav-links a:hover { color:var(--white); }
+.nav-links-cta { display: none; }
+
+.nav-cta { background:var(--blue); color:#fff; border:none; padding:0.55rem 1.4rem; border-radius:8px; font-family:var(--font-body); font-size:0.88rem; font-weight:500; cursor:pointer; transition:all 0.2s; white-space:nowrap; }
+.nav-cta:hover { background:var(--blue-mid); border:1px solid var(--blue-light); transform:translateY(-1px); }
+.nav-menu-btn {
+ display: none;
+ flex-direction: column;
+ justify-content: center;
+ gap: 5px;
+ width: 44px;
+ height: 44px;
+ padding: 10px;
+ background: rgba(15, 35, 70, 0.5);
+ border: 1px solid rgba(30, 55, 95, 0.55);
+ border-radius: 10px;
+ cursor: pointer;
+ flex-shrink: 0;
+}
+.nav-menu-btn span {
+ display: block;
+ height: 2px;
+ width: 100%;
+ background: var(--white);
+ border-radius: 2px;
+ transition: transform 0.25s, opacity 0.25s;
+}
+.nav-menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.nav-overlay {
+ display: none;
+ position: fixed;
+ inset: 0;
+ background: rgba(0, 0, 0, 0.65);
+ z-index: 150;
+ opacity: 0;
+ pointer-events: none;
+ transition: opacity 0.3s;
+}
+.nav-overlay.open {
+ opacity: 1;
+ pointer-events: auto;
+}
+
+/* ─── HERO ─────────────────────────────────── */
+#hero {
+ min-height: 100vh;
+ display:flex; flex-direction:column; align-items:center; justify-content:center;
+ text-align:center; padding:8rem 2rem 5rem;
+ position:relative; overflow-x:hidden; overflow-y:visible;
+}
+.hero-grid {
+ position:absolute; inset:0;
+ background-image:
+ linear-gradient(rgba(15,35,70,0.12) 1px, transparent 1px),
+ linear-gradient(90deg, rgba(15,35,70,0.12) 1px, transparent 1px);
+ background-size: 60px 60px;
+}
+.hero-glow {
+ position:absolute; top:10%; left:50%; transform:translateX(-50%);
+ width:700px; height:400px;
+ background: radial-gradient(ellipse, rgba(15,35,70,0.35) 0%, transparent 70%);
+ pointer-events:none;
+}
+.hero-badge {
+ display:inline-flex; align-items:center; gap:8px;
+ background:rgba(15,35,70,0.35); border:1px solid rgba(30,55,95,0.55);
+ padding:0.4rem 1rem; border-radius:99px; font-size:0.8rem; color:var(--blue-glow);
+ margin-bottom:2rem; position:relative;
+}
+.badge-dot { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+h1 {
+ font-family:var(--font-display); font-size:clamp(2.8rem,6vw,5rem);
+ font-weight:800; line-height:1.05; letter-spacing:-2px;
+ max-width:850px; position:relative;
+}
+h1 .highlight {
+ background: linear-gradient(135deg, var(--blue-glow), var(--accent));
+ -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero-sub {
+ margin-top:1.5rem; font-size:1.2rem; color:var(--muted); max-width:580px; line-height:1.7;
+ position:relative;
+}
+.hero-actions {
+ display:flex; gap:1rem; margin-top:2.5rem; position:relative; z-index:5;
+ flex-wrap:wrap; justify-content:center; width:100%; max-width:640px;
+}
+.btn-primary {
+ background:var(--blue); color:#fff; border:none;
+ padding:1rem 2.2rem; border-radius:10px; font-size:1rem; font-weight:600;
+ cursor:pointer; font-family:var(--font-body);
+ transition:all 0.2s; box-shadow:0 0 24px rgba(10,25,55,0.6);
+}
+.btn-primary:hover { background:var(--blue-light); transform:translateY(-2px); box-shadow:0 0 32px rgba(15,35,70,0.7); }
+.btn-ghost {
+ background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.15);
+ padding:1rem 2.2rem; border-radius:10px; font-size:1rem; font-weight:500;
+ cursor:pointer; font-family:var(--font-body); transition:all 0.2s;
+}
+.btn-ghost:hover { border-color:rgba(255,255,255,0.35); background:rgba(255,255,255,0.05); }
+.hero-stats {
+ display:flex; gap:3rem; margin-top:4rem; position:relative; z-index:5;
+ flex-wrap:wrap; justify-content:center;
+ padding-top:3rem; border-top:1px solid rgba(15,35,70,0.45);
+ width:100%; max-width:900px;
+}
+.stat { text-align:center; }
+.stat-n { font-family:var(--font-accent); font-size:2rem; font-weight:700; color:var(--white); }
+.stat-n span { color:var(--accent); }
+.stat-l { font-size:0.82rem; color:var(--muted); margin-top:2px; }
+
+/* Ícones flutuantes do hero */
+.hero-float-icons {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ z-index: 3;
+}
+.hero-float-icon {
+ position: absolute;
+ will-change: transform;
+ opacity: 1;
+ transform: scale(1);
+}
+.hero-float-icon-inner {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 0.45rem;
+ padding: 0.95rem 1.05rem;
+ min-width: 88px;
+ background: rgba(4, 6, 12, 0.9);
+ border: 1px solid rgba(30, 55, 95, 0.55);
+ border-radius: 14px;
+ box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55), 0 0 24px rgba(15, 35, 70, 0.25);
+ backdrop-filter: blur(8px);
+}
+.hero-float-icon svg {
+ width: 38px;
+ height: 38px;
+ color: #4a6fa5;
+ stroke: currentColor;
+ fill: none;
+}
+.hero-float-label {
+ font-size: 0.68rem;
+ font-weight: 600;
+ letter-spacing: 0.08em;
+ text-transform: uppercase;
+ color: var(--muted);
+ font-family: var(--font-display);
+}
+.hero-float-icon--ide { left: 6%; top: 32%; }
+.hero-float-icon--db { right: 6%; top: 36%; }
+.hero-float-icon--deploy { left: 8%; right: auto; bottom: 26%; }
+#hero .hero-badge,
+#hero h1,
+#hero .hero-sub {
+ position: relative;
+ z-index: 4;
+}
+@media (max-width: 1024px) {
+ .hero-float-icon--ide { left: 2%; top: 28%; }
+ .hero-float-icon--db { right: 2%; top: 30%; }
+ .hero-float-icon--deploy { left: 2%; right: auto; bottom: 20%; }
+ .hero-float-icon-inner { padding: 0.7rem 0.8rem; min-width: 72px; }
+ .hero-float-icon svg { width: 30px; height: 30px; }
+}
+@media (max-width: 640px) {
+ .hero-float-icons {
+  position: relative;
+  inset: auto;
+  display: flex;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  margin: 0 auto 1.25rem;
+  max-width: 100%;
+  padding: 0 0.5rem;
+ }
+ .hero-float-icon {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+ }
+ .hero-float-icon-inner {
+  min-width: 64px;
+  padding: 0.55rem 0.65rem;
+ }
+ .hero-float-icon svg { width: 26px; height: 26px; }
+ .hero-float-label { font-size: 0.6rem; }
+}
+
+/* ─── PASSO A PASSO ─────────────────────────── */
+#path {
+ padding: 5rem 2rem;
+ max-width: 1100px;
+ margin: 0 auto;
+ text-align: center;
+ border-top: 1px solid rgba(15, 35, 70, 0.4);
+ background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(10, 22, 45, 0.25) 50%, rgba(0, 0, 0, 0) 100%);
+}
+.path-intro {
+ max-width: 720px;
+ margin: 0 auto 3rem;
+ color: var(--muted);
+ font-size: 1.05rem;
+ line-height: 1.75;
+}
+.path-intro strong { color: var(--white); font-weight: 600; }
+.steps-grid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 1.5rem;
+ position: relative;
+ text-align: left;
+}
+.steps-grid::before {
+ content: "";
+ position: absolute;
+ top: 2.6rem;
+ left: 12%;
+ right: 12%;
+ height: 2px;
+ background: linear-gradient(90deg, transparent, rgba(42, 68, 112, 0.8), rgba(42, 68, 112, 0.8), transparent);
+ z-index: 0;
+}
+.step-card {
+ position: relative;
+ z-index: 1;
+ background: rgba(4, 6, 12, 0.92);
+ border: 1px solid rgba(30, 55, 95, 0.45);
+ border-radius: 18px;
+ padding: 1.75rem 1.5rem;
+ transition: border-color 0.25s, transform 0.25s;
+}
+.step-card:hover {
+ border-color: rgba(42, 68, 112, 0.75);
+ transform: translateY(-4px);
+}
+.step-card-num {
+ width: 52px;
+ height: 52px;
+ border-radius: 14px;
+ background: linear-gradient(145deg, var(--blue-mid), var(--blue-dark));
+ border: 1px solid rgba(42, 68, 112, 0.6);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-family: var(--font-accent);
+ font-size: 1.5rem;
+ font-weight: 700;
+ color: var(--white);
+ margin-bottom: 1.1rem;
+ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.step-card-title {
+ font-family: var(--font-display);
+ font-size: 1.15rem;
+ font-weight: 700;
+ color: var(--white);
+ margin-bottom: 0.55rem;
+ line-height: 1.25;
+}
+.step-card-text {
+ font-size: 0.9rem;
+ color: var(--muted);
+ line-height: 1.65;
+}
+.step-card-tags {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 0.4rem;
+ margin-top: 1rem;
+}
+.step-tag {
+ font-size: 0.68rem;
+ font-weight: 600;
+ letter-spacing: 0.06em;
+ text-transform: uppercase;
+ padding: 0.25rem 0.55rem;
+ border-radius: 6px;
+ background: rgba(15, 35, 70, 0.5);
+ color: var(--blue-glow);
+ border: 1px solid rgba(30, 55, 95, 0.4);
+}
+.path-cta {
+ margin-top: 2.5rem;
+}
+
+/* ─── SOBRE O INSTRUTOR ─────────────────────── */
+#about {
+ padding: 5rem 2rem;
+ max-width: 1100px;
+ margin: 0 auto;
+ border-top: 1px solid rgba(15, 35, 70, 0.35);
+}
+.about-stage {
+ position: relative;
+}
+.about-energy-svg {
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ pointer-events: none;
+ z-index: 2;
+ overflow: visible;
+}
+.about-grid {
+ position: relative;
+ z-index: 1;
+ display: grid;
+ grid-template-columns: 280px 1fr;
+ gap: 3rem;
+ align-items: start;
+}
+.about-energy-path {
+ fill: none;
+ stroke: rgba(74, 111, 165, 0.42);
+ stroke-width: 1.5;
+ stroke-dasharray: 3 11;
+ stroke-linecap: round;
+ animation: aboutEnergyFlow 1.35s linear infinite;
+}
+.about-energy-path--soft {
+ stroke: rgba(74, 111, 165, 0.18);
+ stroke-width: 3;
+ stroke-dasharray: none;
+ animation: none;
+ filter: blur(2px);
+}
+.about-energy-dot {
+ fill: #7eb3e8;
+ filter: drop-shadow(0 0 5px rgba(126, 179, 232, 0.95));
+}
+.about-energy-dot--trail {
+ fill: #4a6fa5;
+ opacity: 0.5;
+ filter: drop-shadow(0 0 3px rgba(74, 111, 165, 0.6));
+}
+.about-energy-path--loop {
+ stroke: rgba(74, 111, 165, 0.5);
+ stroke-width: 1.5;
+}
+.about-energy-path--trunk {
+ stroke: rgba(126, 179, 232, 0.6);
+ stroke-width: 2;
+ stroke-dasharray: 4 10;
+}
+.about-energy-hub {
+ fill: #7eb3e8;
+ stroke: rgba(126, 179, 232, 0.5);
+ stroke-width: 1.5;
+ filter: drop-shadow(0 0 10px rgba(126, 179, 232, 0.85));
+ animation: aboutHubPulse 2s ease-in-out infinite;
+}
+@keyframes aboutHubPulse {
+ 0%, 100% { opacity: 0.65; }
+ 50% { opacity: 1; }
+}
+@keyframes aboutEnergyFlow {
+ from { stroke-dashoffset: 28; }
+ to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .about-energy-path { animation: none; }
+}
+@media (max-width: 1024px) {
+ .about-energy-svg { display: none; }
+}
+@media (min-width: 1025px) {
+ #about-photo-card {
+ animation: aboutPhotoPulse 3.2s ease-in-out infinite;
+ }
+}
+@keyframes aboutPhotoPulse {
+ 0%, 100% { box-shadow: 0 0 0 rgba(74, 111, 165, 0); }
+ 50% { box-shadow: 0 0 32px rgba(74, 111, 165, 0.22); }
+}
+@media (prefers-reduced-motion: reduce) {
+ #about-photo-card { animation: none; }
+}
+.about-photo {
+ width: 100%;
+ border-radius: 20px;
+ background: linear-gradient(160deg, rgba(20, 42, 77, 0.9), rgba(4, 6, 12, 0.95));
+ border: 1px solid rgba(42, 68, 112, 0.5);
+ display: flex;
+ flex-direction: column;
+ overflow: hidden;
+ text-align: center;
+ box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+.about-photo-media {
+ position: relative;
+ aspect-ratio: 4 / 3;
+ overflow: hidden;
+ background: #04060c;
+}
+.about-photo-media::after {
+ content: "";
+ position: absolute;
+ inset: 0;
+ background: linear-gradient(180deg, transparent 55%, rgba(4, 6, 12, 0.85) 100%);
+ pointer-events: none;
+}
+.about-photo-media img {
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ object-position: center 22%;
+ display: block;
+}
+.about-photo-caption {
+ padding: 1.15rem 1rem 1.25rem;
+ background: linear-gradient(180deg, rgba(4, 6, 12, 0.2), rgba(4, 6, 12, 0.95));
+}
+.about-name {
+ font-family: var(--font-display);
+ font-size: 1.05rem;
+ font-weight: 700;
+ color: var(--white);
+ line-height: 1.35;
+}
+.about-age {
+ font-size: 0.8rem;
+ color: var(--muted);
+ margin-top: 0.35rem;
+}
+.about-content .section-label { text-align: left; }
+.about-content .section-title { text-align: left; margin-bottom: 1rem; }
+.about-lead {
+ font-size: 1.05rem;
+ color: var(--muted);
+ line-height: 1.75;
+ margin-bottom: 1.5rem;
+}
+.about-lead strong { color: var(--white); }
+.about-highlights {
+ display: grid;
+ grid-template-columns: repeat(2, 1fr);
+ gap: 0.85rem;
+ margin-bottom: 1.5rem;
+}
+.about-highlight {
+ display: flex;
+ align-items: flex-start;
+ gap: 0.65rem;
+ padding: 0.85rem 1rem;
+ background: rgba(4, 6, 12, 0.85);
+ border: 1px solid rgba(30, 55, 95, 0.4);
+ border-radius: 12px;
+ font-size: 0.88rem;
+ color: var(--muted);
+ line-height: 1.5;
+}
+.about-highlight-icon {
+ flex-shrink: 0;
+ width: 28px;
+ height: 28px;
+ border-radius: 8px;
+ background: rgba(15, 35, 70, 0.6);
+ color: var(--blue-glow);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 0.85rem;
+ font-weight: 700;
+ font-family: var(--font-display);
+}
+.about-highlight > div { display: flex; flex-direction: column; gap: 0.3rem; }
+.about-highlight strong { color: var(--white); font-size: 0.92rem; }
+.about-badges {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 0.5rem;
+}
+.about-badge {
+ font-size: 0.72rem;
+ font-weight: 600;
+ padding: 0.35rem 0.75rem;
+ border-radius: 99px;
+ background: rgba(15, 35, 70, 0.45);
+ color: var(--blue-glow);
+ border: 1px solid rgba(42, 68, 112, 0.45);
+}
+
+/* ─── PAIN POINTS ───────────────────────────── */
+#pain {
+ padding:6rem 2rem; max-width:1100px; margin:0 auto;
+ text-align: center;
+}
+.section-label { font-size:0.78rem; letter-spacing:3px; color:var(--accent); text-transform:uppercase; font-weight:600; margin-bottom:0.8rem; }
+.section-title { font-family:var(--font-display); font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700; line-height:1.2; }
+.pain-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 1.75rem;
+ margin-top: 3rem;
+ align-items: stretch;
+}
+
+/* Dot pattern cards — borda quebrada nos cantos */
+#landing .dot-card-frame {
+ --dot-radius: 20px;
+ --bracket-len: 52px;
+ --bracket-w: 2px;
+ position: relative;
+ border: none;
+ border-radius: var(--dot-radius);
+ background: transparent;
+ overflow: visible;
+ display: flex;
+ flex-direction: column;
+ height: 100%;
+ transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+#landing .dot-card-frame .dot-pattern {
+ border-radius: inherit;
+ overflow: hidden;
+}
+#landing .dot-card-frame--lg { --dot-radius: 24px; --bracket-len: 64px; }
+#landing .dot-card-frame--sm { --dot-radius: 12px; --bracket-len: 28px; }
+#landing .dot-card-frame:hover {
+ box-shadow: 0 12px 40px rgba(12, 28, 58, 0.2);
+}
+#landing .dot-card-frame:hover .dot-card-corner {
+ box-shadow: 0 0 12px rgba(20, 45, 85, 0.75);
+}
+#landing .dot-pattern {
+ pointer-events: none;
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ z-index: 0;
+ fill: rgba(25, 45, 75, 0.45);
+}
+@media (min-width: 768px) {
+ #landing .dot-pattern { fill: rgba(30, 50, 80, 0.55); }
+}
+#landing .dot-card-corner {
+ position: absolute;
+ width: 10px;
+ height: 10px;
+ background: var(--accent);
+ z-index: 4;
+ pointer-events: none;
+ box-shadow: 0 0 6px rgba(20, 45, 85, 0.45);
+}
+#landing .dot-card-corner::before,
+#landing .dot-card-corner::after {
+ content: "";
+ position: absolute;
+ background: rgba(18, 40, 75, 0.55);
+ pointer-events: none;
+}
+#landing .dot-card-corner--tl { top: -5px; left: -5px; }
+#landing .dot-card-corner--tl::before {
+ top: 50%; left: calc(100% + 3px);
+ width: var(--bracket-len); height: var(--bracket-w);
+ transform: translateY(-50%);
+ background: linear-gradient(90deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--tl::after {
+ left: 50%; top: calc(100% + 3px);
+ width: var(--bracket-w); height: var(--bracket-len);
+ transform: translateX(-50%);
+ background: linear-gradient(180deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--tr { top: -5px; right: -5px; }
+#landing .dot-card-corner--tr::before {
+ top: 50%; right: calc(100% + 3px);
+ width: var(--bracket-len); height: var(--bracket-w);
+ transform: translateY(-50%);
+ background: linear-gradient(270deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--tr::after {
+ right: 50%; top: calc(100% + 3px);
+ width: var(--bracket-w); height: var(--bracket-len);
+ transform: translateX(50%);
+ background: linear-gradient(180deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--bl { bottom: -5px; left: -5px; }
+#landing .dot-card-corner--bl::before {
+ bottom: 50%; left: calc(100% + 3px);
+ width: var(--bracket-len); height: var(--bracket-w);
+ transform: translateY(50%);
+ background: linear-gradient(90deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--bl::after {
+ left: 50%; bottom: calc(100% + 3px);
+ width: var(--bracket-w); height: var(--bracket-len);
+ transform: translateX(-50%);
+ background: linear-gradient(0deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--br { bottom: -5px; right: -5px; }
+#landing .dot-card-corner--br::before {
+ bottom: 50%; right: calc(100% + 3px);
+ width: var(--bracket-len); height: var(--bracket-w);
+ transform: translateY(50%);
+ background: linear-gradient(270deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-corner--br::after {
+ right: 50%; bottom: calc(100% + 3px);
+ width: var(--bracket-w); height: var(--bracket-len);
+ transform: translateX(50%);
+ background: linear-gradient(0deg, var(--accent), rgba(18, 40, 75, 0.4) 70%, transparent);
+}
+#landing .dot-card-frame--sm .dot-card-corner { width: 8px; height: 8px; }
+#landing .dot-card-frame--sm .dot-card-corner--tl { top: -4px; left: -4px; }
+#landing .dot-card-frame--sm .dot-card-corner--tr { top: -4px; right: -4px; }
+#landing .dot-card-frame--sm .dot-card-corner--bl { bottom: -4px; left: -4px; }
+#landing .dot-card-frame--sm .dot-card-corner--br { bottom: -4px; right: -4px; }
+#landing .dot-card-frame > .pain-card,
+#landing .dot-card-frame > .price-card,
+#landing .dot-card-frame > .mock-card {
+ position: relative;
+ z-index: 2;
+ flex: 1;
+ width: 100%;
+ box-sizing: border-box;
+ border: none !important;
+ background: rgba(4, 6, 12, 0.88);
+ backdrop-filter: blur(6px);
+ text-align: center;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+}
+#landing .dot-card-frame > .pain-card {
+ border-radius: calc(var(--dot-radius) - 2px);
+ padding: 2rem 1.5rem;
+ min-height: 210px;
+}
+#landing .dot-card-frame--lg > .price-card {
+ border-radius: calc(var(--dot-radius) - 2px);
+ padding: 2rem 1.75rem;
+}
+#landing .dot-card-frame--sm > .mock-card {
+ border-radius: calc(var(--dot-radius) - 2px);
+ padding: 1rem 0.75rem;
+ min-height: 72px;
+}
+#landing .dot-card-frame > .price-card.featured {
+ background: linear-gradient(160deg, rgba(12, 28, 58, 0.28), rgba(2, 4, 8, 0.92));
+}
+#landing .dot-card-frame > .price-card .price-feats {
+ align-items: center;
+ width: 100%;
+ max-width: 300px;
+ margin-left: auto;
+ margin-right: auto;
+}
+#landing .dot-card-frame > .price-card .price-feat {
+ justify-content: center;
+}
+#landing .dot-card-frame > .price-card .btn-price-ghost,
+#landing .dot-card-frame > .price-card .btn-price-primary {
+ align-self: center;
+}
+
+.pain-card { border-radius: 14px; }
+.pain-icon { display: none; }
+.pain-title {
+ font-family: var(--font-accent);
+ font-weight: 700;
+ font-size: 1.05rem;
+ margin-bottom: 0.65rem;
+ max-width: 24ch;
+}
+.pain-text {
+ color: var(--muted);
+ font-size: 0.9rem;
+ line-height: 1.7;
+ max-width: 34ch;
+ margin: 0 auto;
+}
+
+/* ─── WHAT YOU'LL BUILD ──────────────────────── */
+#preview {
+ padding:6rem 2rem; background:#000000;
+ border-top:1px solid rgba(12,28,58,0.1);
+ border-bottom:1px solid rgba(12,28,58,0.1);
+}
+.preview-inner { max-width:1100px; margin:0 auto; }
+.preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; margin-top:3rem; }
+.preview-features { display:flex; flex-direction:column; gap:1.2rem; }
+.feat-item { display:flex; align-items:flex-start; gap:0; }
+.feat-icon { display: none; }
+.feat-title { font-weight:600; font-size:0.95rem; margin-bottom:3px; }
+.feat-desc { color:var(--muted); font-size:0.85rem; line-height:1.6; }
+.preview-mockup {
+ background: var(--card-bg);
+ border: 1px solid rgba(12,28,58,0.25);
+ border-radius: 20px;
+ overflow: hidden;
+}
+.mockup-bar { background: transparent; padding:0.7rem 1rem; display:flex; gap:6px; align-items:center; border-bottom:1px solid rgba(12,28,58,0.2); }
+.mockup-dot { width:10px;height:10px;border-radius:50%; }
+.mockup-url { flex:1; background:rgba(255,255,255,0.05); border-radius:6px; padding:0.3rem 0.7rem; font-family:var(--font-display); font-size:0.72rem; color:var(--muted); margin:0 0.5rem; }
+.mockup-body { padding:1.2rem; }
+.mock-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+.mock-title { font-family:var(--font-display); font-weight:700; font-size:1.1rem; }
+.mock-badge { background:rgba(20,45,85,0.12); color:var(--accent); font-size:0.7rem; padding:0.25rem 0.6rem; border-radius:6px; font-weight:600; }
+.mock-cards { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1rem; }
+.mock-card {
+ border-radius: 8px;
+ padding: 0.8rem;
+}
+.mock-card-n { font-family:var(--font-accent); font-weight:700; font-size:1.4rem; }
+.mock-card-l { font-size:0.72rem; color:var(--muted); }
+.mock-chart { background: transparent; border:1px solid rgba(12,28,58,0.2); border-radius:10px; padding:0.8rem; height:80px; display:flex; align-items:flex-end; gap:6px; }
+.mock-bar-item { flex:1; background:var(--blue-mid); border-radius:3px 3px 0 0; transition:height 0.5s; }
+
+/* Demo animada (pseudo-vídeo) */
+.demo-player { position: relative; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+.demo-stage {
+ position: relative;
+ min-height: 320px;
+ overflow: hidden;
+ background: linear-gradient(180deg, rgba(4, 6, 12, 0.5) 0%, rgba(0, 0, 0, 0.35) 100%);
+}
+.demo-scene {
+ position: absolute;
+ inset: 0;
+ padding: 1.2rem;
+ opacity: 0;
+ visibility: hidden;
+ pointer-events: none;
+}
+.demo-scene--active {
+ opacity: 1;
+ visibility: visible;
+ z-index: 2;
+ pointer-events: auto;
+}
+.demo-cursor {
+ position: absolute;
+ left: 24px;
+ top: 24px;
+ width: 16px;
+ height: 16px;
+ border: 2px solid var(--accent);
+ border-radius: 50%;
+ box-shadow: 0 0 0 3px rgba(20, 45, 85, 0.25), 0 4px 12px rgba(0, 0, 0, 0.4);
+ z-index: 50;
+ pointer-events: none;
+ opacity: 0;
+}
+.demo-cursor::after {
+ content: "";
+ position: absolute;
+ width: 4px;
+ height: 4px;
+ background: #fff;
+ border-radius: 50%;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+}
+.demo-click-ring {
+ position: absolute;
+ width: 32px;
+ height: 32px;
+ border: 2px solid var(--accent);
+ border-radius: 50%;
+ z-index: 49;
+ pointer-events: none;
+ opacity: 0;
+}
+.demo-toast {
+ position: absolute;
+ bottom: 1rem;
+ right: 1rem;
+ left: 1rem;
+ max-width: 280px;
+ margin-left: auto;
+ padding: 0.65rem 1rem;
+ background: rgba(5, 12, 28, 0.96);
+ border: 1px solid rgba(20, 45, 85, 0.45);
+ border-radius: 10px;
+ font-size: 0.78rem;
+ color: var(--white);
+ z-index: 45;
+ opacity: 0;
+ transform: translateY(12px);
+ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.demo-toast strong { color: var(--accent); font-weight: 600; }
+.demo-stats {
+ display: grid;
+ grid-template-columns: 1fr 1fr;
+ gap: 0.75rem;
+ margin-bottom: 1rem;
+}
+.demo-stat {
+ background: rgba(4, 6, 12, 0.94);
+ border: 1px solid rgba(18, 40, 75, 0.3);
+ border-radius: 10px;
+ padding: 0.85rem 0.6rem;
+ text-align: center;
+ transition: border-color 0.25s, box-shadow 0.25s;
+}
+.demo-stat--highlight {
+ border-color: rgba(20, 45, 85, 0.55);
+ box-shadow: 0 0 20px rgba(20, 45, 85, 0.15);
+}
+.demo-stat-n { font-family: var(--font-accent); font-weight: 700; font-size: 1.35rem; line-height: 1.1; }
+.demo-stat-l { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+.demo-chart {
+ border: 1px solid rgba(12, 28, 58, 0.22);
+ border-radius: 10px;
+ padding: 0.75rem 0.85rem 0.5rem;
+ height: 88px;
+ display: flex;
+ align-items: flex-end;
+ gap: 6px;
+}
+.demo-bar {
+ flex: 1;
+ background: linear-gradient(180deg, var(--blue-mid), var(--blue-dark));
+ border-radius: 3px 3px 0 0;
+ height: 100%;
+ min-height: 8px;
+ transform: scaleY(0.12);
+ transform-origin: bottom center;
+ will-change: transform;
+}
+.demo-terminal {
+ background: #060b14;
+ border: 1px solid rgba(12, 28, 58, 0.28);
+ border-radius: 10px;
+ padding: 1rem 1.1rem;
+ min-height: 220px;
+ font-family: var(--font-display);
+ font-size: 0.7rem;
+ line-height: 2;
+ letter-spacing: 0.02em;
+}
+.demo-term-line { color: var(--muted); opacity: 0; transform: translateX(-8px); }
+.demo-term-line--ok { color: #4ade80; }
+.demo-term-line--accent { color: var(--accent); }
+.demo-term-cursor {
+ display: inline-block;
+ width: 7px;
+ height: 12px;
+ background: var(--accent);
+ margin-left: 2px;
+ vertical-align: middle;
+ opacity: 0;
+}
+.demo-checkout {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ min-height: 220px;
+ gap: 0.85rem;
+}
+.demo-checkout-card {
+ width: 100%;
+ max-width: 270px;
+ background: rgba(4, 6, 12, 0.96);
+ border: 1px solid rgba(18, 40, 75, 0.35);
+ border-radius: 14px;
+ padding: 1.6rem 1.4rem;
+ text-align: center;
+}
+.demo-checkout-icon {
+ width: 52px;
+ height: 52px;
+ margin: 0 auto 0.75rem;
+ border-radius: 50%;
+ background: rgba(74, 222, 128, 0.12);
+ border: 2px solid #4ade80;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 1.5rem;
+ color: #4ade80;
+ transform: scale(0);
+}
+.demo-checkout-title { font-family: var(--font-display); font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
+.demo-checkout-sub { font-size: 0.78rem; color: var(--muted); }
+.demo-checkout-amount { font-family: var(--font-accent); font-size: 1.8rem; margin-top: 0.75rem; color: var(--accent); }
+.demo-progress {
+ display: flex;
+ gap: 8px;
+ justify-content: center;
+ align-items: center;
+ padding: 0.65rem 1rem;
+ border-top: 1px solid rgba(12, 28, 58, 0.15);
+ background: rgba(0, 0, 0, 0.2);
+}
+.demo-progress-dot {
+ width: 7px;
+ height: 7px;
+ border-radius: 99px;
+ background: rgba(255, 255, 255, 0.18);
+ transition: width 0.35s ease, background 0.35s ease;
+}
+.demo-progress-dot--active {
+ width: 22px;
+ background: var(--accent);
+}
+.demo-label {
+ font-size: 0.68rem;
+ letter-spacing: 0.12em;
+ text-transform: uppercase;
+ color: var(--accent);
+ margin-bottom: 0.5rem;
+ font-family: var(--font-serif);
+}
+.demo-deploy-title {
+ font-family: var(--font-display);
+ font-size: 0.95rem;
+ font-weight: 600;
+ margin-bottom: 0.75rem;
+}
+@media (prefers-reduced-motion: reduce) {
+ .demo-cursor, .demo-click-ring, .demo-toast { display: none !important; }
+ .demo-scene { position: relative; opacity: 1 !important; visibility: visible !important; }
+ .demo-scene:not(:first-child) { display: none; }
+}
+
+/* ─── PRICING ────────────────────────────────── */
+#pricing {
+ padding:6rem 2rem; max-width:1000px; margin:0 auto; text-align:center;
+}
+.pricing-toggle { display:flex; align-items:center; gap:1rem; justify-content:center; margin:2rem 0; }
+.toggle-label { font-size:0.9rem; color:var(--muted); }
+.toggle-switch { width:48px; height:26px; background:var(--blue-mid); border-radius:99px; cursor:pointer; position:relative; border:1px solid rgba(12,28,58,0.4); transition:background 0.2s; }
+.toggle-thumb { width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:3px; left:4px; transition:transform 0.2s; }
+.toggle-switch.active .toggle-thumb { transform:translateX(22px); }
+.toggle-switch.active { background:var(--blue); }
+.save-badge { background:rgba(20,45,85,0.12); color:var(--accent); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600; }
+.pricing-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1rem; text-align:left; }
+.price-card {
+ border-radius: 18px;
+ padding: 2rem;
+}
+.price-card.featured {
+ background: linear-gradient(160deg, rgba(12,28,58,0.14), var(--card-bg));
+ position: relative;
+}
+.popular-tag { position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--blue); color:#fff; font-size:0.72rem; font-weight:600; padding:0.25rem 0.8rem; border-radius:99px; white-space:nowrap; }
+.price-name { font-size:0.85rem; color:var(--muted); font-weight:500; margin-bottom:0.5rem; }
+.price-amount { font-family:var(--font-accent); font-size:2.8rem; font-weight:700; line-height:1; }
+.price-amount sub { font-size:1rem; font-weight:400; color:var(--muted); vertical-align:super; }
+.price-amount .period { font-size:1rem; font-weight:400; color:var(--muted); }
+.price-desc { color:var(--muted); font-size:0.85rem; margin:0.8rem 0 1.5rem; line-height:1.6; }
+.price-feats { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.8rem; }
+.price-feat { display:flex; align-items:center; gap:0.6rem; font-size:0.87rem; color:var(--muted); }
+.price-feat::before { content:""; color:var(--accent); font-weight:700; flex-shrink:0; }
+.btn-price-primary { width:100%; background:var(--blue); color:#fff; border:none; padding:0.9rem; border-radius:10px; font-size:0.95rem; font-weight:600; cursor:pointer; font-family:var(--font-body); transition:all 0.2s; }
+.btn-price-primary:hover { background:var(--blue-mid); }
+.btn-price-ghost { width:100%; background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.2); padding:0.9rem; border-radius:10px; font-size:0.95rem; font-weight:500; cursor:pointer; font-family:var(--font-body); transition:all 0.2s; }
+.btn-price-ghost:hover { border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.04); }
+
+/* ─── PLATFORM AREA ────────────────────────── */
+#platform {
+ display:none;
+ min-height:100vh;
+ background:var(--learn-bg);
+ color:var(--learn-text);
+ font-family:var(--font-body);
+}
+
+/* Platform Nav */
+.plat-nav {
+ position:sticky; top:0; z-index:50;
+ background:#fff; border-bottom:1px solid var(--learn-border);
+ display:flex; align-items:center; gap:0; padding:0;
+}
+.plat-logo { padding:0.9rem 1.5rem; font-family:var(--font-accent); font-weight:700; font-size:1.1rem; color:var(--learn-blue); border-right:1px solid var(--learn-border); }
+.plat-logo span { color:var(--learn-accent); }
+.plat-tabs { display:flex; flex:1; overflow-x:auto; }
+.plat-tab { padding:0.9rem 1.3rem; font-size:0.85rem; font-weight:500; color:var(--learn-muted); cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all 0.15s; border-top:none; border-left:none; border-right:none; background:none; font-family:var(--font-body); }
+.plat-tab:hover { color:var(--learn-text); }
+.plat-tab.active { color:var(--learn-blue); border-bottom-color:var(--learn-blue); }
+.plat-actions { display:flex; align-items:center; gap:0.8rem; padding:0 1rem; }
+.saas-profile-wrap { position:relative; display:flex; align-items:center; gap:0.35rem; }
+.saas-name-input {
+ background:var(--learn-blue-light); border:1px solid rgba(29,78,216,0.2);
+ border-radius:8px; padding:0.4rem 0.8rem; font-size:0.82rem;
+ color:var(--learn-blue); font-family:var(--font-body); font-weight:500;
+ width:140px; outline:none; transition:border-color 0.2s, box-shadow 0.2s;
+}
+.saas-name-input:focus { border-color:var(--learn-blue); }
+.saas-name-input.saas-name-input--pulse {
+ border-color:var(--learn-blue);
+ box-shadow:0 0 0 3px rgba(29,78,216,0.25);
+ animation:saasNamePulse 1.4s ease-in-out infinite;
+}
+@keyframes saasNamePulse {
+ 0%, 100% { box-shadow:0 0 0 3px rgba(29,78,216,0.2); }
+ 50% { box-shadow:0 0 0 7px rgba(29,78,216,0.38); }
+}
+.saas-edit-btn {
+ width:28px; height:28px; border-radius:8px; border:1px solid var(--learn-border);
+ background:#fff; color:var(--learn-blue); cursor:pointer; font-size:0.85rem;
+ display:flex; align-items:center; justify-content:center; transition:all 0.15s;
+}
+.saas-edit-btn:hover { background:var(--learn-blue-light); border-color:rgba(29,78,216,0.35); }
+.saas-onboard-overlay {
+ position:fixed; inset:0; z-index:10000;
+ display:none; align-items:flex-start; justify-content:center;
+ padding:5rem 1rem 1rem; pointer-events:none; visibility:hidden;
+}
+.saas-onboard-overlay.is-open {
+ display:flex; pointer-events:none; visibility:visible;
+}
+.saas-onboard-overlay[hidden] { display:none !important; visibility:hidden !important; }
+.saas-onboard-backdrop {
+ position:absolute; inset:0; background:rgba(15,23,42,0.45); opacity:0; transition:opacity 0.25s;
+ pointer-events:none;
+}
+.saas-onboard-overlay.is-open .saas-onboard-backdrop { opacity:1; pointer-events:auto; }
+.saas-onboard-coach {
+ position:fixed; z-index:10002; max-width:300px; padding:0.9rem 1rem;
+ background:#fff; border:1px solid var(--learn-border); border-radius:12px;
+ box-shadow:0 12px 40px rgba(15,23,42,0.18); font-size:0.85rem; line-height:1.55;
+ color:var(--learn-text); opacity:0; transform:translateY(6px); transition:opacity 0.25s, transform 0.25s;
+ pointer-events:none; visibility:hidden;
+}
+.saas-onboard-overlay.is-open .saas-onboard-coach { opacity:1; transform:translateY(0); pointer-events:auto; visibility:visible; }
+.saas-onboard-coach::before {
+ content:""; position:absolute; top:-6px; right:24px; width:12px; height:12px;
+ background:#fff; border-left:1px solid var(--learn-border); border-top:1px solid var(--learn-border);
+ transform:rotate(45deg);
+}
+.saas-onboard-coach strong { color:var(--learn-blue); }
+.saas-onboard-close {
+ position:absolute; top:0.65rem; right:0.75rem; width:32px; height:32px;
+ border:none; border-radius:8px; background:transparent; color:var(--learn-muted);
+ font-size:1.4rem; line-height:1; cursor:pointer; font-family:var(--font-body);
+}
+.saas-onboard-close:hover { background:var(--learn-blue-light); color:var(--learn-blue); }
+.saas-onboard-panel {
+ position:relative; z-index:10001; width:min(480px, 100%); background:#fff;
+ border-radius:16px; border:1px solid var(--learn-border); box-shadow:0 24px 60px rgba(15,23,42,0.2);
+ padding:1.5rem; opacity:0; transform:translateY(12px) scale(0.98); transition:opacity 0.3s, transform 0.3s;
+ pointer-events:auto; max-height:calc(100vh - 6rem); overflow-y:auto;
+}
+.saas-onboard-overlay.is-open .saas-onboard-panel { opacity:1; transform:translateY(0) scale(1); }
+.saas-onboard-panel h3 { font-family:var(--font-display); font-size:1.25rem; margin-bottom:0.35rem; color:var(--learn-text); }
+.saas-onboard-panel > p { font-size:0.88rem; color:var(--learn-muted); line-height:1.6; margin-bottom:1rem; }
+.saas-onboard-field { margin-bottom:0.85rem; }
+.saas-onboard-field label { display:block; font-size:0.78rem; font-weight:600; color:var(--learn-text); margin-bottom:0.35rem; }
+.saas-onboard-field input,
+.saas-onboard-field textarea {
+ width:100%; border:1px solid var(--learn-border); border-radius:10px; padding:0.55rem 0.75rem;
+ font-family:var(--font-body); font-size:0.88rem; color:var(--learn-text); outline:none;
+}
+.saas-onboard-field input:focus,
+.saas-onboard-field textarea:focus { border-color:var(--learn-blue); box-shadow:0 0 0 3px rgba(29,78,216,0.12); }
+.saas-onboard-field textarea { min-height:88px; resize:vertical; line-height:1.5; }
+.saas-onboard-actions { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1rem; }
+.saas-onboard-actions .btn-onboard-primary {
+ flex:1; min-width:140px; padding:0.65rem 1rem; border:none; border-radius:10px;
+ background:var(--learn-blue); color:#fff; font-weight:600; font-size:0.88rem; cursor:pointer;
+ font-family:var(--font-body);
+}
+.saas-onboard-actions .btn-onboard-ghost {
+ padding:0.65rem 0.9rem; border:1px solid var(--learn-border); border-radius:10px;
+ background:#fff; color:var(--learn-muted); font-size:0.82rem; cursor:pointer; font-family:var(--font-body);
+}
+.back-btn {
+ background:var(--learn-blue); color:#fff; border:none;
+ padding:0.4rem 0.9rem; border-radius:7px; font-size:0.82rem; font-weight:500;
+ cursor:pointer; font-family:var(--font-body); transition:all 0.2s;
+}
+.back-btn:hover { background:#1e40af; }
+
+/* Platform Layout */
+.plat-body { display:flex; min-height:calc(100vh - 55px); }
+
+/* Sidebar */
+.plat-sidebar {
+ width:270px; flex-shrink:0; background:#fff;
+ border-right:1px solid var(--learn-border);
+ position:sticky; top:55px; height:calc(100vh - 55px);
+ display:flex; flex-direction:column; overflow:hidden;
+}
+.plat-sidebar-nav { flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.plat-sidebar-whatsapp {
+ display:flex; align-items:center; gap:0.55rem;
+ margin-top:auto; flex-shrink:0;
+ padding:0.9rem 1rem;
+ border-top:1px solid rgba(26,158,74,0.2);
+ background:linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+ color:#166534; text-decoration:none; font-size:0.8rem; font-weight:600;
+ line-height:1.4; font-family:var(--font-body);
+ transition:background 0.2s, color 0.2s;
+}
+.plat-sidebar-whatsapp:hover {
+ background:#dcfce7; color:#14532d;
+}
+.plat-sidebar-whatsapp svg {
+ width:22px; height:22px; flex-shrink:0; fill:#25d366;
+}
+.sidebar-section { padding:1rem; border-bottom:1px solid var(--learn-border); }
+.sidebar-section-title { font-size:0.7rem; font-weight:600; letter-spacing:1.5px; color:var(--learn-muted); text-transform:uppercase; margin-bottom:0.6rem; padding:0 0.3rem; }
+.sidebar-item {
+ display:flex; align-items:center; gap:0.7rem;
+ padding:0.5rem 0.8rem; border-radius:8px; cursor:pointer;
+ font-size:0.87rem; color:var(--learn-muted); transition:all 0.15s;
+}
+.sidebar-item:hover { background:var(--learn-blue-light); color:var(--learn-blue); }
+.sidebar-item.active { background:var(--learn-blue-light); color:var(--learn-blue); font-weight:600; }
+.sidebar-item.done { color:#059669; }
+.sidebar-item.done .step-num { background:#d1fae5; color:#059669; }
+.step-num { width:22px; height:22px; border-radius:50%; background:var(--learn-border); display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; flex-shrink:0; }
+.sidebar-item.active .step-num { background:var(--learn-blue); color:#fff; }
+.progress-bar-container { padding:1rem; }
+.progress-bar-track { background:var(--learn-border); border-radius:99px; height:6px; margin-top:0.4rem; }
+.progress-bar-fill { background:var(--learn-blue); height:6px; border-radius:99px; transition:width 0.5s; }
+.progress-label { font-size:0.75rem; color:var(--learn-muted); display:flex; justify-content:space-between; }
+
+/* Main Content */
+.plat-main {
+ flex:1; padding:2rem 2.5rem; max-width:900px;
+ overflow-y:auto; -webkit-overflow-scrolling:touch;
+ height:calc(100vh - 55px);
+ scroll-behavior:auto;
+ position:relative; z-index:1;
+}
+#platform { position:relative; }
+.step-header { margin-bottom:2rem; }
+.step-phase { font-size:0.75rem; letter-spacing:2px; color:var(--learn-accent); text-transform:uppercase; font-weight:600; margin-bottom:0.5rem; }
+.step-title { font-family:var(--font-display); font-size:2rem; font-weight:700; color:var(--learn-text); line-height:1.2; margin-bottom:0.6rem; }
+.step-subtitle { color:var(--learn-muted); font-size:1rem; line-height:1.7; }
+.guide-steps { margin: 0.75rem 0 0 1.2rem; padding: 0; color: var(--learn-text); line-height: 1.75; font-size: 0.92rem; }
+.guide-steps li { margin-bottom: 0.55rem; }
+.guide-steps strong { color: var(--learn-text); }
+.ai-tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.ai-tool-card { padding: 1rem; border-radius: 12px; border: 1px solid var(--learn-border); background: var(--learn-bg); }
+.ai-tool-card h4 { font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--learn-text); }
+.ai-tool-card p { font-size: 0.8rem; color: var(--learn-muted); line-height: 1.5; margin: 0; }
+.ai-tool-card .tool-tag { display: inline-block; margin-top: 0.5rem; font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--learn-blue); }
+
+/* Content Cards */
+#platform .content-card {
+ margin-bottom: 1.2rem;
+ background: var(--learn-card);
+ border: 1px solid var(--learn-border);
+ border-radius: 14px;
+ padding: 1.5rem;
+}
+.content-card-title { font-weight:600; font-size:0.95rem; color:var(--learn-text); margin-bottom:0.8rem; display:flex; align-items:center; gap:0.5rem; }
+.content-tag { font-size:0.7rem; background:var(--learn-blue-light); color:var(--learn-blue); padding:0.15rem 0.5rem; border-radius:5px; font-weight:600; }
+.content-tag.security { background:#fef3c7; color:#92400e; }
+.content-tag.speed { background:#d1fae5; color:#065f46; }
+.content-tag.deploy { background:#f3e8ff; color:#6b21a8; }
+
+/* Prompt Box */
+.prompt-box {
+ background: var(--learn-blue-light);
+ border: 1px solid var(--learn-border);
+ border-radius: 12px;
+ padding: 1rem 1.2rem;
+ margin: 0.8rem 0;
+ position: relative;
+}
+.prompt-label {
+ font-size: 0.7rem;
+ font-weight: 600;
+ letter-spacing: 1px;
+ color: var(--learn-blue);
+ text-transform: uppercase;
+ margin-bottom: 0.5rem;
+}
+.prompt-text { font-family:var(--font-display); font-size:0.82rem; color:var(--learn-text); line-height:1.7; white-space:pre-wrap; }
+.prompt-saas-name { color:var(--learn-blue); font-weight:600; font-style:italic; }
+.copy-btn {
+ position:absolute; top:0.7rem; right:0.7rem;
+ background:var(--learn-blue-light); border:none; color:var(--learn-blue);
+ padding:0.25rem 0.6rem; border-radius:6px; font-size:0.72rem; font-weight:600;
+ cursor:pointer; font-family:var(--font-body); transition:all 0.15s;
+}
+.copy-btn:hover { background:rgba(29,78,216,0.15); }
+.copy-btn.copied { background:#d1fae5; color:#059669; }
+
+/* Info boxes */
+.info-box { border-radius:10px; padding:1rem 1.2rem; margin:0.8rem 0; font-size:0.88rem; line-height:1.7; }
+.info-box.warning { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+.info-box.success { background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; }
+.info-box.info { background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; }
+.info-box.danger { background:#fff1f2; border:1px solid #fecdd3; color:#9f1239; }
+.info-box strong { font-weight:600; }
+
+/* Code snippet */
+.code-snippet {
+ background:#0f172a; border-radius:10px; padding:1.2rem 1.4rem;
+ font-family:var(--font-display); font-size:0.82rem; line-height:1.8;
+ color:#e2e8f0; margin:0.8rem 0; overflow-x:auto; position:relative;
+}
+.code-snippet .kw { color:#818cf8; }
+.code-snippet .str { color:#86efac; }
+.code-snippet .cm { color:#64748b; font-style:italic; }
+.code-snippet .fn { color:#7dd3fc; }
+.code-snippet .var { color:#fbbf24; }
+
+/* Step Navigation */
+.step-nav {
+ display:flex; gap:1rem; margin-top:2.5rem; padding-top:1.5rem; padding-bottom:0.5rem;
+ border-top:1px solid var(--learn-border);
+ position:relative; z-index:10;
+}
+.btn-prev {
+ background:transparent; border:1px solid var(--learn-border); color:var(--learn-muted);
+ padding:0.7rem 1.5rem; border-radius:9px; font-size:0.9rem; font-weight:500; cursor:pointer;
+ font-family:var(--font-body); transition:all 0.2s; position:relative; z-index:2;
+}
+.btn-prev:hover { border-color:var(--learn-blue); color:var(--learn-blue); }
+.btn-next {
+ background:var(--learn-blue); color:#fff; border:none; padding:0.7rem 1.8rem; border-radius:9px;
+ font-size:0.9rem; font-weight:600; cursor:pointer; font-family:var(--font-body); transition:all 0.2s;
+ position:relative; z-index:2; flex-shrink:0;
+}
+.btn-next:hover { background:#1e40af; }
+.btn-next:active, .btn-prev:active { transform:scale(0.98); }
+.btn-complete { background:#059669; color:#fff; border:none; padding:0.7rem 1.8rem; border-radius:9px; font-size:0.9rem; font-weight:600; cursor:pointer; font-family:var(--font-body); }
+
+/* Tech stack pills */
+.tech-pills { display:flex; flex-wrap:wrap; gap:0.5rem; margin:1rem 0; }
+.tech-pill { background:var(--learn-blue-light); color:var(--learn-blue); font-size:0.8rem; font-weight:600; padding:0.3rem 0.8rem; border-radius:99px; border:1px solid rgba(29,78,216,0.15); }
+.tech-pill.optional { background:#f3e8ff; color:#6b21a8; border-color:rgba(107,33,168,0.15); }
+
+/* Checklist */
+.checklist { display:flex; flex-direction:column; gap:0.5rem; margin:0.8rem 0; }
+.check-item { display:flex; align-items:flex-start; gap:0.8rem; font-size:0.88rem; color:var(--learn-muted); cursor:pointer; padding:0.4rem; border-radius:7px; transition:background 0.15s; }
+.check-item:hover { background:var(--learn-blue-light); }
+.check-item input[type=checkbox] { margin-top:2px; accent-color:var(--learn-blue); width:15px; height:15px; flex-shrink:0; }
+.check-item.checked { color:#059669; text-decoration:line-through; }
+
+/* Selector buttons */
+.option-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem; margin:1rem 0; }
+.option-btn {
+ border: 2px solid var(--learn-border);
+ background: #fff;
+ border-radius: 12px;
+ padding: 1rem;
+ text-align: center;
+ cursor: pointer;
+ font-family: var(--font-body);
+ position: relative;
+ overflow: hidden;
+}
+.option-btn.selected {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: 0 0 20px rgba(20, 45, 85, 0.2), 0 0 12px rgba(12, 28, 58, 0.15);
+}
+.option-btn.selected::before {
+ content: '';
+ position: absolute;
+ inset: 0;
+ border-radius: inherit;
+ padding: 2px;
+ background: linear-gradient(120deg, var(--neon-cyan), var(--neon-blue));
+ -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+ -webkit-mask-composite: xor;
+ mask-composite: exclude;
+ pointer-events: none;
+}
+.option-icon { display: none; }
+.option-name { font-weight:600; font-size:0.9rem; color:var(--learn-text); }
+.option-desc { font-size:0.75rem; color:var(--learn-muted); margin-top:2px; }
+
+/* ─── FOOTER (Landing) ───────────────────────── */
+footer {
+ border-top:1px solid rgba(12,28,58,0.15);
+ padding:3rem 2rem; text-align:center; background:#000000;
+}
+footer p { color:var(--muted); font-size:0.85rem; }
+footer strong { color:var(--white); }
+.footer-doubt {
+ max-width: 520px;
+ margin: 0 auto 1.75rem;
+ padding: 1.35rem 1.5rem;
+ border-radius: 16px;
+ background: rgba(4, 8, 18, 0.9);
+ border: 1px solid rgba(30, 55, 95, 0.45);
+}
+.footer-doubt p {
+ color: var(--muted);
+ font-size: 0.92rem;
+ line-height: 1.55;
+ margin-bottom: 1rem;
+}
+.footer-doubt strong { color: var(--white); }
+.footer-whatsapp {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 0.55rem;
+ padding: 0.75rem 1.35rem;
+ border-radius: 999px;
+ background: #1a9e4a;
+ color: #fff;
+ font-family: var(--font-body);
+ font-size: 0.9rem;
+ font-weight: 600;
+ text-decoration: none;
+ transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+ box-shadow: 0 4px 20px rgba(26, 158, 74, 0.35);
+}
+.footer-whatsapp:hover {
+ background: #22b356;
+ transform: translateY(-2px);
+ box-shadow: 0 6px 28px rgba(26, 158, 74, 0.45);
+ color: #fff;
+}
+.footer-whatsapp svg {
+ width: 20px;
+ height: 20px;
+ flex-shrink: 0;
+ fill: currentColor;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+html { overflow-x: hidden; }
+body.nav-open { overflow: hidden; }
+img, svg, video { max-width: 100%; height: auto; }
+
+/* Tablet */
+@media (max-width: 1024px) {
+ #pain, #preview, #pricing, #path, #about { padding-left: 1.5rem; padding-right: 1.5rem; }
+ .steps-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+ .steps-grid::before { display: none; }
+ .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+ .about-photo { max-width: 280px; margin: 0 auto; }
+ .about-content .section-label,
+ .about-content .section-title { text-align: center; }
+ .about-lead { text-align: center; }
+ .about-highlights { grid-template-columns: 1fr; }
+ .preview-grid { gap: 2.5rem; }
+ .plat-main { padding: 1.5rem 1.25rem; }
+ .option-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobile landscape / tablet portrait */
+@media (max-width: 900px) {
+ nav { padding: 0.75rem 1rem; gap: 0.75rem; }
+ .nav-menu-btn { display: flex; }
+ .nav-overlay { display: block; }
+ .nav-cta { display: none; }
+ .nav-links {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(300px, 88vw);
+  height: 100dvh;
+  height: 100vh;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 5rem 1.25rem 2rem;
+  background: rgba(4, 6, 12, 0.98);
+  border-left: 1px solid rgba(30, 55, 95, 0.5);
+  z-index: 160;
+  transform: translateX(100%);
+  transition: transform 0.32s ease;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.5);
+ }
+ .nav-links.open { transform: translateX(0); }
+ .nav-links a {
+  padding: 1rem 0;
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(30, 55, 95, 0.35);
+ }
+ .nav-links-cta {
+  display: block !important;
+  margin-top: 1rem;
+  text-align: center;
+  background: var(--blue);
+  color: #fff !important;
+  border-radius: 10px;
+  border: none !important;
+  padding: 0.9rem 1rem !important;
+ }
+ .nav-links-cta:hover { color: #fff !important; }
+ .preview-grid { grid-template-columns: 1fr; }
+ .pricing-cards { grid-template-columns: 1fr; }
+ .plat-nav { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+ .plat-logo { padding: 0.75rem 1rem; font-size: 1rem; flex-shrink: 0; }
+ .plat-actions { padding: 0.5rem 0.75rem; flex-shrink: 0; }
+ .saas-name-input { width: 110px; font-size: 0.75rem; }
+ .plat-body { flex-direction: column; }
+ .plat-main { height: auto; min-height: 0; overflow-y: visible; }
+ .plat-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  position: relative;
+  top: 0;
+  border-right: none;
+  border-bottom: 1px solid var(--learn-border);
+  flex-shrink: 0;
+  overflow: hidden;
+ }
+ .plat-sidebar-nav { max-height: 200px; }
+ .plat-sidebar-whatsapp { font-size: 0.75rem; padding: 0.75rem; }
+}
+
+@media (max-width: 768px) {
+ #hero {
+  padding: 6.5rem 1rem 3rem;
+  min-height: auto;
+ }
+ h1 { font-size: clamp(2rem, 9vw, 2.8rem); letter-spacing: -1px; }
+ .hero-sub { font-size: 1rem; padding: 0 0.25rem; }
+ .hero-actions {
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  margin-left: auto;
+  margin-right: auto;
+ }
+ .hero-actions .btn-primary,
+ .hero-actions .btn-ghost {
+  width: 100%;
+  min-height: 48px;
+ }
+ .hero-stats {
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+ }
+ .stat { width: 100%; }
+ .section-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+ .pain-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+ #pain, #preview, #pricing, #path, #about { padding: 4rem 1rem; }
+ .about-badges { justify-content: center; }
+ .pricing-toggle { flex-wrap: wrap; }
+ .price-amount { font-size: 2.2rem; }
+ .demo-stage { min-height: 280px; }
+ .preview-mockup { margin: 0 auto; max-width: 100%; }
+ .plat-main { padding: 1.25rem 1rem; max-width: none; }
+ .step-title { font-size: 1.45rem; }
+ .step-subtitle { font-size: 0.92rem; }
+ #platform .content-card { padding: 1.1rem; }
+ .prompt-box { padding: 0.85rem 1rem; padding-top: 2.2rem; }
+ .copy-btn { top: 0.5rem; right: 0.5rem; }
+ .code-snippet { padding: 1rem; font-size: 0.75rem; }
+ .step-nav {
+  flex-direction: column;
+  gap: 0.65rem;
+ }
+ .step-nav button { width: 100%; min-height: 48px; }
+ .option-grid { grid-template-columns: 1fr; }
+ .tech-pills { gap: 0.4rem; }
+ footer { padding: 2rem 1rem; }
+}
+
+@media (max-width: 480px) {
+ nav { padding: 0.65rem 0.75rem; }
+ .nav-logo { font-size: 1.1rem; }
+ .hero-badge { font-size: 0.72rem; padding: 0.35rem 0.75rem; }
+ .dot-card-frame--lg > .price-card { padding: 1.5rem 1.1rem; }
+ .plat-tab { padding: 0.75rem 0.9rem; font-size: 0.78rem; }
+ .plat-actions { gap: 0.5rem; }
+ .saas-name-input { width: 90px; }
+ .back-btn { padding: 0.35rem 0.65rem; font-size: 0.75rem; }
+ .sidebar-item { font-size: 0.8rem; padding: 0.45rem 0.65rem; }
+ .demo-stats { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* GSAP initial state */
+.gs-hidden { opacity: 0; visibility: hidden; }
+@media (prefers-reduced-motion: reduce) {
+ .gs-hidden { opacity: 1; visibility: visible; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- LANDING PAGE (DARK) -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="landing">
+
+<nav>
+ <div class="nav-logo">SaaS<span>Lab</span></div>
+ <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Abrir menu" aria-expanded="false">
+ <span></span><span></span><span></span>
+ </button>
+ <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+ <div class="nav-links" id="nav-links">
+ <a href="#path">Passo a passo</a>
+ <a href="#about">Quem ensina</a>
+ <a href="#pain">Por que aprender?</a>
+ <a href="#preview">O que você cria</a>
+ <a href="#pricing">Planos</a>
+ <a href="#" class="nav-links-cta" onclick="enterPlatform(); return false;">Começar agora →</a>
+ </div>
+ <button class="nav-cta" onclick="enterPlatform()">Começar agora →</button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+ <div class="hero-grid"></div>
+ <div class="hero-glow"></div>
+ <div class="hero-float-icons" aria-hidden="true">
+ <div class="hero-float-icon hero-float-icon--ide">
+ <div class="hero-float-icon-inner">
+ <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" aria-hidden="true">
+ <rect x="3" y="4" width="18" height="14" rx="2"/>
+ <path d="M8 9l2.5 2.5L8 14M13 14h3"/>
+ </svg>
+ <span class="hero-float-label">IDE</span>
+ </div>
+ </div>
+ <div class="hero-float-icon hero-float-icon--db">
+ <div class="hero-float-icon-inner">
+ <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" aria-hidden="true">
+ <ellipse cx="12" cy="6" rx="7" ry="2.5"/>
+ <path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/>
+ <path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>
+ </svg>
+ <span class="hero-float-label">Banco</span>
+ </div>
+ </div>
+ <div class="hero-float-icon hero-float-icon--deploy">
+ <div class="hero-float-icon-inner">
+ <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" fill="none" aria-hidden="true">
+ <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+ <path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/>
+ <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+ </svg>
+ <span class="hero-float-label">Deploy</span>
+ </div>
+ </div>
+ </div>
+ <div class="hero-badge"><div class="badge-dot"></div>Do zero ao deploy em produção</div>
+ <h1>Construa seu <span class="highlight">SaaS do zero</span> sem enrolação</h1>
+ <p class="hero-sub">Mesmo sem saber programar, você monta um SaaS completo em poucas horas. Uma IA constrói com você enquanto o passo a passo coloca login, pagamentos e deploy no ar, pronto para cobrar clientes de verdade.</p>
+ <div class="hero-actions">
+ <button class="btn-primary" onclick="enterPlatform()">Acessar plataforma gratuita →</button>
+ <button class="btn-ghost" onclick="document.getElementById('preview').scrollIntoView({behavior:'smooth'})">Ver o que você vai criar</button>
+ </div>
+ <div class="hero-stats">
+ <div class="stat"><div class="stat-n">11</div><div class="stat-l">passos no laboratório</div></div>
+ <div class="stat"><div class="stat-n">0<span>→</span></div><div class="stat-l">zero ao deploy</div></div>
+ <div class="stat"><div class="stat-n">100<span>+</span></div><div class="stat-l">prompts prontos</div></div>
+ </div>
+</section>
+<!-- PASSO A PASSO -->
+<section id="path">
+ <div class="section-label">Como funciona</div>
+ <div class="section-title">Do zero ao deploy em alguns passos</div>
+ <p class="path-intro">
+ Sou <strong>desenvolvedor</strong> e montei este caminho para quem <strong>não sabe programar</strong>.
+ No laboratório você começa do absoluto zero: instalar o PC, escolher IA (Cursor, Claude Code, Antigravity…), criar GitHub e só então montar o SaaS com prompts prontos.
+ </p>
+ <div class="steps-grid">
+ <article class="step-card">
+ <div class="step-card-num">1</div>
+ <h3 class="step-card-title">Base do produto com IA</h3>
+ <p class="step-card-text">Definimos stack, estrutura e telas. Você aprende o que está acontecendo enquanto a IA acelera o código na IDE, sem pular etapas importantes.</p>
+ <div class="step-card-tags">
+ <span class="step-tag">IDE</span>
+ <span class="step-tag">Prompts</span>
+ <span class="step-tag">Estrutura</span>
+ </div>
+ </article>
+ <article class="step-card">
+ <div class="step-card-num">2</div>
+ <h3 class="step-card-title">Banco, login e pagamentos</h3>
+ <p class="step-card-text">Montamos autenticação, banco de dados e Stripe com planos reais. Segurança e webhooks explicados de forma simples, do jeito que SaaS de verdade exige.</p>
+ <div class="step-card-tags">
+ <span class="step-tag">Auth</span>
+ <span class="step-tag">Postgres</span>
+ <span class="step-tag">Stripe</span>
+ </div>
+ </article>
+ <article class="step-card">
+ <div class="step-card-num">3</div>
+ <h3 class="step-card-title">Deploy em produção</h3>
+ <p class="step-card-text">Publicamos na Vercel ou VPS com domínio, SSL e pipeline. Seu produto fica online e pronto para receber os primeiros clientes pagantes.</p>
+ <div class="step-card-tags">
+ <span class="step-tag">Vercel</span>
+ <span class="step-tag">CI/CD</span>
+ <span class="step-tag">Produção</span>
+ </div>
+ </article>
+ </div>
+ <div class="path-cta">
+ <button class="btn-primary" onclick="enterPlatform()">Começar o passo 1 agora →</button>
+ </div>
+</section>
+
+<!-- SOBRE O INSTRUTOR -->
+<section id="about">
+ <div class="about-stage">
+ <svg id="about-energy-svg" class="about-energy-svg" aria-hidden="true"></svg>
+ <div class="about-grid">
+ <div class="about-photo" id="about-photo-card">
+ <div class="about-photo-media">
+ <img src="assets/alessandro.png" alt="Alessandro Silva Cardoso, desenvolvedor" width="560" height="420" loading="lazy" decoding="async">
+</div>
+ <div class="about-photo-caption">
+ <div class="about-name">Alessandro Silva Cardoso</div>
+ <div class="about-age">21 anos · Desenvolvedor</div>
+ </div>
+ </div>
+ <div class="about-content">
+ <div class="section-label">Quem vai te guiar</div>
+ <h2 class="section-title">Quem está do seu lado<br>nesta jornada</h2>
+ <p class="about-lead">
+ <strong>Alessandro Silva Cardoso</strong>, 21 anos, atua como desenvolvedor há 2 anos com
+ <strong>certificações</strong>, <strong>vários SaaS já em produção</strong> e uma base técnica sólida
+ em produto, backend e deploy. Ele não repete tutorial genérico: ensina o caminho que usa no dia a dia para lançar software que paga conta.
+ </p>
+ <div class="about-highlights">
+ <div class="about-highlight" data-energy="0">
+ <span class="about-highlight-icon">2+</span>
+ <div><strong>Anos como dev</strong>Experiência prática construindo e mantendo aplicações reais, não só teoria de curso.</div>
+ </div>
+ <div class="about-highlight" data-energy="1">
+ <span class="about-highlight-icon">✓</span>
+ <div><strong>Certificações</strong>Formação validada que reforça segurança, boas práticas e arquitetura de software.</div>
+ </div>
+ <div class="about-highlight" data-energy="2">
+ <span class="about-highlight-icon">↑</span>
+ <div><strong>SaaS em produção</strong>Diversos produtos no ar, com usuários, cobrança e infraestrutura de verdade.</div>
+ </div>
+ <div class="about-highlight" data-energy="3">
+ <span class="about-highlight-icon">◎</span>
+ <div><strong>Base sólida</strong>Do frontend ao deploy: você aprende com quem já passou por erro, retrabalho e escala.</div>
+ </div>
+ </div>
+ <div class="about-badges">
+ <span class="about-badge">Next.js & React</span>
+ <span class="about-badge">Node & APIs</span>
+ <span class="about-badge">Stripe & SaaS</span>
+ <span class="about-badge">Vercel & VPS</span>
+ <span class="about-badge">IA no fluxo de dev</span>
+ </div>
+ </div>
+ </div>
+ </div>
+</section>
+
+
+<!-- PAIN POINTS -->
+<section id="pain">
+ <div class="section-label">O problema</div>
+ <div class="section-title">Você sabe que quer criar um SaaS,<br>mas não sabe por onde começar</div>
+ <div class="pain-grid">
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-1" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-1)"/></svg><div class="pain-card">
+<div class="pain-title">Excesso de tutoriais desconexos</div>
+ <div class="pain-text">Você assiste horas de vídeo mas na hora de juntar tudo, trava. Não existe um caminho claro do início ao fim.</div>
+ </div></div>
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-2" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-2)"/></svg><div class="pain-card">
+<div class="pain-title">Segurança ignorada nos cursos</div>
+ <div class="pain-text">A maioria dos tutoriais não mostra como proteger autenticação, dados, APIs e pagamentos. Você lança vulnerável sem saber.</div>
+ </div></div>
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-3" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-3)"/></svg><div class="pain-card">
+<div class="pain-title">Deploy vira um pesadelo</div>
+ <div class="pain-text">Vercel, VPS, Docker, CI/CD… cada passo no deploy parece um labirinto novo sem mapa.</div>
+ </div></div>
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-4" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-4)"/></svg><div class="pain-card">
+<div class="pain-title">Pagamentos sempre prontos para quebrar</div>
+ <div class="pain-text">Integrar Stripe, webhooks, planos e trials sem experiência é arriscado — um erro pode custar caro.</div>
+ </div></div>
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-5" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-5)"/></svg><div class="pain-card">
+<div class="pain-title">Performance ignorada no início</div>
+ <div class="pain-text">Você lança o produto, começa a crescer, e ele cai. Não foi ensinado como otimizar banco de dados, cache e queries.</div>
+ </div></div>
+ <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-6" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-6)"/></svg><div class="pain-card">
+<div class="pain-title">Prompts de IA que não funcionam</div>
+ <div class="pain-text">Você tenta usar IA para ajudar no desenvolvimento mas os prompts genéricos não geram código usável de verdade.</div>
+ </div></div>
+ </div>
+</section>
+
+<!-- WHAT YOU BUILD -->
+<section id="preview">
+ <div class="preview-inner">
+ <div class="section-label">O que você vai criar</div>
+ <div class="section-title">Um SaaS completo, pronto para<br>cobrar de clientes reais</div>
+ <div class="preview-grid">
+ <div class="preview-features">
+ <div class="feat-item"><div>
+ <div class="feat-title">Autenticação completa</div>
+ <div class="feat-desc">Login, registro, OAuth, 2FA, reset de senha, sessões seguras com JWT + refresh tokens.</div>
+ </div>
+ </div>
+ <div class="feat-item"><div>
+ <div class="feat-title">Pagamentos com Stripe</div>
+ <div class="feat-desc">Planos mensais e anuais, trial, cancelamento, portais de cliente, webhooks validados.</div>
+ </div>
+ </div>
+ <div class="feat-item"><div>
+ <div class="feat-title">Banco de dados escalável</div>
+ <div class="feat-desc">Supabase (Postgres) ou Firebase com RLS, indexes otimizados e queries eficientes.</div>
+ </div>
+ </div>
+ <div class="feat-item"><div>
+ <div class="feat-title">Deploy automatizado</div>
+ <div class="feat-desc">Vercel com domínio, CI/CD no GitHub Actions, ou VPS com Docker e Nginx configurados.</div>
+ </div>
+ </div>
+ <div class="feat-item"><div>
+ <div class="feat-title">Performance & monitoramento</div>
+ <div class="feat-desc">Cache com Redis, rate limiting, lazy loading, alertas de erro e dashboards de métricas.</div>
+ </div>
+ </div>
+ </div>
+ <div class="preview-mockup demo-player" id="demo-player">
+ <div class="mockup-bar">
+ <div class="mockup-dot" style="background:#ff5f57"></div>
+ <div class="mockup-dot" style="background:#febc2e"></div>
+ <div class="mockup-dot" style="background:#28c840"></div>
+ <div class="mockup-url" id="mockup-url-display">meu-saas.vercel.app/dashboard</div>
+ </div>
+ <div class="demo-stage" id="demo-stage">
+ <div class="demo-cursor" id="demo-cursor" aria-hidden="true"></div>
+ <div class="demo-click-ring" id="demo-click-ring" aria-hidden="true"></div>
+ <div class="demo-toast" id="demo-toast" aria-live="polite"></div>
+
+ <div class="demo-scene demo-scene--active" data-scene="0">
+ <div class="mock-header">
+ <div class="mock-title" id="mockup-title-display">Dashboard</div>
+ <div class="mock-badge">LIVE ●</div>
+ </div>
+ <div class="demo-stats">
+ <div class="demo-stat" id="demo-stat-mrr">
+ <div class="demo-stat-n" id="demo-mrr">R$ 3.8k</div>
+ <div class="demo-stat-l">MRR este mês</div>
+ </div>
+ <div class="demo-stat" id="demo-stat-users">
+ <div class="demo-stat-n" id="demo-users">118</div>
+ <div class="demo-stat-l">Usuários ativos</div>
+ </div>
+ <div class="demo-stat">
+ <div class="demo-stat-n">97%</div>
+ <div class="demo-stat-l">Uptime</div>
+ </div>
+ <div class="demo-stat">
+ <div class="demo-stat-n">12ms</div>
+ <div class="demo-stat-l">Latência</div>
+ </div>
+ </div>
+ <div class="demo-chart" id="demo-chart">
+ <div class="demo-bar" data-h="35"></div>
+ <div class="demo-bar" data-h="48"></div>
+ <div class="demo-bar" data-h="42"></div>
+ <div class="demo-bar" data-h="58"></div>
+ <div class="demo-bar" data-h="52"></div>
+ <div class="demo-bar" data-h="72"></div>
+ <div class="demo-bar" data-h="88"></div>
+ </div>
+ </div>
+
+ <div class="demo-scene" data-scene="1">
+ <div class="demo-label">Deploy</div>
+ <div class="demo-deploy-title">GitHub Actions → Vercel</div>
+ <div class="demo-terminal" id="demo-terminal">
+ <div class="demo-term-line">$ git push origin main</div>
+ <div class="demo-term-line demo-term-line--accent">→ Building production...</div>
+ <div class="demo-term-line">✓ Lint & typecheck passed</div>
+ <div class="demo-term-line">✓ Tests 24/24 passed</div>
+ <div class="demo-term-line demo-term-line--ok">✓ Deployed to meu-saas.vercel.app</div>
+ <div class="demo-term-line demo-term-line--ok">✓ SSL certificate active</div>
+ <span class="demo-term-cursor" id="demo-term-cursor"></span>
+ </div>
+ </div>
+
+ <div class="demo-scene" data-scene="2">
+ <div class="demo-label">Stripe</div>
+ <div class="demo-checkout">
+ <div class="demo-checkout-card" id="demo-checkout-card">
+ <div class="demo-checkout-icon" id="demo-checkout-icon">✓</div>
+ <div class="demo-checkout-title">Pagamento confirmado</div>
+ <div class="demo-checkout-sub">Plano Pro · assinatura mensal</div>
+ <div class="demo-checkout-amount" id="demo-checkout-amount">R$ 50,00</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ <div class="demo-progress" aria-hidden="true">
+ <span class="demo-progress-dot demo-progress-dot--active" data-scene-dot="0"></span>
+ <span class="demo-progress-dot" data-scene-dot="1"></span>
+ <span class="demo-progress-dot" data-scene-dot="2"></span>
+ </div>
+ </div>
+ </div>
+ </div>
+</section>
+
+
+
+<!-- PRICING -->
+<section id="pricing">
+ <div class="section-label">Investimento</div>
+ <div class="section-title">Escolha seu plano</div>
+ <div class="pricing-toggle">
+ <span class="toggle-label">Mensal</span>
+ <div class="toggle-switch" id="billing-toggle" onclick="toggleBilling()">
+ <div class="toggle-thumb"></div>
+ </div>
+ <span class="toggle-label">Anual</span>
+ <span class="save-badge" id="save-badge" style="display:none">Economize 40%</span>
+ </div>
+ <div class="pricing-cards">
+ <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-11" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-11)"/></svg><div class="price-card">
+ <div class="price-name">Starter</div>
+ <div class="price-amount"><sub>R$</sub> <span id="price1">40</span><span class="period">/mês</span></div>
+ <div class="price-desc">Para quem quer aprender no próprio ritmo com acesso completo ao conteúdo.</div>
+ <div class="price-feats">
+ <div class="price-feat">Todos os 12 módulos</div>
+ <div class="price-feat">100+ prompts prontos</div>
+ <div class="price-feat">Templates de código</div>
+ <div class="price-feat">Comunidade no Discord</div>
+ <div class="price-feat">Atualizações por 1 ano</div>
+ </div>
+ <button class="btn-price-ghost" onclick="enterPlatform()">Começar agora</button>
+</div></div>
+ <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-12" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-12)"/></svg><div class="price-card featured">
+ <div class="popular-tag">Mais popular</div>
+ <div class="price-name">Pro</div>
+ <div class="price-amount"><sub>R$</sub> <span id="price2">50</span><span class="period">/mês</span></div>
+ <div class="price-desc">Para quem quer lançar rápido com suporte e revisão de código.</div>
+ <div class="price-feats">
+ <div class="price-feat">Tudo do Starter</div>
+ <div class="price-feat">Revisão de código 1x/semana</div>
+ <div class="price-feat">Mentoria em grupo mensal</div>
+ <div class="price-feat">Acesso vitalício ao conteúdo</div>
+ <div class="price-feat">Templates premium exclusivos</div>
+ <div class="price-feat">Certificado de conclusão</div>
+ </div>
+ <button class="btn-price-primary" onclick="enterPlatform()">Começar agora →</button>
+</div></div>
+ </div>
+</section>
+
+<footer>
+ <div class="footer-doubt">
+ <p><strong>Ficou com alguma dúvida?</strong> Fala comigo no WhatsApp — respondo pessoalmente para você ficar tranquilo antes de começar.</p>
+ <a class="footer-whatsapp" href="https://wa.me/5511952025568?text=Ol%C3%A1!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20SaaS%20Academy." target="_blank" rel="noopener noreferrer">
+ <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.882 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+ Chamar no WhatsApp
+ </a>
+ </div>
+ <p>Feito com amor para fundadores técnicos | <strong>SaaS Academy</strong> &copy; 2025</p>
+ <p style="margin-top:0.5rem;font-size:0.78rem">Ao acessar a plataforma você concorda com nossos termos de uso</p>
+</footer>
+
+</div><!-- /landing -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PLATAFORMA DE APRENDIZADO (LIGHT) -->
+<!-- ═══════════════════════════════════════════ -->
+<div id="platform">
+
+<nav class="plat-nav">
+ <div class="plat-logo">SaaS<span>Lab</span></div>
+ <div class="plat-tabs" id="plat-tabs">
+ <button class="plat-tab active" onclick="gotoStep(0)">Começo</button>
+ <button class="plat-tab" onclick="gotoStep(1)">PC</button>
+ <button class="plat-tab" onclick="gotoStep(2)">IA</button>
+ <button class="plat-tab" onclick="gotoStep(3)">GitHub</button>
+ <button class="plat-tab" onclick="gotoStep(4)">Setup</button>
+ <button class="plat-tab" onclick="gotoStep(5)">Auth</button>
+ <button class="plat-tab" onclick="gotoStep(6)">Banco</button>
+ <button class="plat-tab" onclick="gotoStep(7)">Pagamentos</button>
+ <button class="plat-tab" onclick="gotoStep(8)">Segurança</button>
+ <button class="plat-tab" onclick="gotoStep(9)">Performance</button>
+ <button class="plat-tab" onclick="gotoStep(10)">Deploy</button>
+ </div>
+ <div class="plat-actions">
+ <div class="saas-profile-wrap" id="saas-name-wrap">
+ <input class="saas-name-input" id="saas-name" type="text" placeholder="Nome do SaaS" value="MeuSaaS" oninput="updateSaasProfile()" aria-label="Nome do seu SaaS">
+ <button type="button" class="saas-edit-btn" id="saas-edit-btn" onclick="openSaasOnboarding(true)" title="Editar nome e visão do SaaS" aria-label="Editar perfil do SaaS">✎</button>
+ </div>
+ <button class="back-btn" onclick="exitPlatform()">← Voltar</button>
+ </div>
+</nav>
+
+<div class="plat-body">
+ <div class="plat-sidebar">
+ <div class="progress-bar-container">
+ <div class="progress-label"><span>Progresso</span><span id="progress-pct">0%</span></div>
+ <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+ </div>
+ <div class="plat-sidebar-nav">
+  <div class="sidebar-section">
+ <div class="sidebar-section-title">Fase 0 — Do zero</div>
+ <div class="sidebar-item active" onclick="gotoStep(0)"><div class="step-num" id="sn0">1</div>Bem-vindo</div>
+ <div class="sidebar-item" onclick="gotoStep(1)"><div class="step-num" id="sn1">2</div>Preparar o PC</div>
+ <div class="sidebar-item" onclick="gotoStep(2)"><div class="step-num" id="sn2">3</div>Programar com IA</div>
+ <div class="sidebar-item" onclick="gotoStep(3)"><div class="step-num" id="sn3">4</div>GitHub do zero</div>
+ </div>
+ <div class="sidebar-section">
+ <div class="sidebar-section-title">Fase 1 — Fundação</div>
+ <div class="sidebar-item" onclick="gotoStep(4)"><div class="step-num" id="sn4">5</div>Setup do Projeto</div>
+ <div class="sidebar-item" onclick="gotoStep(5)"><div class="step-num" id="sn5">6</div>Autenticação</div>
+ <div class="sidebar-item" onclick="gotoStep(6)"><div class="step-num" id="sn6">7</div>Banco de Dados</div>
+ </div>
+ <div class="sidebar-section">
+ <div class="sidebar-section-title">Fase 2 — Produto</div>
+ <div class="sidebar-item" onclick="gotoStep(7)"><div class="step-num" id="sn7">8</div>Pagamentos</div>
+ <div class="sidebar-item" onclick="gotoStep(8)"><div class="step-num" id="sn8">9</div>Segurança</div>
+ <div class="sidebar-item" onclick="gotoStep(9)"><div class="step-num" id="sn9">10</div>Performance</div>
+ </div>
+ <div class="sidebar-section">
+ <div class="sidebar-section-title">Fase 3 — Lançamento</div>
+ <div class="sidebar-item" onclick="gotoStep(10)"><div class="step-num" id="sn10">11</div>Deploy & CI/CD</div>
+ </div>
+ </div>
+ <a class="plat-sidebar-whatsapp" href="https://wa.me/5511952025568?text=Ol%C3%A1!%20Tenho%20uma%20d%C3%BAvida%20no%20laborat%C3%B3rio%20do%20SaaS%20Academy." target="_blank" rel="noopener noreferrer">
+ <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.882 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+ <span>Alguma dúvida? Me chame no WhatsApp</span>
+ </a>
+ </div>
+
+ <div class="plat-main" id="plat-main">
+ <!-- Conteúdo injetado por JS -->
+ </div>
+</div>
+<div id="saas-onboard-overlay" class="saas-onboard-overlay" hidden aria-hidden="true">
+ <div class="saas-onboard-backdrop" onclick="dismissSaasOnboarding()"></div>
+ <div class="saas-onboard-coach" id="saas-onboard-coach" role="status">
+ <strong>Comece aqui!</strong> Troque <strong>MeuSaaS</strong> pelo nome da sua ideia e descreva como o produto deve funcionar. Todos os prompts do laboratório usam isso.
+ </div>
+ <div class="saas-onboard-panel" role="dialog" aria-labelledby="saas-onboard-title">
+ <button type="button" class="saas-onboard-close" onclick="dismissSaasOnboarding()" aria-label="Fechar">×</button>
+ <h3 id="saas-onboard-title">Defina seu SaaS</h3>
+ <p>Antes do passo a passo: escolha o <strong>nome</strong> e explique em poucas linhas <strong>o que o produto faz</strong>. A IA vai personalizar tudo para você.</p>
+ <div class="saas-onboard-field">
+ <label for="saas-onboard-name">Nome do SaaS</label>
+ <input type="text" id="saas-onboard-name" placeholder="Ex: AgendaBarber, FitCoach Pro…">
+ </div>
+ <div class="saas-onboard-field">
+ <label for="saas-onboard-brief">Como seu SaaS funciona? (visão do produto)</label>
+ <textarea id="saas-onboard-brief" placeholder="Ex: SaaS para barbearias agendarem horários online, com plano grátis para 1 barbeiro e plano pago para equipe + lembretes no WhatsApp."></textarea>
+ </div>
+ <div class="content-card" style="margin:0;padding:1rem;background:var(--learn-bg);border:1px dashed var(--learn-border)">
+ <div class="content-card-title" style="font-size:0.9rem;margin-bottom:0.5rem">Sem ideia ainda? Copie este prompt na IA</div>
+ <div class="prompt-box" style="margin:0">
+ <div class="prompt-label">Prompt — Nome + visão do SaaS</div>
+ <div class="prompt-text" id="prompt-saas-vision" style="max-height:140px;overflow-y:auto;font-size:0.8rem">Ajude-me a definir meu SaaS do zero. Sou iniciante absoluto.
+
+1. Sugira 5 nomes curtos e fáceis de lembrar
+2. Para o nome que eu escolher, explique em 1 parágrafo o que o produto faz
+3. Liste as 3 telas principais do MVP (mínimo viável)
+4. 3 funcionalidades do plano grátis e 3 do plano pago
+5. Qual problema real isso resolve e para quem
+
+Minha ideia inicial (pode estar vaga):
+[ESCREVA AQUI — ex: app para personal trainers cobrarem mensalidade online]
+
+No final, me entregue um resumo em formato:
+NOME: ...
+VISÃO: ...
+PÚBLICO: ...
+MVP: ...</div>
+ <button type="button" class="copy-btn" onclick="copyPrompt('prompt-saas-vision')">Copiar</button>
+ </div>
+ </div>
+ <div class="saas-onboard-actions">
+ <button type="button" class="btn-onboard-ghost" onclick="copyPrompt('prompt-saas-vision')">Copiar prompt</button>
+ <button type="button" class="btn-onboard-primary" onclick="confirmSaasOnboarding()">Salvar e começar →</button>
+ </div>
+ </div>
+</div>
+
+</div><!-- /platform -->
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+<script>
+// ─── STATE ───────────────────────────────────
+let currentStep = 0;
+let saasName = 'MeuSaaS';
+let saasBrief = '';
+const SAAS_STORAGE_NAME = 'saaslab_name';
+const SAAS_STORAGE_BRIEF = 'saaslab_brief';
+const SAAS_STORAGE_ONBOARDED = 'saaslab_onboarded';
+let completedSteps = new Set();
+let selectedDeployTarget = 'vercel';
+let selectedDb = 'supabase';
+let selectedAuth = 'firebase';
+const SAAS_STORAGE_AUTH = 'saaslab_auth';
+let isAnnual = false;
+
+// ─── BILLING TOGGLE ──────────────────────────
+function toggleBilling() {
+ isAnnual = !isAnnual;
+ document.getElementById('billing-toggle').classList.toggle('active', isAnnual);
+ document.getElementById('save-badge').style.display = isAnnual ? 'inline' : 'none';
+ document.getElementById('price1').textContent = isAnnual ? '24' : '40';
+ document.getElementById('price2').textContent = isAnnual ? '30' : '50';
+ animatePriceChange();
+}
+
+// ─── PLATFORM NAVIGATION ─────────────────────
+function loadSaasProfile() {
+ const savedName = localStorage.getItem(SAAS_STORAGE_NAME);
+ const savedBrief = localStorage.getItem(SAAS_STORAGE_BRIEF);
+ const savedAuth = localStorage.getItem(SAAS_STORAGE_AUTH);
+ if (savedName) saasName = savedName;
+ if (savedBrief) saasBrief = savedBrief;
+ if (savedAuth) selectedAuth = savedAuth;
+ const nameEl = document.getElementById('saas-name');
+ if (nameEl) nameEl.value = saasName;
+ applySaasToMockup();
+}
+
+function applySaasToMockup() {
+ const title = document.getElementById('mockup-title-display');
+ const url = document.getElementById('mockup-url-display');
+ if (title) title.textContent = saasName + ' Dashboard';
+ if (url) url.textContent = saasName.toLowerCase().replace(/\s+/g, '-') + '.vercel.app/dashboard';
+}
+
+function syncOnboardFields() {
+ const n = document.getElementById('saas-onboard-name');
+ const b = document.getElementById('saas-onboard-brief');
+ if (n) n.value = saasName === 'MeuSaaS' && !localStorage.getItem(SAAS_STORAGE_NAME) ? '' : saasName;
+ if (b) b.value = saasBrief;
+}
+
+function positionSaasCoach() {
+ const wrap = document.getElementById('saas-name-wrap');
+ const coach = document.getElementById('saas-onboard-coach');
+ if (!wrap || !coach) return;
+ const r = wrap.getBoundingClientRect();
+ coach.style.top = (r.bottom + 10) + 'px';
+ coach.style.right = Math.max(12, window.innerWidth - r.right) + 'px';
+ coach.style.left = 'auto';
+}
+
+function resetSaasOnboardingUi() {
+ const overlay = document.getElementById('saas-onboard-overlay');
+ if (!overlay) return;
+ overlay.classList.remove('is-open');
+ overlay.hidden = true;
+ overlay.setAttribute('aria-hidden', 'true');
+ document.getElementById('platform')?.classList.remove('is-onboard-open');
+ document.getElementById('saas-name')?.classList.remove('saas-name-input--pulse');
+ window.removeEventListener('resize', positionSaasCoach);
+}
+
+function openSaasOnboarding(force) {
+ const overlay = document.getElementById('saas-onboard-overlay');
+ if (!overlay) return;
+ syncOnboardFields();
+ overlay.hidden = false;
+ overlay.removeAttribute('hidden');
+ overlay.setAttribute('aria-hidden', 'false');
+ requestAnimationFrame(() => {
+ overlay.classList.add('is-open');
+ positionSaasCoach();
+ document.getElementById('saas-name')?.classList.add('saas-name-input--pulse');
+ setTimeout(() => document.getElementById('saas-onboard-name')?.focus(), 280);
+ });
+ if (force) window.addEventListener('resize', positionSaasCoach);
+}
+
+function dismissSaasOnboarding() {
+ resetSaasOnboardingUi();
+}
+
+function confirmSaasOnboarding() {
+ const n = document.getElementById('saas-onboard-name')?.value?.trim();
+ const b = document.getElementById('saas-onboard-brief')?.value?.trim();
+ if (n) {
+ saasName = n;
+ document.getElementById('saas-name').value = n;
+ localStorage.setItem(SAAS_STORAGE_NAME, n);
+ }
+ if (b) {
+ saasBrief = b;
+ localStorage.setItem(SAAS_STORAGE_BRIEF, b);
+ }
+ localStorage.setItem(SAAS_STORAGE_ONBOARDED, '1');
+ applySaasToMockup();
+ dismissSaasOnboarding();
+ renderStep(currentStep);
+ scrollPlatformToTop();
+}
+
+function maybeShowSaasOnboarding() {
+ if (!localStorage.getItem(SAAS_STORAGE_ONBOARDED)) {
+ setTimeout(() => openSaasOnboarding(false), 400);
+ } else {
+ document.getElementById('saas-name')?.classList.remove('saas-name-input--pulse');
+ }
+}
+
+function enterPlatform() {
+ document.getElementById('landing').style.display = 'none';
+ document.getElementById('platform').style.display = 'block';
+ loadSaasProfile();
+ renderStep(0);
+ scheduleScrollToTop();
+ maybeShowSaasOnboarding();
+}
+function exitPlatform() {
+ dismissSaasOnboarding();
+ document.getElementById('platform').style.display = 'none';
+ document.getElementById('landing').style.display = 'block';
+ window.scrollTo(0,0);
+ if (typeof ScrollTrigger !== 'undefined') {
+ ScrollTrigger.refresh();
+ initLandingGSAP();
+ initDemoPlayer(true);
+ }
+}
+function updateSaasProfile() {
+ saasName = document.getElementById('saas-name')?.value?.trim() || 'MeuSaaS';
+ localStorage.setItem(SAAS_STORAGE_NAME, saasName);
+ applySaasToMockup();
+ renderStep(currentStep);
+}
+function updateSaasName() { updateSaasProfile(); }
+
+function escapeHtml(str) {
+ return String(str ?? '')
+ .replace(/&/g, '&amp;')
+ .replace(/</g, '&lt;')
+ .replace(/>/g, '&gt;')
+ .replace(/"/g, '&quot;');
+}
+
+function saasContextBlock() {
+ if (!saasBrief) return '';
+ return `\n\nContexto do produto (como o cliente quer que funcione):\n${saasBrief}`;
+}
+
+function scrollPlatformToTop() {
+ const main = document.getElementById('plat-main');
+ const header = main?.querySelector('.step-header');
+ if (main) {
+ main.scrollTop = 0;
+ try { main.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (_) { main.scrollTo(0, 0); }
+ }
+ window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+ document.documentElement.scrollTop = 0;
+ document.body.scrollTop = 0;
+ if (header) {
+ try { header.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (_) { header.scrollIntoView(true); }
+ }
+}
+
+function scheduleScrollToTop() {
+ scrollPlatformToTop();
+ requestAnimationFrame(() => {
+ scrollPlatformToTop();
+ requestAnimationFrame(scrollPlatformToTop);
+ });
+ setTimeout(scrollPlatformToTop, 60);
+ setTimeout(scrollPlatformToTop, 200);
+}
+
+function gotoStep(n) {
+ if (n < 0 || n >= steps.length) return;
+ dismissSaasOnboarding();
+ currentStep = n;
+ document.querySelectorAll('.plat-tab').forEach((t, i) => t.classList.toggle('active', i === n));
+ document.querySelectorAll('.sidebar-item').forEach((t, i) => t.classList.toggle('active', i === n));
+ renderStep(n);
+ scheduleScrollToTop();
+}
+function updateProgress() {
+ const pct = Math.round((completedSteps.size/steps.length)*100);
+ document.getElementById('progress-fill').style.width = pct+'%';
+ document.getElementById('progress-pct').textContent = pct+'%';
+ Array.from({length: steps.length}, (_, i) => i).forEach(i=>{
+ const el = document.getElementById('sn'+i);
+ if(el) { el.textContent = completedSteps.has(i) ? '\u2713' : (i+1); el.parentElement.classList.toggle('done', completedSteps.has(i)); }
+ });
+}
+function completeStep(n) {
+ dismissSaasOnboarding();
+ completedSteps.add(n);
+ updateProgress();
+ if (n < steps.length - 1) gotoStep(n + 1);
+ else alert('Parabéns! Você concluiu todos os módulos do ' + saasName + '!');
+}
+
+// ─── COPY PROMPT ─────────────────────────────
+function copyPrompt(id) {
+ const el = document.getElementById(id);
+ const text = el.innerText;
+ navigator.clipboard.writeText(text).then(()=>{
+ const btn = el.parentElement.querySelector('.copy-btn');
+ if(btn){btn.textContent='Copiado!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Copiar';btn.classList.remove('copied')},2000);}
+ });
+}
+
+// ─── DEPLOY SELECTOR ─────────────────────────
+function selectDeploy(t) {
+ selectedDeployTarget = t;
+ document.querySelectorAll('.opt-deploy').forEach(b=>b.classList.toggle('selected',b.dataset.val===t));
+ renderDeployPrompt();
+}
+function selectDb(t) {
+ selectedDb = t;
+ localStorage.setItem('saaslab_db', t);
+ document.querySelectorAll('.opt-db').forEach(b=>b.classList.toggle('selected',b.dataset.val===t));
+ renderDbPrompt();
+}
+function selectAuth(t) {
+ selectedAuth = t;
+ localStorage.setItem(SAAS_STORAGE_AUTH, t);
+ document.querySelectorAll('.opt-auth').forEach(b=>b.classList.toggle('selected', b.dataset.val === t));
+ renderAuthContent();
+}
+
+// ─── STEP CONTENT ─────────────────────────────
+const steps = [
+
+// STEP 0: BEM-VINDO
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-title">Bem-vindo ao laboratório</div>
+ <div class="step-subtitle">Você <strong>não precisa saber programar</strong>. Este passo a passo foi feito para quem está começando do absoluto zero — com IA ao seu lado.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Primeiro: nome e visão do produto</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">No topo da tela, troque <strong>MeuSaaS</strong> pelo nome da sua ideia. Se ainda não sabe o que construir, clique em <strong>✎</strong> ao lado do nome ou copie o prompt abaixo na IA.</p>
+ ${saasBrief ? `<div class="info-box success"><strong>Seu SaaS:</strong> ${saasName} — ${saasBrief}</div>` : `<div class="info-box warning"><strong>Atenção:</strong> defina a visão do produto no botão ✎ no topo ou use o prompt abaixo.</div>`}
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Nome + como o SaaS funciona</div>
+ <div class="prompt-text" id="prompt-saas-vision-step0">Ajude-me a definir meu SaaS do zero. Sou iniciante.
+
+1. Sugira 5 nomes curtos
+2. Explique o que o produto faz (1 parágrafo)
+3. 3 telas do MVP + planos grátis/pago
+4. Problema que resolve e para quem
+
+Minha ideia: [ESCREVA AQUI]
+
+Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-saas-vision-step0')">Copiar</button>
+ </div>
+ <button type="button" class="btn-next" style="margin-top:0.75rem;width:100%" onclick="openSaasOnboarding(true)">Abrir formulário do meu SaaS ✎</button>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">O que é este laboratório?</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0">Aqui você monta o <strong>${saasName}</strong> em etapas curtas. Em cada etapa explicamos <em>o que fazer</em>, <em>por que fazer</em> e damos textos prontos para colar na IA. Você aprende enquanto constrói — sem pular para código avançado sem entender.</p>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Como usar (bem simples)</div>
+ <ol class="guide-steps">
+ <li><strong>Leia</strong> o passo com calma — não precisa decorar nada.</li>
+ <li><strong>Marque</strong> o checklist quando terminar cada tarefa.</li>
+ <li><strong>Copie</strong> os prompts e cole na sua IA (Cursor, Claude, etc.).</li>
+ <li><strong>Teste</strong> no navegador: se funcionou, avance. Se travou, volte um passo ou chame no WhatsApp.</li>
+ </ol>
+ <div class="info-box info"><strong>Dica de ouro:</strong> Erro é normal. Programador profissional também erra — a diferença é saber pesquisar e pedir ajuda à IA com clareza.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">O que você vai instalar e aprender</div>
+ <div class="tech-pills">
+ <span class="tech-pill">Terminal básico</span>
+ <span class="tech-pill">Node.js</span>
+ <span class="tech-pill">IA (Cursor, Claude…)</span>
+ <span class="tech-pill">GitHub</span>
+ <span class="tech-pill">Next.js + SaaS</span>
+ <span class="tech-pill">Stripe + Deploy</span>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-next" onclick="completeStep(0)">Próximo: Preparar o computador →</button>
+</div>`,
+
+// STEP 1: PREPARAR PC
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-title">Preparar o computador</div>
+ <div class="step-subtitle">Antes de codar, instalamos as ferramentas básicas. Siga na ordem — leva cerca de 20–30 minutos na primeira vez.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">1. O que é o Terminal?</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.92rem;margin:0 0 0.75rem">É a tela de “comandos de texto” do computador. Parece assustador, mas você só vai usar alguns comandos repetidos. No <strong>Windows</strong>, abra o <strong>PowerShell</strong> ou <strong>Terminal</strong> (busque no menu Iniciar).</p>
+ <div class="code-snippet"><span class="cm"># Teste se o terminal responde (copie e aperte Enter)</span>
+<span class="fn">echo</span> <span class="str">"Oi, estou aprendendo SaaS!"</span></div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">2. Instalar o Node.js (obrigatório)</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.92rem;margin:0 0 0.75rem">Node.js permite rodar JavaScript no seu PC e usar comandos como <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">npm</code> para instalar bibliotecas do projeto.</p>
+ <ol class="guide-steps">
+ <li>Acesse <strong>https://nodejs.org</strong> e baixe a versão <strong>LTS</strong> (recomendada).</li>
+ <li>Instale com “Next” em tudo (pode deixar as opções padrão).</li>
+ <li>Feche e abra o terminal de novo.</li>
+ <li>Confira se instalou:</li>
+ </ol>
+ <div class="code-snippet"><span class="fn">node</span> <span class="str">-v</span>
+<span class="fn">npm</span> <span class="str">-v</span></div>
+ <div class="info-box success">Deve aparecer algo como <strong>v20.x</strong> ou <strong>v22.x</strong>. Se der “comando não encontrado”, reinicie o PC e tente de novo.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">3. Criar uma pasta para o seu projeto</div>
+ <ol class="guide-steps">
+ <li>Escolha um lugar simples, ex.: <strong>Documentos</strong>.</li>
+ <li>No terminal:</li>
+ </ol>
+ <div class="code-snippet"><span class="fn">cd</span> <span class="str">$env:USERPROFILE\\Documents</span>
+<span class="fn">mkdir</span> <span class="str">meu-saas</span>
+<span class="fn">cd</span> <span class="str">meu-saas</span></div>
+ <div class="info-box info">Sempre que abrir o terminal de novo, use <strong>cd</strong> para voltar até essa pasta antes de rodar comandos do projeto.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist — PC pronto</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Terminal abre sem erro</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> node -v e npm -v funcionam</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Pasta meu-saas criada</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(0)">← Bem-vindo</button>
+ <button class="btn-next" onclick="completeStep(1)">Próximo: Programar com IA →</button>
+</div>`,
+
+// STEP 2: IA
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-title">Programar com IA</div>
+ <div class="step-subtitle">Você não precisa decorar código. A IA escreve; você <strong>dirige</strong>: pede, testa, corrige e aprende no caminho.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Qual IA usar? (escolha 1 para começar)</div>
+ <div class="ai-tool-grid">
+ <div class="ai-tool-card"><h4>Cursor</h4><p>Editor com IA integrada. Ideal para ver o projeto e o código no mesmo lugar. Muito usado para SaaS.</p><span class="tool-tag">Recomendado</span></div>
+ <div class="ai-tool-card"><h4>Claude Code</h4><p>Assistente da Anthropic focado em código. Ótimo para explicar erros e refatorar arquivos.</p><span class="tool-tag">Terminal / IDE</span></div>
+ <div class="ai-tool-card"><h4>Antigravity</h4><p>Ambiente agente do Google para construir apps com várias etapas automatizadas.</p><span class="tool-tag">Agente</span></div>
+ <div class="ai-tool-card"><h4>ChatGPT / Claude web</h4><p>Para tirar dúvidas, gerar prompts e entender conceitos antes de colar no editor.</p><span class="tool-tag">Estudo</span></div>
+ <div class="ai-tool-card"><h4>GitHub Copilot</h4><p>Sugestões de código dentro do VS Code/Cursor. Complementa os prompts deste curso.</p><span class="tool-tag">Autocomplete</span></div>
+ <div class="ai-tool-card"><h4>Windsurf / Codeium</h4><p>Alternativas com IA no editor. Funcionam bem se Cursor não estiver disponível.</p><span class="tool-tag">Alternativa</span></div>
+ </div>
+ <div class="info-box info"><strong>Não precisa instalar todos.</strong> Comece com <strong>Cursor</strong> (ou VS Code + extensão de IA) e use os prompts que copiamos em cada módulo.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Como “conversar” com a IA (modelo que funciona)</div>
+ <ol class="guide-steps">
+ <li><strong>Contexto:</strong> “Estou criando um SaaS chamado ${saasName}, sou iniciante.”</li>
+ <li><strong>Tarefa:</strong> “Crie a página de login com Next.js.”</li>
+ <li><strong>Restrições:</strong> “Use TypeScript, explique cada arquivo e não pule etapas.”</li>
+ <li><strong>Se der erro:</strong> Cole a mensagem de erro inteira + print do terminal.</li>
+ </ol>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt inicial — cole na sua IA agora</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Primeiro contato com o projeto</div>
+ <div class="prompt-text" id="prompt-ia-start">Sou iniciante absoluto em programação. Vou criar um SaaS chamado "${saasName}".
+
+Regras:
+1. Explique tudo em português simples, passo a passo.
+2. Não assuma que eu já sei Git, terminal ou frameworks.
+3. Quando der um comando, diga em qual pasta rodar.
+4. Se eu colar um erro, explique a causa e a correção.
+
+Minha meta agora: entender a estrutura de pastas de um projeto Next.js antes de escrever código complexo.
+
+Me guie como se eu nunca tivesse programado.${saasContextBlock()}</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-ia-start')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist — IA configurada</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Instalei Cursor (ou outro editor com IA)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Testei colar o prompt inicial e recebi resposta</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sei que devo copiar erros completos para a IA</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(1)">← Preparar o PC</button>
+ <button class="btn-next" onclick="completeStep(2)">Próximo: GitHub do zero →</button>
+</div>`,
+
+// STEP 3: GITHUB
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-title">GitHub do zero</div>
+ <div class="step-subtitle">GitHub guarda seu código na nuvem — como um “Google Drive” do projeto. É essencial para backup, histórico e deploy.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">1. Criar conta no GitHub</div>
+ <ol class="guide-steps">
+ <li>Acesse <strong>https://github.com</strong> e clique em <strong>Sign up</strong>.</li>
+ <li>Use um e-mail que você acessa sempre.</li>
+ <li>Escolha plano <strong>Free</strong> — é suficiente para começar.</li>
+ <li>Confirme o e-mail se pedirem.</li>
+ </ol>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">2. Instalar o Git no Windows</div>
+ <ol class="guide-steps">
+ <li>Baixe em <strong>https://git-scm.com/download/win</strong></li>
+ <li>Instale com opções padrão (Next, Next…).</li>
+ <li>Feche e abra o terminal novamente.</li>
+ <li>Configure seu nome e e-mail (aparece nos commits):</li>
+ </ol>
+ <div class="code-snippet"><span class="fn">git</span> <span class="str">--version</span>
+<span class="fn">git config</span> <span class="str">--global user.name "Seu Nome"</span>
+<span class="fn">git config</span> <span class="str">--global user.email "seu@email.com"</span></div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">3. Criar repositório e enviar código</div>
+ <ol class="guide-steps">
+ <li>No GitHub: <strong>New repository</strong> → nome ex.: <strong>${saasName.toLowerCase().replace(/\s+/g,'-')}</strong> → Create (sem README se o projeto local já tiver arquivos).</li>
+ <li>Na pasta do projeto no terminal:</li>
+ </ol>
+ <div class="code-snippet"><span class="fn">git</span> <span class="str">init</span>
+<span class="fn">git</span> <span class="str">add .</span>
+<span class="fn">git</span> <span class="str">commit -m "primeiro commit do ${saasName}"</span>
+<span class="fn">git</span> <span class="str">branch -M main</span>
+<span class="fn">git</span> <span class="str">remote add origin https://github.com/SEU-USUARIO/NOME-DO-REPO.git</span>
+<span class="fn">git</span> <span class="str">push -u origin main</span></div>
+ <div class="info-box warning"><strong>Login no push:</strong> o GitHub não aceita mais senha simples. Use <strong>Personal Access Token</strong> (Settings → Developer settings → Tokens) ou instale o <strong>GitHub CLI</strong> (<code>gh auth login</code>).</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — se travar no GitHub</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Ajuda com Git</div>
+ <div class="prompt-text" id="prompt-git-help">Sou iniciante. Estou no Windows tentando enviar meu projeto "${saasName}" para o GitHub.
+
+Meu erro ou dúvida:
+[COLE AQUI A MENSAGEM DO TERMINAL]
+
+Explique em português simples:
+1. O que esse erro significa
+2. Comando exato para corrigir
+3. Como evitar de novo</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-git-help')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist — GitHub ok</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Conta GitHub criada</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> git --version funciona no terminal</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Repositório criado no GitHub</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> git push funcionou (código na nuvem)</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(2)">← Programar com IA</button>
+ <button class="btn-next" onclick="completeStep(3)">Próximo: Setup do projeto →</button>
+</div>`,
+
+// STEP 4: SETUP
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-title">Setup do Projeto</div>
+ <div class="step-subtitle">Agora que você já tem <strong>PC, IA e GitHub</strong>, vamos criar a base do <strong>${saasName}</strong>. Use os prompts — não precisa digitar tudo na mão.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Stack recomendada <span class="content-tag">Padrão 2025</span></div>
+ <div class="tech-pills">
+ <span class="tech-pill">Next.js 15</span>
+ <span class="tech-pill">TypeScript</span>
+ <span class="tech-pill">Tailwind CSS</span>
+ <span class="tech-pill">Prisma ORM</span>
+ <span class="tech-pill">Supabase</span>
+ <span class="tech-pill optional">shadcn/ui</span>
+ <span class="tech-pill optional">tRPC (opcional)</span>
+ </div>
+ <div class="info-box info"><strong>Por que Next.js?</strong> Server Components, App Router e deploy instantâneo na Vercel tornam ele ideal para SaaS em 2025.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt para criar o projeto</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Cole no Cursor, Claude ou ChatGPT</div>
+ <div class="prompt-text" id="prompt-setup">Crie um projeto Next.js 15 com TypeScript para o SaaS chamado "<span class="prompt-saas-name">${saasName}</span>".
+
+Inclua:
+1. App Router com estrutura de pastas profissional
+2. Tailwind CSS + shadcn/ui configurados
+3. Variáveis de ambiente (.env.local) para:
+ - DATABASE_URL (Supabase)
+ - NEXTAUTH_SECRET
+ - STRIPE_SECRET_KEY
+4. Middleware de proteção de rotas
+5. Layout base com navbar e sidebar
+6. Página de dashboard protegida
+
+Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-setup')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Comandos iniciais</div>
+ <div class="code-snippet">
+<span class="cm"># 1. Criar o projeto</span>
+<span class="kw">npx</span> create-next-app@latest ${saasName.toLowerCase().replace(/\s+/g,'-')} <span class="str">--typescript --tailwind --app --src-dir</span>
+<span class="kw">cd</span> ${saasName.toLowerCase().replace(/\s+/g,'-')}
+
+<span class="cm"># 2. Instalar dependências essenciais</span>
+<span class="kw">npm install</span> <span class="str">@prisma/client prisma next-auth stripe zod</span>
+
+<span class="cm"># 3. UI Components</span>
+<span class="kw">npx</span> shadcn@latest init
+
+<span class="cm"># 4. Inicializar Git</span>
+<span class="kw">git init && git add . && git commit</span> <span class="str">-m "feat: initial ${saasName} setup"</span>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist de setup</div>
+ <div class="checklist" id="checklist-setup">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto Next.js criado com TypeScript</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> .env.local configurado (NUNCA commitado no Git)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> .gitignore incluindo .env*</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Repositório criado no GitHub</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto abrindo sem erros no localhost:3000</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(3)">← GitHub</button>
+ <button class="btn-next" onclick="completeStep(4)">Próximo: Autenticação →</button>
+</div>`,
+
+// STEP 5: AUTH
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-title">Autenticação (login)</div>
+ <div class="step-subtitle">Crie logins no <strong>${saasName}</strong> com <strong>Firebase Authentication</strong> — tutorial no console, chaves na Vercel, depois prompt na IA.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Como fazer login?</div>
+ <div class="option-grid">
+ <div class="option-btn opt-auth selected" data-val="firebase" onclick="selectAuth('firebase')"><div class="option-name">Firebase Auth</div>
+ <div class="option-desc">Email/senha + Google — recomendado</div></div>
+ <div class="option-btn opt-auth" data-val="nextauth" onclick="selectAuth('nextauth')"><div class="option-name">NextAuth</div>
+ <div class="option-desc">Alternativa para Next.js</div></div>
+ </div>
+</div>
+
+<div id="auth-content-area"></div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(4)">← Setup</button>
+ <button class="btn-next" onclick="completeStep(5)">Próximo: Banco de Dados →</button>
+</div>`,
+
+// STEP 6: DATABASE
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-title">Banco de Dados</div>
+ <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. Siga o <strong>tutorial no console</strong> (pegar chaves e colar na Vercel) — depois use o prompt na IA para o código.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Escolha o banco de dados</div>
+ <div class="option-grid">
+ <div class="option-btn opt-db selected" data-val="supabase" onclick="selectDb('supabase')"><div class="option-name">Supabase</div>
+ <div class="option-desc">Postgres + RLS + realtime</div>
+ </div>
+ <div class="option-btn opt-db" data-val="firebase" onclick="selectDb('firebase')"><div class="option-name">Firebase</div>
+ <div class="option-desc">NoSQL + regras + scale auto</div>
+ </div>
+ <div class="option-btn opt-db" data-val="planetscale" onclick="selectDb('planetscale')"><div class="option-name">PlanetScale</div>
+ <div class="option-desc">MySQL serverless</div>
+ </div>
+ </div>
+</div>
+
+<div id="db-content-area"></div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(5)">← Autenticação</button>
+ <button class="btn-next" onclick="completeStep(6)">Próximo: Pagamentos →</button>
+</div>`,
+
+// STEP 7: PAYMENTS
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-title">Pagamentos com Stripe</div>
+ <div class="step-subtitle">Integre planos, trials e cobranças recorrentes no <strong>${saasName}</strong>.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Fluxo de pagamento SaaS</div>
+ <div class="info-box success"><strong>Fluxo recomendado:</strong> Usuário escolhe plano → Stripe Checkout → Webhook confirma pagamento → Banco atualiza plano → Acesso liberado.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt para integração Stripe completa</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Stripe + Planos + Trial</div>
+ <div class="prompt-text" id="prompt-stripe">Implemente integração completa com Stripe no SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+Inclua:
+1. Produtos e preços no Stripe (mensal + anual)
+2. Trial de 14 dias grátis automático
+3. Checkout Session com success_url e cancel_url
+4. Webhook handler em /api/webhooks/stripe para eventos:
+ - checkout.session.completed
+ - customer.subscription.updated
+ - customer.subscription.deleted
+ - invoice.payment_failed
+5. Portal do cliente (gerenciar/cancelar assinatura)
+6. Middleware verificando se plano está ativo
+7. Validação de assinatura em cada request protegida
+
+Mostre o código completo com validação de webhook via stripe-signature.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-stripe')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Webhook seguro — código essencial <span class="content-tag security">Segurança</span></div>
+ <div class="code-snippet"><span class="cm">// app/api/webhooks/stripe/route.ts</span>
+<span class="kw">import</span> Stripe <span class="kw">from</span> <span class="str">'stripe'</span>
+
+<span class="kw">export async function</span> <span class="fn">POST</span>(req: Request) {
+ <span class="kw">const</span> <span class="var">body</span> = <span class="kw">await</span> req.<span class="fn">text</span>()
+ <span class="kw">const</span> <span class="var">sig</span> = req.headers.<span class="fn">get</span>(<span class="str">'stripe-signature'</span>)!
+
+ <span class="cm">// SEMPRE validar a assinatura do webhook!</span>
+ <span class="kw">const</span> <span class="var">event</span> = stripe.webhooks.<span class="fn">constructEvent</span>(
+ <span class="var">body</span>, <span class="var">sig</span>, process.env.<span class="var">STRIPE_WEBHOOK_SECRET</span>!
+ )
+ <span class="cm">// Processar event.type...</span>
+}</div>
+ <div class="info-box danger"><strong>Nunca</strong> confie no payload do webhook sem validar a assinatura com STRIPE_WEBHOOK_SECRET. Qualquer um pode enviar POSTs falsos.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist de pagamentos</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Produtos e preços criados no Stripe Dashboard</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Checkout funcionando (modo teste)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Webhook validando assinatura Stripe</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Banco atualizado após pagamento confirmado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Portal do cliente funcionando</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(6)">← Banco de Dados</button>
+ <button class="btn-next" onclick="completeStep(7)">Próximo: Segurança →</button>
+</div>`,
+
+// STEP 8: SECURITY
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-title">Segurança</div>
+ <div class="step-subtitle">Proteja o <strong>${saasName}</strong> contra os ataques mais comuns em aplicações SaaS.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Os 5 pilares de segurança SaaS <span class="content-tag security">Segurança</span></div>
+ <div class="info-box info">Este módulo cobre as vulnerabilidades mais exploradas em SaaS — implemente tudo antes de ir para produção.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Headers HTTP de segurança</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Security Headers</div>
+ <div class="prompt-text" id="prompt-headers">Configure headers de segurança HTTP no Next.js para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+No next.config.ts, adicione:
+1. Content-Security-Policy (CSP) — bloquear XSS
+2. X-Frame-Options: DENY — bloquear clickjacking
+3. X-Content-Type-Options: nosniff
+4. Strict-Transport-Security (HSTS) — forçar HTTPS
+5. Permissions-Policy — limitar APIs do browser
+6. Referrer-Policy: strict-origin-when-cross-origin
+
+Mostre a configuração completa e explique o que cada header protege.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-headers')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Rate Limiting + Input Validation</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Rate Limiting com Upstash Redis</div>
+ <div class="prompt-text" id="prompt-ratelimit">Implemente rate limiting e validação de input no SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+1. Rate limiting com Upstash Redis:
+ - 10 requests/minuto em /api/auth/login
+ - 100 requests/minuto em /api/* para usuários autenticados
+ - 20 requests/minuto em /api/* para usuários não autenticados
+
+2. Validação de todos os inputs com Zod:
+ - Schemas para todos os endpoints POST/PUT
+ - Sanitização de strings (trim, lowercase onde necessário)
+ - Rejeição de payloads malformados com erro 400
+
+3. SQL Injection — mostrar por que Prisma protege automaticamente
+
+Mostre código completo com middleware reutilizável.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-ratelimit')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Variáveis de ambiente seguras</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Env Vars + Secrets</div>
+ <div class="prompt-text" id="prompt-env">Configure gerenciamento seguro de variáveis de ambiente no "${saasName}".
+
+1. Validação de env vars no startup com Zod (env.mjs pattern do T3)
+2. Separação de vars server-only vs client (NEXT_PUBLIC_*)
+3. Checklist completo de .gitignore para não expor secrets
+4. Como configurar secrets na Vercel e em VPS com dotenv-vault
+5. Rotação de API keys sem downtime
+
+Mostre o código de validação de env e o .env.example completo.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-env')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Top 5 erros de segurança em SaaS</div>
+ <div class="info-box danger"><strong>IDOR:</strong> Sempre verifique se o usuário autenticado é dono do recurso antes de retorná-lo.</div>
+ <div class="info-box danger"><strong>Secrets no Git:</strong> Use git-secrets ou gitleaks no CI para bloquear commits com chaves expostas.</div>
+ <div class="info-box warning"><strong>Logs com dados sensíveis:</strong> Nunca logue senhas, tokens ou dados de cartão — nem em desenvolvimento.</div>
+ <div class="info-box warning"><strong>Dependências desatualizadas:</strong> Execute npm audit weekly e configure Dependabot no GitHub.</div>
+ <div class="info-box warning"><strong>CORS aberto:</strong> Defina origins explícitas — nunca use Access-Control-Allow-Origin: *</div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(7)">← Pagamentos</button>
+ <button class="btn-next" onclick="completeStep(8)">Próximo: Performance →</button>
+</div>`,
+
+// STEP 9: PERFORMANCE
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-title">Performance & Velocidade</div>
+ <div class="step-subtitle">Faça o <strong>${saasName}</strong> carregar rápido, escalar com usuários e nunca cair.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Por que performance importa desde o dia 1 <span class="content-tag speed">Performance</span></div>
+ <div class="info-box success"><strong>Cada 100ms de latência</strong> custa ~1% de conversão. SaaS com boa performance retêm mais usuários e gastam menos em infraestrutura.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Cache com Redis</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Cache Strategy</div>
+ <div class="prompt-text" id="prompt-cache">Implemente estratégia de cache para o SaaS "<span class="prompt-saas-name">${saasName}</span>" com Upstash Redis.
+
+1. Cache de queries pesadas (dados do dashboard, listas, relatórios)
+ - TTL de 60s para dados frequentemente lidos
+ - Invalidação de cache quando dados mudam
+2. Cache de sessão Redis (alternativa ao JWT stateless)
+3. Cache de respostas de API externa (se aplicável)
+4. Padrão stale-while-revalidate no Next.js
+
+Mostre o wrapper de cache reutilizável e exemplos de uso em Server Components.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-cache')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Otimização de banco de dados</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Database Performance</div>
+ <div class="prompt-text" id="prompt-db-perf">Otimize as queries do banco de dados do SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+1. Identifique e adicione indexes nos campos:
+ - userId (Foreign Keys)
+ - email (buscas de login)
+ - status (filtros de assinatura)
+ - createdAt (ordenação)
+
+2. Paginação eficiente com cursor-based pagination (não offset)
+3. Select apenas os campos necessários (evitar SELECT *)
+4. Queries N+1 — mostre como detectar e corrigir com Prisma
+5. Connection pooling com PgBouncer no Supabase
+
+Mostre o EXPLAIN ANALYZE das queries antes e depois das otimizações.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-db-perf')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Monitoramento e alertas</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Monitoring Setup</div>
+ <div class="prompt-text" id="prompt-monitor">Configure monitoramento completo para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+1. Sentry para rastreamento de erros (frontend + backend)
+2. Vercel Analytics para Core Web Vitals
+3. Uptime monitoring com Better Uptime ou UptimeRobot (gratuito)
+4. Alertas de erro por email/Slack via Sentry
+5. Logs estruturados com Pino (não console.log)
+6. Dashboard de métricas: requests/s, latência p95, erros %
+
+Mostre a configuração completa e os thresholds de alerta recomendados.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-monitor')">Copiar</button>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(8)">← Segurança</button>
+ <button class="btn-next" onclick="completeStep(9)">Próximo: Deploy →</button>
+</div>`,
+
+// STEP 10: DEPLOY
+()=>`
+<div class="step-header">
+ <div class="step-phase">Fase 3 — Lançamento</div>
+ <div class="step-title">Deploy & CI/CD</div>
+ <div class="step-subtitle">Lance o <strong>${saasName}</strong> em produção com deploy automático e zero downtime.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Escolha sua infraestrutura de deploy <span class="content-tag deploy">Deploy</span></div>
+ <div class="option-grid">
+ <div class="option-btn opt-deploy selected" data-val="vercel" onclick="selectDeploy('vercel')"><div class="option-name">Vercel</div>
+ <div class="option-desc">Mais fácil, gratuito para começar</div>
+ </div>
+ <div class="option-btn opt-deploy" data-val="vps" onclick="selectDeploy('vps')"><div class="option-name">VPS (DigitalOcean)</div>
+ <div class="option-desc">Mais controle, maior escala</div>
+ </div>
+ <div class="option-btn opt-deploy" data-val="railway" onclick="selectDeploy('railway')"><div class="option-name">Railway</div>
+ <div class="option-desc">Meio-termo: fácil + flexível</div>
+ </div>
+ </div>
+</div>
+
+<div id="deploy-prompt-area"></div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — GitHub Actions CI/CD</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Pipeline CI/CD completo</div>
+ <div class="prompt-text" id="prompt-cicd">Crie um pipeline CI/CD completo com GitHub Actions para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+Workflow para Pull Requests:
+1. Lint (ESLint + Prettier)
+2. Type check (tsc --noEmit)
+3. Testes unitários (Jest/Vitest)
+4. Build de produção (next build)
+5. Preview deploy na Vercel
+
+Workflow para push na main:
+1. Todos os checks do PR
+2. Migrations do banco (prisma migrate deploy)
+3. Deploy em produção na Vercel
+4. Smoke test pós-deploy (curl no /api/health)
+5. Notificação no Slack em caso de falha
+
+Mostre os arquivos .github/workflows/ completos.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-cicd')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt — Domínio + SSL + DNS</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Domain Setup</div>
+ <div class="prompt-text" id="prompt-domain">Configure domínio personalizado e SSL para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
+
+1. Como apontar DNS do domínio para Vercel/VPS
+2. SSL automático com Let's Encrypt (Certbot no VPS)
+3. Redirect www → non-www (ou vice versa)
+4. Configuração de subdomínio: app.${saasName.toLowerCase().replace(/\s+/g,'-')}.com
+5. SPF, DKIM, DMARC para emails transacionais (não cair no spam)
+6. Headers de segurança verificáveis com securityheaders.com
+
+Mostre passo a passo para Namecheap/GoDaddy + Vercel/DigitalOcean.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-domain')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist final antes do lançamento</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Build de produção sem erros ou warnings</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Todas as variáveis de ambiente configuradas no host</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Migrations rodadas em produção</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Stripe em modo live (não teste)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Emails transacionais funcionando (Resend/SendGrid)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sentry configurado e monitorando</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Domínio personalizado com SSL ativo</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Rate limiting ativo em produção</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Backup automático do banco configurado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Fluxo de pagamento testado de ponta a ponta</label>
+ </div>
+</div>
+
+<div class="step-nav">
+ <button class="btn-prev" onclick="gotoStep(9)">← Performance</button>
+ <button class="btn-complete" onclick="completeStep(10)"> Concluir curso!</button>
+</div>`
+
+];
+
+function renderDeployPrompt() {
+ const area = document.getElementById('deploy-prompt-area');
+ if (!area) return;
+ const prompts = {
+ vercel: { title: '▲ Deploy na Vercel (recomendado para começar)', text: `Faça o deploy do SaaS "${saasName}" na Vercel do zero.
+
+1. Conectar repositório GitHub na Vercel
+2. Configurar todas as environment variables no painel Vercel (as mesmas do .env.local: Firebase, Supabase, Stripe, NextAuth, etc.)
+3. Configurar o projeto como Next.js (auto-detectado)
+4. Domínio personalizado no painel
+5. Banco externo (Firebase, Supabase ou Vercel Postgres) — copie as chaves do passo Banco de Dados
+6. Configurar VERCEL_URL e fazer redirect HTTP→HTTPS
+
+Mostre o vercel.json se necessário e como verificar o deploy com vercel --prod.` },
+ vps: { title: ' Deploy em VPS com Docker + Nginx', text: `Faça o deploy do SaaS "${saasName}" em um VPS Ubuntu 22.04 (DigitalOcean Droplet $12/mês).
+
+1. Configurar VPS: atualizar pacotes, criar usuário não-root, SSH key
+2. Instalar Docker + Docker Compose
+3. Dockerfile otimizado para Next.js (multi-stage build)
+4. docker-compose.yml com app + Nginx
+5. Nginx como reverse proxy com SSL (Certbot Let's Encrypt)
+6. GitHub Actions para deploy automático via SSH
+7. Backup automático do banco
+
+Mostre todos os arquivos completos: Dockerfile, docker-compose.yml, nginx.conf.` },
+ railway: { title: ' Deploy no Railway', text: `Faça o deploy do SaaS "${saasName}" no Railway.
+
+1. Conectar repositório GitHub ao Railway
+2. Configurar variáveis de ambiente no painel Railway
+3. Adicionar serviço PostgreSQL no Railway (ou conectar Supabase)
+4. Configurar domínio personalizado
+5. Healthcheck endpoint em /api/health
+6. Autoscaling e limites de recursos
+
+Mostre o railway.json e como configurar o pipeline de deploy.` }
+ };
+ const p = prompts[selectedDeployTarget];
+ area.innerHTML = `
+ <div class="content-card">
+ <div class="content-card-title">${p.title} <span class="content-tag deploy">Deploy</span></div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Deploy Completo</div>
+ <div class="prompt-text" id="prompt-deploy-dynamic">${p.text}</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-deploy-dynamic')">Copiar</button>
+ </div>
+ </div>`;
+}
+
+function renderAuthContent() {
+ const area = document.getElementById('auth-content-area');
+ if (!area) return;
+ const name = saasName;
+ const ctx = saasBrief ? `\n\nContexto do produto:\n${saasBrief}` : '';
+ const slug = (name || 'meu-saas').toLowerCase().replace(/\s+/g, '-');
+
+ if (selectedAuth === 'firebase') {
+  area.innerHTML = `
+<div class="content-card">
+ <div class="content-card-title">Tutorial — Firebase Auth (criar logins no console)</div>
+ <div class="info-box warning"><strong>Não é só código.</strong> Primeiro você liga os métodos de login no Firebase Console; depois usa as chaves NEXT_PUBLIC_* no projeto e na Vercel.</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Abrir Authentication</strong></p>
+ <ol class="guide-steps">
+ <li>No <strong>Firebase Console</strong> → seu projeto → <strong>Build → Authentication</strong>.</li>
+ <li>Clique em <strong>Começar</strong> (primeira vez).</li>
+ <li>Aba <strong>Users</strong>: aqui aparecem os usuários cadastrados.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>2. Ativar Email e senha</strong></p>
+ <ol class="guide-steps">
+ <li>Aba <strong>Sign-in method</strong> → <strong>Email/Password</strong>.</li>
+ <li>Ative o primeiro interruptor → <strong>Salvar</strong>.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Ativar Google (opcional)</strong></p>
+ <ol class="guide-steps">
+ <li><strong>Sign-in method</strong> → <strong>Google</strong> → Ativar → e-mail de suporte → Salvar.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>4. Domínios autorizados</strong></p>
+ <ol class="guide-steps">
+ <li>Authentication → <strong>Settings</strong> → <strong>Authorized domains</strong>.</li>
+ <li>Deve ter <strong>localhost</strong>. Adicione seu domínio da Vercel após o deploy.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. Variáveis no .env.local</strong></p>
+ <div class="code-snippet">NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${slug}.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...</div>
+ <div class="info-box info">No terminal do projeto: npm install firebase</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>6. Colar na Vercel</strong></p>
+ <ol class="guide-steps">
+ <li>Vercel → Settings → Environment Variables → mesmas NEXT_PUBLIC_FIREBASE_* → Redeploy.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>7. Ligar ao Firestore</strong></p>
+ <div class="info-box success">Use o <strong>uid</strong> do usuário logado em users/{uid} e regras com request.auth.uid.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Prompt para a IA — login Firebase</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — Firebase Authentication + Next.js</div>
+ <div class="prompt-text" id="prompt-auth">Implemente autenticação com Firebase Auth no SaaS "${name}" (Next.js App Router).${ctx}
+
+Já ativei: Email/Password e Google no console. Domínios: localhost e Vercel.
+
+Inclua:
+1. lib/firebase/client.ts com variáveis NEXT_PUBLIC_FIREBASE_*
+2. Páginas /login e /register (email+senha)
+3. Botão Entrar com Google
+4. Hook useAuth() com user, loading, logout
+5. Proteger /dashboard/* (redirect se não logado)
+6. Criar users/{uid} no Firestore após cadastro (plan: free)
+7. Erros em português
+8. Variáveis .env necessárias
+
+Explique em português simples.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-auth')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Checklist — login funcionando</div>
+ <div class="checklist">
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Email/senha ativado no Console</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Google ativado (se usar)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> localhost em Authorized domains</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> NEXT_PUBLIC_FIREBASE_* no .env.local</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Variáveis na Vercel + redeploy</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Cadastro e login no localhost OK</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> /dashboard bloqueado sem login</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Usuário em Authentication → Users</label>
+ </div>
+</div>`;
+  return;
+ }
+
+ area.innerHTML = `
+<div class="content-card">
+ <div class="content-card-title">NextAuth.js v5 (alternativa)</div>
+ <div class="info-box info">Use se preferir não usar Firebase Auth.</div>
+</div>
+<div class="content-card">
+ <div class="content-card-title">Prompt — NextAuth</div>
+ <div class="prompt-box">
+ <div class="prompt-label">Prompt — NextAuth v5</div>
+ <div class="prompt-text" id="prompt-auth">Implemente NextAuth v5 no SaaS "${name}".${ctx} Google, GitHub, email/senha, middleware /dashboard.</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-auth')">Copiar</button>
+ </div>
+</div>`;
+}
+
+function renderDbPrompt() {
+ const area = document.getElementById('db-content-area');
+ if (!area) return;
+ const name = saasName;
+ const ctx = saasBrief ? `\n\nContexto do produto:\n${saasBrief}` : '';
+
+ const prompts = {
+  supabase: {
+   label: 'Prompt — Banco Supabase + Prisma',
+   text: `Configure o banco de dados Supabase com Prisma para o SaaS "${name}".${ctx}\n\nSchema necessário:\n- User: id, email, name, image, plan, createdAt\n- Subscription: id, userId, stripeCustomerId, status, currentPeriodEnd\n\nInclua:\n1. schema.prisma completo\n2. Configuração do Prisma Client (lib/db.ts)\n3. Row Level Security (RLS) no Supabase\n4. Indexes otimizados\n5. Seed script para dados de teste`
+  },
+  firebase: {
+   label: 'Prompt — Firebase Firestore + Next.js',
+   text: `Implemente Firebase Firestore no SaaS "${name}" com Next.js App Router.${ctx}\n\nJá configurei no console: projeto Firebase, Firestore ativo, app Web registrado e variáveis no .env.local e na Vercel.\n\nInclua:\n1. lib/firebase/client.ts (SDK web — só chaves NEXT_PUBLIC_*)\n2. lib/firebase/admin.ts (Admin SDK — só no servidor)\n3. Coleções: users/{uid}, subscriptions/{uid}, [dados do produto]\n4. Regras Firestore: usuário só lê/escreve o próprio uid\n5. Funções server-side para criar/atualizar documentos com Admin SDK\n6. Tipos TypeScript para cada documento\n7. Checklist do que testar localmente e em produção`
+  },
+  planetscale: {
+   label: 'Prompt — PlanetScale + Prisma',
+   text: `Configure PlanetScale com Prisma para o SaaS "${name}".${ctx}\n\nInclua:\n1. Schema Prisma para MySQL\n2. Branching do PlanetScale para migrations seguras\n3. Connection string com @planetscale/database\n4. Deploy de schema sem downtime\n5. Indexes e queries otimizadas`
+  }
+ };
+
+ const slug = (name || 'meu-saas').toLowerCase().replace(/\s+/g, '-');
+
+ const firebaseTutorial = selectedDb === 'firebase' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial — Firebase do zero (console + chaves + Vercel)</div>
+ <div class="info-box warning"><strong>Não é só comando no terminal.</strong> No Firebase você cria o projeto no site, copia as chaves e cola nas variáveis de ambiente — no seu PC e na Vercel.</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Criar o projeto</strong></p>
+ <ol class="guide-steps">
+ <li>Acesse <strong>https://console.firebase.google.com</strong> e entre com sua conta Google.</li>
+ <li>Clique em <strong>Adicionar projeto</strong> → nome sugerido: <strong>${slug}</strong>.</li>
+ <li>Desative o Google Analytics se quiser começar mais simples (pode ativar depois).</li>
+ <li>Clique em <strong>Criar projeto</strong> e aguarde finalizar.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>2. Ativar o Firestore (banco)</strong></p>
+ <ol class="guide-steps">
+ <li>No menu lateral: <strong>Build → Firestore Database</strong>.</li>
+ <li>Clique em <strong>Criar banco de dados</strong>.</li>
+ <li>Modo <strong>Produção</strong> (recomendado) → escolha região próxima (ex.: <strong>southamerica-east1</strong>).</li>
+ <li>Confirme. O banco fica vazio — a IA vai criar as coleções no código.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Registrar app Web e pegar chaves públicas</strong></p>
+ <ol class="guide-steps">
+ <li>Na página inicial do projeto, clique no ícone <strong>&lt;/&gt; Web</strong>.</li>
+ <li>Apelido do app: <strong>${name}</strong> → <strong>Registrar app</strong>.</li>
+ <li>Copie o objeto <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">firebaseConfig</code> (apiKey, authDomain, projectId, etc.).</li>
+ <li>Essas chaves vão no <strong>.env.local</strong> com prefixo <strong>NEXT_PUBLIC_</strong> (podem aparecer no front).</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>4. Chave privada do servidor (Admin SDK)</strong></p>
+ <ol class="guide-steps">
+ <li><strong>Configurações do projeto</strong> (engrenagem) → aba <strong>Contas de serviço</strong>.</li>
+ <li>Clique em <strong>Gerar nova chave privada</strong> → baixa um arquivo <strong>.json</strong>.</li>
+ <li><strong>Nunca</strong> commite esse JSON no GitHub. Use só em variáveis de ambiente.</li>
+ <li>No Next.js, a IA converte isso em variáveis <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">FIREBASE_ADMIN_*</code>.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. Colar no .env.local (seu PC)</strong></p>
+ <div class="code-snippet"><span class="cm"># Chaves públicas (Firebase Console → App Web)</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_API_KEY</span>=<span class="str">sua_api_key</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN</span>=<span class="str">seu-projeto.firebaseapp.com</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_PROJECT_ID</span>=<span class="str">seu-projeto-id</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET</span>=<span class="str">seu-projeto.appspot.com</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</span>=<span class="str">123456789</span>
+<span class="var">NEXT_PUBLIC_FIREBASE_APP_ID</span>=<span class="str">1:123:web:abc</span>
+
+<span class="cm"># Servidor (JSON da conta de serviço — NÃO commitar)</span>
+<span class="var">FIREBASE_ADMIN_PROJECT_ID</span>=<span class="str">seu-projeto-id</span>
+<span class="var">FIREBASE_ADMIN_CLIENT_EMAIL</span>=<span class="str">firebase-adminsdk@...</span>
+<span class="var">FIREBASE_ADMIN_PRIVATE_KEY</span>=<span class="str">"-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n"</span></div>
+ <div class="info-box info">Reinicie o servidor Next.js depois de salvar o <strong>.env.local</strong> (<code style="background:#f1f5f9;padding:2px 6px;border-radius:4px">npm run dev</code>).</div>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>6. Colar na Vercel (produção)</strong></p>
+ <ol class="guide-steps">
+ <li>Abra <strong>vercel.com</strong> → seu projeto → <strong>Settings → Environment Variables</strong>.</li>
+ <li>Crie <strong>as mesmas variáveis</strong> do .env.local (Production + Preview + Development).</li>
+ <li>Em <strong>FIREBASE_ADMIN_PRIVATE_KEY</strong>, cole a chave inteira; na Vercel use <strong>\\n</strong> nas quebras de linha.</li>
+ <li>Clique em <strong>Save</strong> e faça um <strong>Redeploy</strong> para aplicar.</li>
+ </ol>
+
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>7. Regras de segurança no Firestore</strong></p>
+ <ol class="guide-steps">
+ <li>Firestore → aba <strong>Regras</strong>.</li>
+ <li>Comece restrito: só usuário autenticado acessa o próprio <strong>uid</strong> (a IA gera o arquivo de regras).</li>
+ <li>Clique em <strong>Publicar</strong> após revisar com a IA.</li>
+ </ol>
+</div>` : '';
+ const supabaseTutorial = selectedDb === 'supabase' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial — Supabase do zero (console + chaves + Vercel)</div>
+ <ol class="guide-steps">
+ <li>Acesse <strong>https://supabase.com</strong> → <strong>New project</strong> → escolha nome e senha do banco.</li>
+ <li>Em <strong>Project Settings → API</strong>, copie <strong>Project URL</strong>, <strong>anon key</strong> (pública) e <strong>service_role</strong> (só servidor).</li>
+ <li>Cole no <strong>.env.local</strong>: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.</li>
+ <li>Na <strong>Vercel → Settings → Environment Variables</strong>, repita as mesmas chaves e faça redeploy.</li>
+ <li>Depois use o prompt abaixo na IA para Prisma + RLS.</li>
+ </ol>
+</div>` : '';
+
+ const planetTutorial = selectedDb === 'planetscale' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial — PlanetScale (console + connection string)</div>
+ <ol class="guide-steps">
+ <li>Crie banco em <strong>planetscale.com</strong> → copie a <strong>connection string</strong>.</li>
+ <li>Coloque em DATABASE_URL no .env.local e na Vercel.</li>
+ <li>Use o prompt abaixo para Prisma + migrations.</li>
+ </ol>
+</div>` : '';
+
+ const supabaseExtra = selectedDb === 'supabase' ? `
+<div class="content-card">
+ <div class="content-card-title">Código: Prisma Client singleton</div>
+ <div class="code-snippet"><span class="cm">// lib/db.ts</span>
+<span class="kw">import</span> { PrismaClient } <span class="kw">from</span> <span class="str">'@prisma/client'</span>
+<span class="kw">const</span> <span class="var">g</span> = globalThis <span class="kw">as</span> { prisma?: PrismaClient }
+<span class="kw">export const</span> <span class="var">db</span> = <span class="var">g</span>.prisma ?? <span class="kw">new</span> <span class="fn">PrismaClient</span>()
+<span class="kw">if</span> (process.env.<span class="var">NODE_ENV</span> !== <span class="str">'production'</span>) <span class="var">g</span>.prisma = <span class="var">db</span></div>
+</div>
+<div class="content-card">
+ <div class="content-card-title">Row Level Security (RLS) <span class="content-tag security">Segurança</span></div>
+ <div class="info-box info"><strong>RLS no Supabase</strong> garante que cada usuário só acessa os próprios dados.</div>
+</div>` : '';
+
+ const checklist = `
+<div class="content-card">
+ <div class="content-card-title">Checklist — banco configurado</div>
+ <div class="checklist">
+ ${selectedDb === 'firebase' ? `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto criado no Firebase Console</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Firestore ativado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> App Web registrado e chaves NEXT_PUBLIC_* no .env.local</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Chave Admin no .env.local — sem commit no Git</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Mesmas variáveis na Vercel + redeploy feito</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Regras Firestore publicadas</label>
+ ` : selectedDb === 'supabase' ? `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto Supabase criado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> URL e keys no .env.local</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Variáveis na Vercel</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Prisma schema + migration rodados</label>
+ ` : `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Banco PlanetScale criado</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> DATABASE_URL no .env.local e Vercel</label>
+ `}
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Prompt copiado e código testado localmente</label>
+ </div>
+</div>`;
+
+ const p = prompts[selectedDb] || prompts.supabase;
+ area.innerHTML = firebaseTutorial + supabaseTutorial + planetTutorial + `
+<div class="content-card">
+ <div class="content-card-title">Prompt para a IA montar o código <span class="content-tag speed">Depois do tutorial</span></div>
+ <div class="prompt-box">
+ <div class="prompt-label">${p.label}</div>
+ <div class="prompt-text" id="prompt-db">${p.text}</div>
+ <button class="copy-btn" onclick="copyPrompt('prompt-db')">Copiar</button>
+ </div>
+</div>
+${supabaseExtra}
+${checklist}`;
+}
+
+function renderStep(n) {
+ const main = document.getElementById('plat-main');
+ if (!main || typeof steps[n] !== 'function') return;
+ try {
+ main.innerHTML = steps[n]();
+ if (n === 10) renderDeployPrompt();
+ if (n === 5) renderAuthContent();
+ if (n === 6) renderDbPrompt();
+ requestAnimationFrame(() => {
+ animatePlatformStep();
+ scheduleScrollToTop();
+ });
+ } catch (err) {
+ console.error('Erro ao renderizar passo', n, err);
+ main.innerHTML = '<div class="content-card"><p style="color:#b91c1c">Erro ao carregar este passo. Recarregue a página ou volte um passo.</p></div>';
+ }
+}
+
+// ─── LINHAS DE ENERGIA (#about) ──────────────
+let aboutEnergyTweens = [];
+let aboutEnergyResizeTimer;
+let aboutEnergyObserver = null;
+
+function aboutEnergyInView() {
+ const about = document.getElementById("about");
+ if (!about) return false;
+ const r = about.getBoundingClientRect();
+ const vh = window.innerHeight || document.documentElement.clientHeight;
+ return r.bottom > vh * 0.12 && r.top < vh * 0.92;
+}
+
+function aboutEnergyUnionRect(...rects) {
+ const valid = rects.filter((r) => r && r.width > 0 && r.height > 0);
+ if (!valid.length) return null;
+ const left = Math.min(...valid.map((r) => r.left));
+ const top = Math.min(...valid.map((r) => r.top));
+ const right = Math.max(...valid.map((r) => r.right));
+ const bottom = Math.max(...valid.map((r) => r.bottom));
+ return { left, top, right, bottom, width: right - left, height: bottom - top };
+}
+
+function aboutEnergyToLocal(rect, stageRect) {
+ return {
+ left: rect.left - stageRect.left,
+ top: rect.top - stageRect.top,
+ right: rect.right - stageRect.left,
+ bottom: rect.bottom - stageRect.top,
+ width: rect.width,
+ height: rect.height
+ };
+}
+
+function aboutEnergyRoundedLoop(x1, y1, x2, y2, cr) {
+ const r = Math.min(cr, (x2 - x1) / 2, (y2 - y1) / 2);
+ return [
+ `M ${x1 + r} ${y1}`,
+ `H ${x2 - r}`,
+ `Q ${x2} ${y1} ${x2} ${y1 + r}`,
+ `V ${y2 - r}`,
+ `Q ${x2} ${y2} ${x2 - r} ${y2}`,
+ `H ${x1 + r}`,
+ `Q ${x1} ${y2} ${x1} ${y2 - r}`,
+ `V ${y1 + r}`,
+ `Q ${x1} ${y1} ${x1 + r} ${y1}`,
+ "Z"
+ ].join(" ");
+}
+
+function bindAboutEnergyObserver() {
+ if (aboutEnergyObserver || !window.ResizeObserver) return;
+ const stage = document.querySelector(".about-stage");
+ if (!stage) return;
+ aboutEnergyObserver = new ResizeObserver(() => scheduleAboutEnergyRedraw());
+ aboutEnergyObserver.observe(stage);
+ const img = document.querySelector("#about-photo-card img");
+ if (img) {
+ if (img.complete) scheduleAboutEnergyRedraw();
+ else img.addEventListener("load", scheduleAboutEnergyRedraw, { once: true });
+ aboutEnergyObserver.observe(img);
+ }
+ document.querySelector(".about-highlights")?.querySelectorAll(".about-highlight").forEach((el) => {
+ aboutEnergyObserver.observe(el);
+ });
+}
+
+function initAboutEnergyLines() {
+ const stage = document.querySelector(".about-stage");
+ const svg = document.getElementById("about-energy-svg");
+ const photo = document.getElementById("about-photo-card");
+ const highlightsEl = document.querySelector(".about-highlights");
+ const highlights = [...document.querySelectorAll(".about-highlight[data-energy]")];
+ const desktop = window.matchMedia("(min-width: 1025px)").matches;
+ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+ aboutEnergyTweens.forEach((t) => t.kill());
+ aboutEnergyTweens = [];
+
+ if (!stage || !svg || !photo || !highlightsEl || highlights.length < 4 || !desktop) {
+ if (svg) svg.innerHTML = "";
+ return;
+ }
+
+ if (!aboutEnergyInView()) {
+ if (svg) svg.innerHTML = "";
+ return;
+ }
+
+ const sr = stage.getBoundingClientRect();
+ const w = Math.max(1, Math.round(sr.width));
+ const h = Math.max(1, Math.round(sr.height));
+ svg.setAttribute("width", w);
+ svg.setAttribute("height", h);
+ svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+ svg.innerHTML = "";
+
+ const zoneRects = [highlightsEl.getBoundingClientRect()];
+ const zone = aboutEnergyUnionRect(...zoneRects);
+ if (!zone) return;
+
+ const zoneLocal = aboutEnergyToLocal(zone, sr);
+ const photoLocal = aboutEnergyToLocal(photo.getBoundingClientRect(), sr);
+
+ const pad = 12;
+ const x1 = zoneLocal.left - pad;
+ const y1 = zoneLocal.top - pad;
+ const x2 = zoneLocal.right + pad;
+ const y2 = zoneLocal.bottom + pad;
+ const cr = Math.min(20, Math.max(12, Math.min(zoneLocal.width, zoneLocal.height) * 0.06));
+
+ const hubX = x1;
+ const hubY = (y1 + y2) / 2;
+
+ const photoAttachX = photoLocal.right;
+ const photoAttachY = photoLocal.top + photoLocal.height / 2;
+
+ const dLoop = aboutEnergyRoundedLoop(x1, y1, x2, y2, cr);
+
+ function addPath(d, extraClass, delayIdx) {
+ const glow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+ glow.setAttribute("d", d);
+ glow.setAttribute("class", "about-energy-path about-energy-path--soft");
+ svg.appendChild(glow);
+ const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+ path.setAttribute("d", d);
+ path.setAttribute("class", "about-energy-path" + (extraClass ? " " + extraClass : ""));
+ path.style.animationDelay = `${(delayIdx || 0) * 0.18}s`;
+ svg.appendChild(path);
+ return path;
+ }
+
+ function animateDotOnPath(path, delay, duration, dotR) {
+ if (reduced || typeof gsap === "undefined") return;
+ const trail = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+ trail.setAttribute("class", "about-energy-dot about-energy-dot--trail");
+ trail.setAttribute("r", dotR > 3 ? "2.5" : "2");
+ svg.appendChild(trail);
+ const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+ dot.setAttribute("class", "about-energy-dot");
+ dot.setAttribute("r", String(dotR));
+ svg.appendChild(dot);
+ const len = path.getTotalLength();
+ const lead = { t: 0 };
+ const follow = { t: 0 };
+ aboutEnergyTweens.push(gsap.to(lead, {
+ t: 1, duration, repeat: -1, delay, ease: "power2.inOut",
+ onUpdate() {
+ const pt = path.getPointAtLength(lead.t * len);
+ dot.setAttribute("cx", pt.x);
+ dot.setAttribute("cy", pt.y);
+ dot.setAttribute("opacity", 0.35 + Math.sin(lead.t * Math.PI) * 0.65);
+ }
+ }));
+ aboutEnergyTweens.push(gsap.to(follow, {
+ t: 1, duration, repeat: -1, delay: delay + 0.1, ease: "power2.inOut",
+ onUpdate() {
+ const pt = path.getPointAtLength(Math.max(0, follow.t * len - 16));
+ trail.setAttribute("cx", pt.x);
+ trail.setAttribute("cy", pt.y);
+ }
+ }));
+ }
+
+ const loop = addPath(dLoop, "about-energy-path--loop", 0);
+ animateDotOnPath(loop, 0, 5.5, 3);
+
+ const dist = Math.max(40, hubX - photoAttachX);
+ const bend = Math.min(120, dist * 0.45);
+ const dTrunk = `M ${hubX} ${hubY} C ${hubX - bend} ${hubY}, ${photoAttachX + bend * 0.35} ${photoAttachY}, ${photoAttachX} ${photoAttachY}`;
+ const trunk = addPath(dTrunk, "about-energy-path--trunk", 0);
+ animateDotOnPath(trunk, 0.35, 2.2, 4.5);
+
+ const hub = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+ hub.setAttribute("class", "about-energy-hub");
+ hub.setAttribute("cx", hubX);
+ hub.setAttribute("cy", hubY);
+ hub.setAttribute("r", "5");
+ svg.appendChild(hub);
+}
+
+function scheduleAboutEnergyRedraw() {
+ clearTimeout(aboutEnergyResizeTimer);
+ aboutEnergyResizeTimer = setTimeout(() => {
+ requestAnimationFrame(() => requestAnimationFrame(initAboutEnergyLines));
+ }, 80);
+}
+
+function scheduleAboutEnergyAfterMotion() {
+ scheduleAboutEnergyRedraw();
+ setTimeout(scheduleAboutEnergyRedraw, 450);
+ setTimeout(scheduleAboutEnergyRedraw, 900);
+}
+
+// ─── GSAP ANIMATIONS ─────────────────────────
+let landingAnimations;
+
+function initLandingGSAP() {
+ if (typeof gsap === "undefined") return;
+ gsap.registerPlugin(ScrollTrigger);
+ landingAnimations?.kill?.();
+ ScrollTrigger.getAll().forEach(st => {
+ const tr = st.trigger;
+ if (st.vars?.id === "demo-player-st") return;
+ if (tr && document.getElementById("landing")?.contains(tr)) st.kill();
+ });
+
+ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const heroTargets = "#hero .hero-badge, #hero h1, #hero .hero-sub, #hero .hero-actions, #hero .hero-actions button, #hero .hero-stats, #hero .stat";
+
+ if (reduced) {
+ gsap.set("#landing .pain-card, #landing .price-card, #landing .feat-item, #landing .preview-mockup, #path .step-card, #about .about-photo, #about .about-content > *", { clearProps: "all", opacity: 1, y: 0, x: 0, scale: 1 });
+ gsap.set(".hero-float-icon, " + heroTargets, { clearProps: "all", opacity: 1, y: 0, x: 0, scale: 1 });
+ initAboutEnergyLines();
+ return;
+ }
+
+ const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+ tl.fromTo(".hero-float-icon",
+ { scale: 0, opacity: 0, transformOrigin: "50% 50%" },
+ { scale: 1, opacity: 1, duration: 0.8, stagger: 0.15, ease: "back.out(2.5)" },
+ 0.1
+ );
+ tl.fromTo("#hero .hero-badge", { opacity: 0, y: 28, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.55 })
+ .fromTo("#hero h1", { opacity: 0, y: 36 }, { opacity: 1, y: 0, duration: 0.65 }, "-=0.25")
+ .fromTo("#hero .hero-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55 }, "-=0.35")
+ .fromTo("#hero .hero-actions button", { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.12, duration: 0.45 }, "-=0.25")
+ .fromTo("#hero .stat", { opacity: 0, y: 18 }, { opacity: 1, y: 0, stagger: 0.08, duration: 0.45 }, "-=0.2");
+
+ gsap.to("#hero .hero-glow", {
+ scale: 1.12,
+ opacity: 0.85,
+ duration: 2.8,
+ repeat: -1,
+ yoyo: true,
+ ease: "sine.inOut"
+ });
+
+ function startHeroFloat() {
+ document.querySelectorAll(".hero-float-icon").forEach((icon, i) => {
+ gsap.killTweensOf(icon);
+ gsap.set(icon, { x: 0, y: 0 });
+ gsap.to(icon, {
+ y: i % 2 === 0 ? 12 : -10,
+ duration: 2.2 + i * 0.3,
+ repeat: -1,
+ yoyo: true,
+ ease: "sine.inOut",
+ delay: 0.5 + i * 0.18
+ });
+ });
+ }
+ tl.call(startHeroFloat, null, "+=0.2");
+
+ gsap.from("#path .section-label, #path .section-title, .path-intro", {
+ scrollTrigger: { trigger: "#path", start: "top 85%", id: "landing-path-head" },
+ opacity: 0, y: 28, duration: 0.6, stagger: 0.08
+ });
+ gsap.from("#path .step-card", {
+ scrollTrigger: { trigger: "#path .steps-grid", start: "top 88%", id: "landing-path-steps" },
+ opacity: 0, y: 36, scale: 0.96, stagger: 0.12, duration: 0.65, ease: "back.out(1.1)"
+ });
+ gsap.from("#about .about-photo", {
+ scrollTrigger: { trigger: "#about", start: "top 85%", id: "landing-about-photo" },
+ opacity: 0, x: -30, duration: 0.7, ease: "power3.out",
+ onComplete: scheduleAboutEnergyRedraw
+ });
+ gsap.from("#about .about-content > *", {
+ scrollTrigger: { trigger: "#about", start: "top 85%", id: "landing-about-content" },
+ opacity: 0, y: 24, stagger: 0.07, duration: 0.55, ease: "power2.out",
+ onComplete: scheduleAboutEnergyRedraw
+ });
+ if (!document.getElementById("about")?.dataset.energyBound) {
+ document.getElementById("about").dataset.energyBound = "1";
+ ScrollTrigger.create({
+ trigger: "#about",
+ start: "top 88%",
+ onEnter: scheduleAboutEnergyAfterMotion,
+ onEnterBack: scheduleAboutEnergyAfterMotion,
+ onRefresh: scheduleAboutEnergyRedraw
+ });
+ bindAboutEnergyObserver();
+ }
+ gsap.from("#pain .section-label, #pain .section-title", {
+ scrollTrigger: { trigger: "#pain", start: "top 82%", id: "landing-pain-title" },
+ opacity: 0, y: 32, duration: 0.65, stagger: 0.1
+ });
+
+ gsap.from(".pain-card", {
+ scrollTrigger: { trigger: ".pain-grid", start: "top 85%", id: "landing-pain-cards" },
+ opacity: 0, y: 48, scale: 0.94, stagger: 0.09, duration: 0.7, ease: "back.out(1.15)"
+ });
+
+ gsap.from("#preview .section-label, #preview .section-title", {
+ scrollTrigger: { trigger: "#preview", start: "top 82%", id: "landing-preview-title" },
+ opacity: 0, y: 28, duration: 0.6, stagger: 0.08
+ });
+
+ gsap.from(".feat-item", {
+ scrollTrigger: { trigger: ".preview-features", start: "top 80%", id: "landing-feats" },
+ opacity: 0, x: -36, stagger: 0.07, duration: 0.55, ease: "power2.out"
+ });
+
+ gsap.from("#demo-player", {
+ scrollTrigger: { trigger: "#demo-player", start: "top 85%", id: "landing-mockup" },
+ opacity: 0, x: 40, scale: 0.96, duration: 0.75, ease: "power3.out"
+ });
+
+ gsap.from("#pricing .section-label, #pricing .section-title, .pricing-toggle", {
+ scrollTrigger: { trigger: "#pricing", start: "top 85%", id: "landing-pricing-head" },
+ opacity: 0, y: 24, stagger: 0.08, duration: 0.55
+ });
+
+ gsap.from(".price-card", {
+ scrollTrigger: { trigger: ".pricing-cards", start: "top 82%", id: "landing-pricing-cards" },
+ opacity: 0, y: 55, stagger: 0.14, duration: 0.75, ease: "power3.out"
+ });
+
+ document.querySelectorAll("#landing .dot-card-frame").forEach(card => {
+ if (card.dataset.cardHover) return;
+ card.dataset.cardHover = "1";
+ card.addEventListener("mouseenter", () => gsap.to(card, { y: -5, scale: 1.015, duration: 0.3, ease: "power2.out" }));
+ card.addEventListener("mouseleave", () => gsap.to(card, { y: 0, scale: 1, duration: 0.35, ease: "power2.out" }));
+ });
+
+ landingAnimations = tl;
+ bindAboutEnergyObserver();
+ if (aboutEnergyInView()) scheduleAboutEnergyAfterMotion();
+}
+
+function animatePlatformStep() {
+ if (typeof gsap === "undefined") return;
+ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const targets = "#plat-main .step-header > *, #plat-main .content-card, #plat-main .prompt-box";
+ const nav = "#plat-main .step-nav > *";
+ if (reduced) {
+ gsap.set(targets + ", " + nav, { clearProps: "all", opacity: 1, y: 0 });
+ return;
+ }
+ gsap.fromTo(targets,
+ { opacity: 0, y: 28 },
+ { opacity: 1, y: 0, stagger: 0.06, duration: 0.5, ease: "power2.out", overwrite: "auto" }
+ );
+ gsap.fromTo(nav,
+ { opacity: 0, y: 12 },
+ { opacity: 1, y: 0, stagger: 0.05, duration: 0.35, ease: "power2.out", overwrite: "auto", delay: 0.15 }
+ );
+}
+
+function animatePriceChange() {
+ if (typeof gsap === "undefined") return;
+ ["price1", "price2"].forEach(id => {
+ const el = document.getElementById(id);
+ if (!el) return;
+ gsap.fromTo(el, { y: 12, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" });
+ });
+}
+
+// ─── DEMO ANIMADA (pseudo-vídeo) ─────────────
+let demoTimeline = null;
+let demoObserver = null;
+
+function initDemoPlayer(force) {
+ const player = document.getElementById("demo-player");
+ if (!player || typeof gsap === "undefined") return;
+ if (player.dataset.demoInit && !force) return;
+
+ if (force) {
+ demoTimeline?.kill();
+ demoTimeline = null;
+ demoObserver?.disconnect();
+ demoObserver = null;
+ ScrollTrigger.getById("demo-player-st")?.kill();
+ }
+
+ player.dataset.demoInit = "1";
+
+ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ const stage = document.getElementById("demo-stage");
+ const scenes = [...player.querySelectorAll(".demo-scene")];
+ const dots = [...player.querySelectorAll(".demo-progress-dot")];
+ const cursor = document.getElementById("demo-cursor");
+ const ring = document.getElementById("demo-click-ring");
+ const toast = document.getElementById("demo-toast");
+ const urlEl = document.getElementById("mockup-url-display");
+ const titleEl = document.getElementById("mockup-title-display");
+ const mrrEl = document.getElementById("demo-mrr");
+ const usersEl = document.getElementById("demo-users");
+ const statMrr = document.getElementById("demo-stat-mrr");
+ const statUsers = document.getElementById("demo-stat-users");
+ const bars = [...player.querySelectorAll(".demo-bar")];
+ const termLines = [...player.querySelectorAll(".demo-term-line")];
+ const termCursor = document.getElementById("demo-term-cursor");
+ const checkoutIcon = document.getElementById("demo-checkout-icon");
+ const checkoutCard = document.getElementById("demo-checkout-card");
+
+ function setScene(i) {
+ scenes.forEach((s, idx) => s.classList.toggle("demo-scene--active", idx === i));
+ dots.forEach((d, idx) => d.classList.toggle("demo-progress-dot--active", idx === i));
+ }
+
+ function getPos(el) {
+ const sr = stage.getBoundingClientRect();
+ const er = el.getBoundingClientRect();
+ return { x: er.left - sr.left + er.width / 2 - 8, y: er.top - sr.top + er.height / 2 - 8 };
+ }
+
+ function moveCursor(el, dur = 0.55) {
+ const p = getPos(el);
+ return gsap.to(cursor, { left: p.x, top: p.y, opacity: 1, duration: dur, ease: "power2.inOut" });
+ }
+
+ function clickAt(el) {
+ const p = getPos(el);
+ gsap.set(ring, { left: p.x - 8, top: p.y - 8, scale: 0.5, opacity: 0.85 });
+ return gsap.to(ring, { scale: 1.45, opacity: 0, duration: 0.45, ease: "power2.out" });
+ }
+
+ function showToast(html) {
+ toast.innerHTML = html;
+ return gsap.timeline()
+ .to(toast, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" })
+ .to(toast, { opacity: 0, y: 12, duration: 0.35, delay: 1.8 });
+ }
+
+ function resetDashboard() {
+ mrrEl.textContent = "R$ 3.8k";
+ usersEl.textContent = "118";
+ statMrr.classList.remove("demo-stat--highlight");
+ statUsers.classList.remove("demo-stat--highlight");
+ gsap.set(bars, { scaleY: 0.15, transformOrigin: "bottom center" });
+ }
+
+ function buildTimeline() {
+ demoTimeline?.kill();
+ resetDashboard();
+ setScene(0);
+ urlEl.textContent = "meu-saas.vercel.app/dashboard";
+ titleEl.textContent = "Dashboard";
+ gsap.set(cursor, { opacity: 0 });
+ gsap.set(toast, { opacity: 0, y: 12 });
+ gsap.set(termLines, { opacity: 0, x: -10 });
+ gsap.set(termCursor, { opacity: 0 });
+ gsap.set(checkoutIcon, { scale: 0 });
+ gsap.set(checkoutCard, { opacity: 1, y: 0 });
+
+ const tl = gsap.timeline({ repeat: -1, repeatDelay: 1.2 });
+
+ tl.add(() => { setScene(0); urlEl.textContent = "meu-saas.vercel.app/dashboard"; titleEl.textContent = "Dashboard"; });
+ tl.fromTo(scenes[0], { opacity: 0.5 }, { opacity: 1, duration: 0.45 });
+ tl.to(bars, {
+ scaleY: (i, el) => (parseFloat(el.dataset.h) || 40) / 100,
+ duration: 0.85,
+ stagger: 0.06,
+ ease: "power2.out",
+ transformOrigin: "bottom center"
+ }, 0);
+ tl.add(moveCursor(statMrr), 0.35);
+ tl.add(() => {
+ const o = { v: 3.8 };
+ gsap.to(o, { v: 4.2, duration: 1.1, ease: "power2.out", onUpdate: () => { mrrEl.textContent = "R$ " + o.v.toFixed(1) + "k"; } });
+ statMrr.classList.add("demo-stat--highlight");
+ }, 0.55);
+ tl.add(clickAt(statMrr), 0.45);
+ tl.add(moveCursor(statUsers), "+=0.15");
+ tl.add(() => {
+ const o = { v: 118 };
+ gsap.to(o, { v: 128, duration: 0.95, ease: "power2.out", onUpdate: () => { usersEl.textContent = Math.round(o.v); } });
+ statUsers.classList.add("demo-stat--highlight");
+ }, "+=0.1");
+ tl.add(clickAt(statUsers), "+=0.05");
+ tl.add(showToast("<strong>Novo assinante</strong> · +R$ 50/mês"), "+=0.15");
+ tl.to(cursor, { opacity: 0, duration: 0.3 }, "+=2");
+
+ tl.to(scenes[0], { opacity: 0, duration: 0.35 });
+ tl.add(() => {
+ setScene(1);
+ urlEl.textContent = "github.com/seu-usuario/meu-saas/actions";
+ titleEl.textContent = "Deploy";
+ gsap.set(scenes[1], { opacity: 0 });
+ gsap.set(termLines, { opacity: 0, x: -10 });
+ });
+ tl.to(scenes[1], { opacity: 1, duration: 0.45 });
+ tl.to(termLines, { opacity: 1, x: 0, duration: 0.32, stagger: 0.42, ease: "power2.out" }, "-=0.15");
+ tl.to(termCursor, { opacity: 1, duration: 0.35, repeat: 7, yoyo: true, ease: "steps(1)" }, "-=2");
+ tl.to(termCursor, { opacity: 0, duration: 0.15 }, "+=0.3");
+ tl.to({}, { duration: 0.6 });
+
+ tl.to(scenes[1], { opacity: 0, duration: 0.35 });
+ tl.add(() => {
+ setScene(2);
+ urlEl.textContent = "checkout.stripe.com/c/pay_…";
+ titleEl.textContent = "Stripe";
+ gsap.set(scenes[2], { opacity: 0 });
+ gsap.set(checkoutCard, { y: 24, opacity: 0 });
+ gsap.set(checkoutIcon, { scale: 0 });
+ });
+ tl.to(scenes[2], { opacity: 1, duration: 0.45 });
+ tl.to(checkoutCard, { y: 0, opacity: 1, duration: 0.55, ease: "power3.out" }, "-=0.2");
+ tl.to(checkoutIcon, { scale: 1, duration: 0.55, ease: "back.out(2.8)" }, "-=0.25");
+ tl.to({}, { duration: 2.2 });
+
+ return tl;
+ }
+
+ if (reduced) {
+ setScene(0);
+ gsap.set(bars, { scaleY: (i, el) => (parseFloat(el.dataset.h) || 40) / 100, transformOrigin: "bottom center" });
+ return;
+ }
+
+ function startDemo() {
+ if (!demoTimeline) demoTimeline = buildTimeline();
+ else demoTimeline.restart(true);
+ demoTimeline.play();
+ }
+
+ function pauseDemo() {
+ demoTimeline?.pause();
+ }
+
+ function isInView() {
+ const r = player.getBoundingClientRect();
+ return r.top < window.innerHeight * 0.92 && r.bottom > window.innerHeight * 0.08;
+ }
+
+ demoObserver?.disconnect();
+ demoObserver = new IntersectionObserver((entries) => {
+ entries.forEach((entry) => {
+ if (entry.isIntersecting) startDemo();
+ else pauseDemo();
+ });
+ }, { threshold: 0.2, rootMargin: "40px 0px" });
+ demoObserver.observe(player);
+
+ ScrollTrigger.create({
+ id: "demo-player-st",
+ trigger: player,
+ start: "top 92%",
+ end: "bottom 8%",
+ onEnter: startDemo,
+ onEnterBack: startDemo,
+ onLeave: pauseDemo,
+ onLeaveBack: pauseDemo
+ });
+
+ if (isInView()) startDemo();
+
+ window.addEventListener("load", () => {
+ if (typeof ScrollTrigger !== "undefined") ScrollTrigger.refresh();
+ if (isInView()) startDemo();
+ }, { once: true });
+}
+
+function initHeroFloatIcons() {
+ const icons = document.querySelectorAll(".hero-float-icon");
+ if (!icons.length) return;
+ const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+ if (typeof gsap === "undefined" || reduced) return;
+ icons.forEach((el) => {
+ if (gsap.getProperty(el, "opacity") < 0.5) {
+ gsap.set(el, { scale: 1, opacity: 1, x: 0, y: 0 });
+ }
+ });
+}
+
+function ensureHeroButtonsVisible() {
+ const sel = "#hero .hero-actions button, #hero .stat, #hero .hero-actions, #hero .hero-stats";
+ document.querySelectorAll(sel).forEach((el) => {
+ el.style.opacity = "1";
+ el.style.visibility = "visible";
+ el.style.transform = "none";
+ });
+ if (typeof gsap !== "undefined") {
+ gsap.set(sel, { opacity: 1, y: 0, x: 0, scale: 1, clearProps: "transform" });
+ }
+}
+
+
+function initMobileNav() {
+ const btn = document.getElementById("nav-menu-btn");
+ const links = document.getElementById("nav-links");
+ const overlay = document.getElementById("nav-overlay");
+ if (!btn || !links || btn.dataset.navReady) return;
+ btn.dataset.navReady = "1";
+ function closeMenu() {
+  links.classList.remove("open");
+  overlay?.classList.remove("open");
+  btn.setAttribute("aria-expanded", "false");
+  document.body.classList.remove("nav-open");
+ }
+ function openMenu() {
+  links.classList.add("open");
+  overlay?.classList.add("open");
+  btn.setAttribute("aria-expanded", "true");
+  document.body.classList.add("nav-open");
+ }
+ btn.addEventListener("click", () => {
+  links.classList.contains("open") ? closeMenu() : openMenu();
+ });
+ overlay?.addEventListener("click", closeMenu);
+ links.querySelectorAll("a").forEach((a) => a.addEventListener("click", closeMenu));
+ window.addEventListener("resize", () => {
+  if (window.innerWidth > 900) closeMenu();
+ });
+}
+
+
+window.addEventListener("pageshow", () => {
+ resetSaasOnboardingUi();
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+ resetSaasOnboardingUi();
+ initMobileNav();
+ initLandingGSAP();
+ initDemoPlayer();
+ window.addEventListener("resize", scheduleAboutEnergyRedraw);
+ document.addEventListener("keydown", (e) => {
+ if (e.key === "Escape") dismissSaasOnboarding();
+ });
+ setTimeout(() => {
+ initHeroFloatIcons();
+ ensureHeroButtonsVisible();
+ bindAboutEnergyObserver();
+ if (aboutEnergyInView()) scheduleAboutEnergyAfterMotion();
+ }, 1200);
+});
+window.addEventListener("load", () => {
+ bindAboutEnergyObserver();
+ scheduleAboutEnergyRedraw();
+});
+</script>
+</body>
+</html>
