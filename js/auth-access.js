@@ -123,8 +123,7 @@
     const email = normalizeEmail(user.email);
 
     const now = firebase.firestore.FieldValue.serverTimestamp();
-
-
+    const configuredAdmin = isConfiguredAdmin(user.email);
 
     if (!snap.exists) {
 
@@ -132,9 +131,9 @@
 
         email,
 
-        role: "user",
+        role: configuredAdmin ? "admin" : "user",
 
-        libraryAccess: false,
+        libraryAccess: !!configuredAdmin,
 
         createdAt: now,
 
@@ -176,40 +175,49 @@
 
 
 
+  function setNavVisible(el, show) {
+    if (!el) return;
+    if (show) {
+      el.hidden = false;
+      el.removeAttribute("hidden");
+    } else {
+      el.hidden = true;
+    }
+  }
+
   function updateAccessNav(user) {
-
     const loginBtn = document.getElementById("nav-login-btn");
-
     const userBtn = document.getElementById("nav-user-btn");
-
     const adminBtn = document.getElementById("nav-admin-btn");
+    const adminLink = document.getElementById("nav-admin-link");
+    const adminFab = document.getElementById("admin-fab");
+    const platAdminBtn = document.getElementById("plat-admin-btn");
+    const isAdmin = user && window.isLabAdmin(user);
 
-    if (loginBtn) loginBtn.style.display = user ? "none" : "";
+    setNavVisible(loginBtn, !user);
+    setNavVisible(userBtn, !!user);
+    setNavVisible(adminBtn, isAdmin);
+    setNavVisible(platAdminBtn, isAdmin);
+
+    if (adminFab) {
+      if (isAdmin) {
+        adminFab.hidden = false;
+        adminFab.classList.add("is-visible");
+      } else {
+        adminFab.hidden = true;
+        adminFab.classList.remove("is-visible");
+      }
+    }
+
+    if (adminLink) {
+      adminLink.style.display = isAdmin ? "block" : "none";
+    }
 
     if (userBtn) {
-
-      userBtn.style.display = user ? "" : "none";
-
       const name = user?.email ? user.email.split("@")[0] : "Conta";
-
-      userBtn.textContent = window.isLabAdmin(user) ? name + " (admin)" : name;
-
+      userBtn.textContent = isAdmin ? name + " (admin)" : name;
+      userBtn.title = isAdmin ? "Logado como admin — use Painel admin ou o botão Admin no canto" : "Sair da conta";
     }
-
-    if (adminBtn) {
-
-      adminBtn.style.display = user && window.isLabAdmin(user) ? "" : "none";
-
-    }
-
-    const platAdminBtn = document.getElementById("plat-admin-btn");
-
-    if (platAdminBtn) {
-
-      platAdminBtn.style.display = user && window.isLabAdmin(user) ? "" : "none";
-
-    }
-
   }
 
 
@@ -491,15 +499,16 @@
       showAuthMsg("Entrando…", "info");
 
       await auth.signInWithEmailAndPassword(email, pass);
+      await refreshLabUserProfile(auth.currentUser);
+      updateAccessNav(auth.currentUser);
 
       if (window.isLabAdmin(auth.currentUser)) {
-
-        showAuthMsg("Bem-vindo, admin!", "success");
-
+        showAuthMsg(
+          "Bem-vindo, admin! Clique em Painel admin ou no botão Admin (canto inferior direito).",
+          "success"
+        );
       } else {
-
         showAuthMsg("Login ok! Verificando acesso…", "success");
-
       }
 
       await afterAuthSuccess(auth.currentUser);
