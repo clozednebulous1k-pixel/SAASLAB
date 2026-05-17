@@ -9,7 +9,7 @@ window.goToCheckout = function goToCheckout(plan) {
   const url = window.CHECKOUT_LINKS[plan] || window.CHECKOUT_LINKS.pro;
   if (!url || url.startsWith("COLOQUE_")) {
     alert(
-      "Configure o link de pagamento em js/checkout-config.js (planos Starter e Pro)."
+      "Configure o link de pagamento em js/checkout-config.js."
     );
     return;
   }

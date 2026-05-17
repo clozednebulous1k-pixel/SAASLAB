@@ -1053,6 +1053,7 @@ h1 .highlight {
 .toggle-switch.active { background:var(--blue); }
 .save-badge { background:rgba(20,45,85,0.12); color:var(--accent); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600; }
 .pricing-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1rem; text-align:left; }
+.pricing-cards--single { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
 .price-card {
  border-radius: 18px;
  padding: 2rem;
@@ -2168,20 +2169,13 @@ body.admin-dash-open { overflow: hidden; }
 <!-- PRICING -->
 <section id="pricing">
  <div class="section-label">Investimento</div>
- <div class="section-title">Escolha seu plano</div>
- <div class="pricing-toggle">
- <span class="toggle-label">Mensal</span>
- <div class="toggle-switch" id="billing-toggle" onclick="toggleBilling()">
- <div class="toggle-thumb"></div>
- </div>
- <span class="toggle-label">Anual</span>
- <span class="save-badge" id="save-badge" style="display:none">Economize 40%</span>
- </div>
- <div class="pricing-cards">
- <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-11" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-11)"/></svg><div class="price-card">
- <div class="price-name">Starter</div>
- <div class="price-amount"><sub>R$</sub> <span id="price1">40</span><span class="period">/mês</span></div>
- <div class="price-desc">Para quem quer aprender no próprio ritmo com acesso completo ao conteúdo.</div>
+ <div class="section-title">Acesso completo — R$ 50/mês</div>
+ <div class="pricing-cards pricing-cards--single">
+ <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-11" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-11)"/></svg><div class="price-card featured">
+ <div class="popular-tag">Plano mensal</div>
+ <div class="price-name">SaaS Academy</div>
+ <div class="price-amount"><sub>R$</sub> <span id="price1">50</span><span class="period">/mês</span></div>
+ <div class="price-desc">Pagamento seguro pela Hotmart. Cancele quando quiser.</div>
  <div class="price-feats">
  <div class="price-feat">Todos os 12 módulos</div>
  <div class="price-feat">100+ prompts prontos</div>
@@ -2189,23 +2183,9 @@ body.admin-dash-open { overflow: hidden; }
  <div class="price-feat">Comunidade no Discord</div>
  <div class="price-feat">Atualizações por 1 ano</div>
  </div>
- <button class="btn-price-ghost" onclick="goToCheckout('starter')">Comprar Starter</button>
+ <button class="btn-price-primary" onclick="goToCheckout('pro')">Comprar agora — R$ 50/mês →</button>
 </div></div>
- <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-12" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-12)"/></svg><div class="price-card featured">
- <div class="popular-tag">Mais popular</div>
- <div class="price-name">Pro</div>
- <div class="price-amount"><sub>R$</sub> <span id="price2">50</span><span class="period">/mês</span></div>
- <div class="price-desc">Para quem quer lançar rápido com suporte e revisão de código.</div>
- <div class="price-feats">
- <div class="price-feat">Tudo do Starter</div>
- <div class="price-feat">Revisão de código 1x/semana</div>
- <div class="price-feat">Mentoria em grupo mensal</div>
- <div class="price-feat">Acesso vitalício ao conteúdo</div>
- <div class="price-feat">Templates premium exclusivos</div>
- <div class="price-feat">Certificado de conclusão</div>
- </div>
- <button class="btn-price-primary" onclick="goToCheckout('pro')">Comprar Pro →</button>
-</div></div>
+
  </div>
 </section>
 
@@ -2372,12 +2352,7 @@ let isAnnual = false;
 
 // ─── BILLING TOGGLE ──────────────────────────
 function toggleBilling() {
- isAnnual = !isAnnual;
- document.getElementById('billing-toggle').classList.toggle('active', isAnnual);
- document.getElementById('save-badge').style.display = isAnnual ? 'inline' : 'none';
- document.getElementById('price1').textContent = isAnnual ? '24' : '40';
- document.getElementById('price2').textContent = isAnnual ? '30' : '50';
- animatePriceChange();
+ /* plano único R$ 50/mês — toggle desativado */
 }
 
 // ─── PLATFORM NAVIGATION ─────────────────────
@@ -4006,7 +3981,7 @@ function animatePlatformStep() {
 
 function animatePriceChange() {
  if (typeof gsap === "undefined") return;
- ["price1", "price2"].forEach(id => {
+ ["price1", "price-main"].forEach(id => {
  const el = document.getElementById(id);
  if (!el) return;
  gsap.fromTo(el, { y: 12, opacity: 0, scale: 0.9 }, { y: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" });
