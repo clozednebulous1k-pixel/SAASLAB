@@ -1603,6 +1603,27 @@ img, svg, video { max-width: 100%; height: auto; }
  font-family: var(--font-body); font-size: 0.9rem;
 }
 .access-field input:focus { outline: none; border-color: #1d4ed8; box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12); }
+.access-password-wrap { position: relative; }
+.access-password-wrap input { padding-right: 2.75rem; }
+.access-toggle-pw {
+ position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%);
+ border: none; background: transparent; color: #64748b; font-size: 0.72rem; font-weight: 600;
+ cursor: pointer; padding: 0.25rem 0.4rem; border-radius: 6px; font-family: var(--font-body);
+}
+.access-toggle-pw:hover { color: #1d4ed8; background: #eff6ff; }
+.access-options {
+ display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+ margin: 0.35rem 0 0.85rem; flex-wrap: wrap;
+}
+.access-remember {
+ display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #475569; cursor: pointer;
+}
+.access-remember input { width: auto; margin: 0; accent-color: #1d4ed8; }
+.access-forgot {
+ border: none; background: none; color: #1d4ed8; font-size: 0.8rem; font-weight: 600;
+ cursor: pointer; padding: 0; font-family: var(--font-body); text-decoration: underline;
+}
+.access-forgot:hover { color: #1e40af; }
 .access-btn-primary {
  width: 100%; padding: 0.75rem; border: none; border-radius: 10px; background: #1d4ed8; color: #fff;
  font-weight: 600; cursor: pointer; font-family: var(--font-body); margin-top: 0.25rem;
@@ -1699,23 +1720,33 @@ body.admin-dash-open { overflow: hidden; }
   <div class="access-tabs">
    <button type="button" class="access-tab active" data-tab="login" onclick="switchAccessTab('login')">Entrar</button>
    <button type="button" class="access-tab" data-tab="register" onclick="switchAccessTab('register')">Criar conta</button>
-   <button type="button" class="access-tab" data-tab="activate" onclick="switchAccessTab('activate')">Ativar compra</button>
   </div>
   <div class="access-auth-msg" id="access-auth-msg" role="status"></div>
   <div class="access-panel" data-panel="login">
-   <div class="access-field"><label for="access-email">E-mail</label><input type="email" id="access-email" autocomplete="email" placeholder="mesmo e-mail da compra"></div>
-   <div class="access-field"><label for="access-password">Senha</label><input type="password" id="access-password" autocomplete="current-password"></div>
+   <div class="access-field"><label for="access-email">E-mail</label><input type="email" id="access-email" autocomplete="email" placeholder="seu@email.com"></div>
+   <div class="access-field"><label for="access-password">Senha</label>
+    <div class="access-password-wrap">
+     <input type="password" id="access-password" autocomplete="current-password">
+     <button type="button" class="access-toggle-pw" onclick="toggleAccessPassword('access-password', this)" aria-label="Mostrar senha">Ver</button>
+    </div>
+   </div>
+   <div class="access-options">
+    <label class="access-remember"><input type="checkbox" id="access-remember"> Lembrar de mim</label>
+    <button type="button" class="access-forgot" onclick="accessForgotPassword()">Esqueci a senha</button>
+   </div>
    <button type="button" class="access-btn-primary" onclick="accessLogin()">Entrar no laboratório</button>
   </div>
   <div class="access-panel" data-panel="register" hidden>
-   <div class="access-field"><label for="access-reg-email">E-mail da compra</label><input type="email" id="access-reg-email" autocomplete="email"></div>
-   <div class="access-field"><label for="access-reg-password">Criar senha</label><input type="password" id="access-reg-password" autocomplete="new-password" minlength="6"></div>
-   <button type="button" class="access-btn-primary" onclick="accessRegister()">Criar conta e verificar acesso</button>
-  </div>
-  <div class="access-panel" data-panel="activate" hidden>
-   <p class="access-hint">Pagou no gateway externo (Stripe Payment Link, Hotmart, Kirvano…)? Crie a conta com o <strong>mesmo e-mail</strong>.</p>
-   <p class="access-hint">Liberação: Firebase Console → Firestore → <code>email_access</code> → documento = e-mail → campo <code>active: true</code>.</p>
-   <button type="button" class="access-btn-ghost" onclick="switchAccessTab('register')">Criar conta agora</button>
+   <div class="access-field"><label for="access-reg-email">E-mail</label><input type="email" id="access-reg-email" autocomplete="email"></div>
+   <div class="access-field">
+    <label for="access-reg-password">Criar senha</label>
+    <div class="access-password-wrap">
+     <input type="password" id="access-reg-password" autocomplete="new-password" minlength="6">
+     <button type="button" class="access-toggle-pw" onclick="toggleAccessPassword('access-reg-password', this)" aria-label="Mostrar senha">Ver</button>
+    </div>
+   </div>
+   <label class="access-remember" style="margin-bottom:0.85rem"><input type="checkbox" id="access-remember-reg"> Lembrar de mim</label>
+   <button type="button" class="access-btn-primary" onclick="accessRegister()">Criar conta</button>
   </div>
  </div>
 </div>

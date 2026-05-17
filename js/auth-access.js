@@ -294,11 +294,13 @@
 
     requestAnimationFrame(() => gate.classList.add("is-open"));
 
-    switchAccessTab(tab || "login");
+    switchAccessTab(tab === "activate" ? "login" : tab || "login");
 
     showAuthMsg("");
 
     initFirebaseAccess();
+
+    loadRememberedEmail();
 
   };
 
@@ -416,7 +418,7 @@
 
       sessionStorage.setItem("saaslab_pending_enter", "1");
 
-      openAccessGate("activate");
+      openAccessGate("login");
 
       showAuthMsg(
 
@@ -462,11 +464,11 @@
 
     }
 
-    switchAccessTab("activate");
+    switchAccessTab("login");
 
     showAuthMsg(
 
-      "Conta ok, mas o laboratório ainda não está liberado para este e-mail. Aguarde a confirmação da compra.",
+      "Conta criada, mas o laboratório ainda não está liberado. Aguarde a confirmação da compra ou fale no WhatsApp.",
 
       "warn"
 
@@ -499,6 +501,7 @@
       showAuthMsg("Entrando…", "info");
 
       await auth.signInWithEmailAndPassword(email, pass);
+      saveRememberedEmail(email);
       await refreshLabUserProfile(auth.currentUser);
       updateAccessNav(auth.currentUser);
 
@@ -552,6 +555,7 @@
       showAuthMsg("Criando conta…", "info");
 
       await auth.createUserWithEmailAndPassword(email, pass);
+      saveRememberedEmail(email);
 
       showAuthMsg("Conta criada! Verificando acesso…", "success");
 
@@ -651,6 +655,69 @@
 
     return auth;
 
+  };
+
+  const REMEMBER_EMAIL_KEY = "saaslab_remember_email";
+
+  function saveRememberedEmail(email) {
+    const remember =
+      document.getElementById("access-remember")?.checked ||
+      document.getElementById("access-remember-reg")?.checked;
+    if (remember && email) {
+      localStorage.setItem(REMEMBER_EMAIL_KEY, normalizeEmail(email));
+    } else {
+      localStorage.removeItem(REMEMBER_EMAIL_KEY);
+    }
+  }
+
+  window.loadRememberedEmail = function loadRememberedEmail() {
+    const saved = localStorage.getItem(REMEMBER_EMAIL_KEY);
+    if (!saved) return;
+    const loginEmail = document.getElementById("access-email");
+    const regEmail = document.getElementById("access-reg-email");
+    const remember = document.getElementById("access-remember");
+    const rememberReg = document.getElementById("access-remember-reg");
+    if (loginEmail) loginEmail.value = saved;
+    if (regEmail) regEmail.value = saved;
+    if (remember) remember.checked = true;
+    if (rememberReg) rememberReg.checked = true;
+  };
+
+  window.toggleAccessPassword = function toggleAccessPassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input || !btn) return;
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    btn.textContent = show ? "Ocultar" : "Ver";
+    btn.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+  };
+
+  window.accessForgotPassword = async function accessForgotPassword() {
+    initFirebaseAccess();
+    const email =
+      document.getElementById("access-email")?.value?.trim() ||
+      document.getElementById("access-reg-email")?.value?.trim();
+    if (!email) {
+      showAuthMsg("Digite seu e-mail acima para receber o link de redefinição.", "warn");
+      switchAccessTab("login");
+      return;
+    }
+    if (!auth) {
+      showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
+      return;
+    }
+    try {
+      showAuthMsg("Enviando link para seu e-mail…", "info");
+      await auth.sendPasswordResetEmail(email);
+      showAuthMsg("Link enviado! Verifique sua caixa de entrada e o spam.", "success");
+    } catch (e) {
+      const code = e?.code || "";
+      if (code === "auth/user-not-found") {
+        showAuthMsg("Nenhuma conta com este e-mail. Crie uma conta na aba Criar conta.", "warn");
+      } else {
+        showAuthMsg(e?.message || "Não foi possível enviar o e-mail.", "error");
+      }
+    }
   };
 
 })();
