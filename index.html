@@ -1360,6 +1360,18 @@ h1 .highlight {
 .content-tag.security { background:#fef3c7; color:#92400e; }
 .content-tag.speed { background:#d1fae5; color:#065f46; }
 .content-tag.deploy { background:#f3e8ff; color:#6b21a8; }
+.content-tag.scale { background:#e0f2fe; color:#075985; }
+
+#platform .lab-scale-table {
+ width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.75rem 0 0.5rem;
+}
+#platform .lab-scale-table th,
+#platform .lab-scale-table td {
+ border: 1px solid var(--learn-border); padding: 0.55rem 0.65rem;
+ text-align: left; vertical-align: top; line-height: 1.5;
+}
+#platform .lab-scale-table th { background: #f8fafc; font-weight: 600; color: var(--learn-text); }
+#platform .lab-scale-actions { margin: 0.75rem 0 0; padding-left: 1.1rem; color: var(--learn-muted); font-size: 0.9rem; line-height: 1.65; }
 
 /* Prompt Box */
 .prompt-box {
@@ -2864,7 +2876,7 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
  <li><strong>Landing</strong> em HTML/CSS/JS na <strong>Vercel</strong></li>
  <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo — sem API na Vercel)</li>
  <li><strong>Login</strong> com <strong>Firebase Auth</strong> (e-mail/senha + Google)</li>
- <li><strong>Banco</strong> <strong>Firestore</strong> com regras que bloqueiam alterações pelo navegador</li>
+ <li><strong>Banco</strong> <strong>Firestore</strong> com regras que bloqueiam alterações pelo navegador (Spark no início; Blaze ou Postgres se crescer muito)</li>
  <li><strong>Acesso ao produto</strong> só se o e-mail estiver liberado após a compra</li>
  </ol>
  <div class="info-box success"><strong>Nos passos 5 a 10</strong> você encontra o tutorial completo: Firebase, Hotmart, Vercel, segurança e deploy.</div>
@@ -3191,17 +3203,17 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 <div class="step-header">
  <div class="step-phase">Fase 1 — Fundação</div>
  <div class="step-title">Banco de Dados</div>
- <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. Siga o <strong>tutorial no console</strong> (pegar chaves e colar na Vercel) — depois use o prompt na IA para o código.</div>
+ <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. O plano certo depende de <strong>quantas pessoas vão usar</strong> — leia a escala abaixo e escolha Firebase, Supabase ou PlanetScale.</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Escolha o banco de dados</div>
  <div class="option-grid">
- <div class="option-btn opt-db selected" data-val="supabase" onclick="selectDb('supabase')"><div class="option-name">Supabase</div>
- <div class="option-desc">Postgres + RLS + realtime</div>
+ <div class="option-btn opt-db selected" data-val="firebase" onclick="selectDb('firebase')"><div class="option-name">Firebase</div>
+ <div class="option-desc">Recomendado no SaaS Academy — NoSQL + regras</div>
  </div>
- <div class="option-btn opt-db" data-val="firebase" onclick="selectDb('firebase')"><div class="option-name">Firebase</div>
- <div class="option-desc">NoSQL + regras + scale auto</div>
+ <div class="option-btn opt-db" data-val="supabase" onclick="selectDb('supabase')"><div class="option-name">Supabase</div>
+ <div class="option-desc">Postgres + RLS — melhor para muitos usuários</div>
  </div>
  <div class="option-btn opt-db" data-val="planetscale" onclick="selectDb('planetscale')"><div class="option-name">PlanetScale</div>
  <div class="option-desc">MySQL serverless</div>
@@ -3339,6 +3351,18 @@ service cloud.firestore {
 <div class="content-card">
  <div class="content-card-title">Por que performance importa desde o dia 1 <span class="content-tag speed">Performance</span></div>
  <div class="info-box success"><strong>Cada 100ms de latência</strong> custa ~1% de conversão. SaaS com boa performance retêm mais usuários e gastam menos em infraestrutura.</div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Escala conforme o número de usuários <span class="content-tag scale">Escala</span></div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Performance não é só “site rápido” — é <strong>aguentar mais gente sem cair nem explodir a fatura</strong>. Quanto mais usuários simultâneos, mais você precisa de banco robusto, cache e monitoramento.</p>
+ <ul class="lab-scale-actions" style="margin-top:0">
+  <li><strong>Poucos usuários (até ~100):</strong> Firebase Spark ou Supabase Free + Vercel Hobby costumam bastar. Foque em código limpo e regras de segurança.</li>
+  <li><strong>Crescimento (100–1.000):</strong> Ative plano pago no Firebase (Blaze) ou Supabase Pro; use paginação em listas; evite carregar o dashboard inteiro de uma vez.</li>
+  <li><strong>Alto volume (1.000+):</strong> Postgres com índices, Redis para cache, CDN para assets, alertas no Sentry/UptimeRobot. Considere migrar do Firestore se precisar de relatórios SQL complexos.</li>
+ </ul>
+ <div class="info-box warning" style="margin-top:0.85rem"><strong>Sinais de que precisa subir de nível:</strong> lentidão em horário de pico, e-mails do Firebase/Vercel sobre cota, erros <code>resource-exhausted</code> ou <code>too many connections</code>, conta de infraestrutura subindo todo mês sem mais vendas.</div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0">Volte ao passo <strong>Banco de Dados</strong> para ver a tabela completa de “quantos usuários → qual infraestrutura”.</p>
 </div>
 
 <div class="content-card">
@@ -3732,6 +3756,58 @@ function renderAuthContent() {
 </div>`;
 }
 
+function getScaleGuideHtml(db) {
+ const dbTip = db === 'firebase'
+  ? 'No Firebase, cada login e cada tela que lê o Firestore consome <strong>leituras</strong>. Com 200 alunos ativos por dia, dá para estourar o Spark se o código listar coleções inteiras.'
+  : db === 'supabase'
+  ? 'No Supabase/Postgres, o limite costuma ser <strong>conexões simultâneas</strong> e queries pesadas. Use pooler (PgBouncer) e índices quando passar de centenas de usuários online.'
+  : 'No PlanetScale/MySQL, foque em <strong>índices</strong> e migrations sem travar a tabela em produção.';
+ return `
+<div class="content-card" id="lab-scale-guide">
+ <div class="content-card-title">Quantos usuários? Qual banco e infraestrutura? <span class="content-tag scale">Escala</span></div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não existe “um banco para sempre”. O <strong>${saasName}</strong> pode começar simples e ficar mais robusto conforme cresce. Use esta tabela como guia — números são ordem de grandeza (usuários que usam o produto de verdade, não só visitantes na landing).</p>
+ <table class="lab-scale-table" aria-label="Guia de escala por número de usuários">
+  <thead>
+   <tr><th>Usuários ativos</th><th>Cenário</th><th>Banco / infra</th><th>O que você pode fazer</th></tr>
+  </thead>
+  <tbody>
+   <tr>
+    <td><strong>1 – 100</strong></td>
+    <td>MVP, curso, primeiros clientes pagantes</td>
+    <td>Firebase <strong>Spark</strong> (grátis) ou Supabase <strong>Free</strong></td>
+    <td>Regras Firestore/RLS certas; poucas leituras por login; deploy na Vercel grátis</td>
+   </tr>
+   <tr>
+    <td><strong>100 – 1.000</strong></td>
+    <td>SaaS com tráfego real, suporte, dashboard</td>
+    <td>Firebase <strong>Blaze</strong> (pago sob uso) ou Supabase <strong>Pro</strong></td>
+    <td>Monitorar cotas no console; paginação; evitar listeners em listas gigantes; cache de telas pesadas</td>
+   </tr>
+   <tr>
+    <td><strong>1.000 – 10.000</strong></td>
+    <td>Produto em crescimento, relatórios, equipe</td>
+    <td><strong>Postgres</strong> (Supabase/RDS) + Redis (Upstash) + CDN</td>
+    <td>Índices; queries só com campos necessários; jobs em background; separar leitura pesada (relatórios)</td>
+   </tr>
+   <tr>
+    <td><strong>10.000+</strong></td>
+    <td>Escala séria, SLA, múltiplos times</td>
+    <td>Postgres dedicado, réplicas, filas (Bull/SQS), observabilidade</td>
+    <td>Arquitetura com filas; limitar taxa por IP; revisão de custo mensal; possível time de infra</td>
+   </tr>
+  </tbody>
+ </table>
+ <div class="info-box info" style="margin-top:0.85rem"><strong>Modelo SaaS Academy (HTML + Firestore):</strong> centenas de alunos costumam caber no Spark se cada usuário gera poucas leituras (só <code>users</code> e <code>email_access</code>). Milhares de usuários ativos por dia → planeje <strong>Blaze</strong> ou migração para Postgres.</div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.85rem 0 0"><strong>Dica para o banco escolhido agora (${db === 'firebase' ? 'Firebase' : db === 'supabase' ? 'Supabase' : 'PlanetScale'}):</strong> ${dbTip}</p>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.5rem 0 0"><strong>O que mais pesa na conta (além do banco):</strong> Vercel (banda e funções), Hotmart (taxa por venda), envio de e-mail (Resend/SendGrid), armazenamento de arquivos (Firebase Storage / S3).</p>
+ <ul class="lab-scale-actions">
+  <li><strong>Você não precisa</strong> comprar servidor caro no dia 1 — comece grátis e suba de plano quando o console mostrar uso alto.</li>
+  <li><strong>Você precisa</strong> medir: Firebase → Uso e faturamento; Supabase → Database → Reports; Vercel → Analytics.</li>
+  <li><strong>Antes de migrar de banco</strong>, otimize: paginação, índices, menos leituras por tela, cache. Migração é projeto — faça só com necessidade clara.</li>
+ </ul>
+</div>`;
+}
+
 function renderDbPrompt() {
  const area = document.getElementById('db-content-area');
  if (!area) return;
@@ -3821,12 +3897,15 @@ function renderDbPrompt() {
  <li>Comece restrito: só usuário autenticado acessa o próprio <strong>uid</strong> (a IA gera o arquivo de regras).</li>
  <li>Clique em <strong>Publicar</strong> (use firestore.rules do projeto).</li>
  </ol>
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>8. Limites do plano Spark (grátis)</strong></p>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>8. Limites do plano Spark (grátis) e quando subir de plano</strong></p>
  <img class="lab-screenshot" src="assets/firebase-spark-limites.png" alt="Cotas do Firebase no plano Spark" loading="lazy">
  <ul class="guide-steps" style="list-style:disc;margin-top:0.75rem">
  <li><strong>Gravações:</strong> ~20 mil/dia · <strong>Leituras:</strong> ~50 mil/dia · <strong>Exclusões:</strong> ~20 mil/dia</li>
  <li><strong>Armazenamento:</strong> ~1 GB · <strong>Banda:</strong> ~10 GB/mês</li>
  </ul>
+ <div class="info-box warning" style="margin-top:0.75rem"><strong>Exemplo real:</strong> 150 alunos entrando 1x por dia, cada um com 10 leituras no Firestore = ~1.500 leituras/dia (ok no Spark). O mesmo público com dashboard que lê 200 documentos por visita = ~30.000 leituras/dia (perto do limite). <strong>O código manda no custo.</strong></div>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>Quando migrar para Blaze (pago):</strong> console avisa que está perto do limite, ou você precisa de mais de ~50 mil leituras/dia. Blaze cobra só o que passar — não precisa mudar o código no dia 1.</p>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.5rem 0 0"><strong>Quando pensar em Postgres (Supabase):</strong> relatórios complexos, muitos joins, milhares de usuários com dados grandes por conta, ou equipe pedindo SQL. Até lá, Firestore + regras bem feitas resolve.</p>
  <div class="lab-path"><strong>Caminho:</strong> Configurações do projeto → Uso e faturamento → Cotas do projeto</div>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>9. Vercel (HTML estático)</strong></p>
  <ol class="guide-steps"><li>Chaves em js/firebase-config.js — sem env vars na Vercel</li><li>Next.js: NEXT_PUBLIC_FIREBASE_* na Vercel</li></ol>
@@ -3892,7 +3971,7 @@ function renderDbPrompt() {
 </div>`;
 
  const p = prompts[selectedDb] || prompts.supabase;
- area.innerHTML = firebaseTutorial + supabaseTutorial + planetTutorial + `
+ area.innerHTML = getScaleGuideHtml(selectedDb) + firebaseTutorial + supabaseTutorial + planetTutorial + `
 <div class="content-card">
  <div class="content-card-title">Prompt para a IA montar o código <span class="content-tag speed">Depois do tutorial</span></div>
  <div class="prompt-box">
