@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SaaS Academy — Do Zero ao Deploy</title>
+<link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Boldonse&family=Goldman:wght@400;700&family=Italiana&family=Jost:ital,wght@0,100..900;1,100..900&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
@@ -79,8 +81,31 @@ nav {
  backdrop-filter: blur(16px);
  border-bottom: 1px solid rgba(15,35,70,0.5);
 }
+.brand-logo {
+ display: flex; align-items: center; gap: 0.65rem; text-decoration: none; color: var(--white);
+ flex-shrink: 0;
+}
+.brand-logo__icon {
+ width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: block;
+}
+.brand-logo__text {
+ font-family: var(--font-accent); font-size: 1.15rem; font-weight: 700; letter-spacing: 0.02em;
+ line-height: 1.1; white-space: nowrap;
+}
+.brand-logo__text span { color: var(--accent); }
 .nav-logo { font-family:var(--font-accent); font-size:1.3rem; font-weight:700; letter-spacing:0.02em; color:var(--white); }
 .nav-logo span { color:var(--accent); }
+.plat-nav .plat-logo.brand-logo {
+ color: var(--learn-blue); border-right: 1px solid var(--learn-border);
+ padding: 0.9rem 1.5rem; flex-shrink: 0;
+}
+.plat-nav .plat-logo.brand-logo .brand-logo__text span { color: var(--learn-accent); }
+.plat-nav .plat-logo.brand-logo .brand-logo__text { font-size: 1.05rem; }
+.access-gate-brand {
+ display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.85rem;
+}
+.access-gate-brand .brand-logo__text { color: #0f172a; font-size: 1.05rem; }
+.access-gate-brand .brand-logo__text span { color: #1d4ed8; }
 .nav-links { display:flex; gap:2rem; }
 .nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; font-weight:500; transition:color 0.2s; }
 .nav-links a:hover { color:var(--white); }
@@ -1729,6 +1754,10 @@ body.admin-dash-open { overflow: hidden; }
 <div id="access-gate" hidden aria-hidden="true">
  <div class="access-gate-panel" role="dialog" aria-labelledby="access-gate-title">
   <button type="button" class="access-gate-close" onclick="closeAccessGate()" aria-label="Fechar">×</button>
+  <div class="access-gate-brand brand-logo">
+   <img src="assets/logo-icon.svg" alt="" class="brand-logo__icon" width="40" height="40">
+   <span class="brand-logo__text">SaaS <span>Academy</span></span>
+  </div>
   <h3 id="access-gate-title">Acesso ao laboratório</h3>
   <p>Somente clientes com <strong>compra confirmada</strong>. Use o <strong>mesmo e-mail do pagamento</strong> (Gmail ou senha).</p>
   <div class="access-tabs">
@@ -1811,7 +1840,10 @@ body.admin-dash-open { overflow: hidden; }
 <div id="landing">
 
 <nav>
- <div class="nav-logo">SaaS<span>Lab</span></div>
+ <a href="#" class="nav-logo brand-logo" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">
+  <img src="assets/logo-icon.svg" alt="" class="brand-logo__icon" width="36" height="36">
+  <span class="brand-logo__text">SaaS <span>Academy</span></span>
+ </a>
  <button type="button" class="nav-menu-btn" id="nav-menu-btn" aria-label="Abrir menu" aria-expanded="false">
  <span></span><span></span><span></span>
  </button>
@@ -2197,7 +2229,10 @@ body.admin-dash-open { overflow: hidden; }
 <div id="platform">
 
 <nav class="plat-nav">
- <div class="plat-logo">SaaS<span>Lab</span></div>
+ <a href="#" class="plat-logo brand-logo" onclick="exitPlatform(); return false;">
+  <img src="assets/logo-icon.svg" alt="" class="brand-logo__icon" width="32" height="32">
+  <span class="brand-logo__text">SaaS <span>Academy</span></span>
+ </a>
  <div class="plat-tabs" id="plat-tabs">
  <button class="plat-tab active" onclick="gotoStep(0)">Começo</button>
  <button class="plat-tab" onclick="gotoStep(1)">PC</button>
