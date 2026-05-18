@@ -7,4 +7,5 @@ Thumbs.db
 *.log
 _patch_*
 _test.js
+scripts/webhook-secrets.ps1
 sections_insert_fixed.html
