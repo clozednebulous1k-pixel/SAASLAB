@@ -357,6 +357,19 @@
     if (btn) btn.textContent = "Entrar no laboratório";
   };
 
+  window.accessSetFirstAccessMode = function accessSetFirstAccessMode() {
+    setAccessAuthMode("first");
+    showAuthMsg("Crie e confirme sua senha abaixo, depois clique em Criar senha e entrar.", "info");
+    document.getElementById("access-password")?.focus();
+  };
+
+  async function finishLoginAfterAuth(email) {
+    saveRememberedEmail(email);
+    const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+    if (ok) clearAuthFailures();
+    return ok;
+  }
+
   window.accessCheckEmail = async function accessCheckEmail() {
     initFirebaseAccess();
     if (!auth) {
@@ -384,10 +397,10 @@
 
       const methods = await fetchAuthMethodsForEmail(email);
       if (!methods || methods.length === 0) {
-        setAccessAuthMode("first");
+        setAccessAuthMode("returning");
         showAuthMsg(
-          "Primeiro acesso! Crie sua senha abaixo (não enviamos senha por e-mail).",
-          "success"
+          "E-mail liberado. Digite sua senha e clique Entrar. Primeira vez? Clique em «Primeira vez — criar senha».",
+          "info"
         );
         document.getElementById("access-password")?.focus();
         return;
@@ -547,6 +560,7 @@
     const email = document.getElementById("access-email")?.value?.trim();
     const pass = document.getElementById("access-password")?.value;
     const passConfirm = document.getElementById("access-password-confirm")?.value;
+    const emailKey = normalizeEmail(email);
 
     if (!email) {
       showAuthMsg("Digite o e-mail da compra.", "warn");
@@ -583,48 +597,67 @@
         return;
       }
 
-      let methods = [];
-      try {
-        methods = await fetchAuthMethodsForEmail(email);
-      } catch (e) {
-        recordAuthFailure();
-        showAuthMsg(friendlyAuthError(e), "error");
-        return;
-      }
+      const isCreateFlow = window.__accessAuthMode === "first";
 
-      const isFirstAccess = !methods.length || window.__accessAuthMode === "first";
-
-      if (isFirstAccess) {
+      if (isCreateFlow) {
         if (pass !== passConfirm) {
           setAccessAuthMode("first");
-          showAuthMsg("Confirme a senha (clique em Verificar se ainda não fez).", "warn");
+          showAuthMsg("Confirme a senha nos dois campos.", "warn");
           return;
         }
-        showAuthMsg("Criando sua conta…", "info");
-        await auth.createUserWithEmailAndPassword(normalizeEmail(email), pass);
-        saveRememberedEmail(email);
-        const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
-        if (ok) clearAuthFailures();
-        return;
+        try {
+          showAuthMsg("Criando sua conta…", "info");
+          await auth.createUserWithEmailAndPassword(emailKey, pass);
+          await finishLoginAfterAuth(email);
+          return;
+        } catch (createErr) {
+          if (createErr?.code === "auth/email-already-in-use") {
+            try {
+              showAuthMsg("Conta já existe. Entrando…", "info");
+              await auth.signInWithEmailAndPassword(emailKey, pass);
+              await finishLoginAfterAuth(email);
+              return;
+            } catch (signInErr) {
+              setAccessAuthMode("returning");
+              showAuthMsg(
+                "Conta já cadastrada. Senha incorreta? Use Esqueci a senha ou a senha que criou antes.",
+                "warn"
+              );
+              return;
+            }
+          }
+          recordAuthFailure();
+          showAuthMsg(friendlyAuthError(createErr), "error");
+          return;
+        }
       }
 
       showAuthMsg("Entrando…", "info");
-      await auth.signInWithEmailAndPassword(normalizeEmail(email), pass);
-      saveRememberedEmail(email);
-      const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
-      if (ok) clearAuthFailures();
+      try {
+        await auth.signInWithEmailAndPassword(emailKey, pass);
+        await finishLoginAfterAuth(email);
+        return;
+      } catch (signInErr) {
+        const code = signInErr?.code || "";
+        if (code === "auth/user-not-found") {
+          showAuthMsg(
+            "Nenhuma conta com este e-mail. Clique em «Primeira vez — criar senha», confirme a senha e tente de novo.",
+            "warn"
+          );
+          return;
+        }
+        if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+          showAuthMsg(
+            "Senha incorreta. Use Esqueci a senha. Se nunca entrou, clique em «Primeira vez — criar senha».",
+            "warn"
+          );
+          return;
+        }
+        if (code !== "auth/too-many-requests") recordAuthFailure();
+        showAuthMsg(friendlyAuthError(signInErr), "error");
+      }
     } catch (e) {
-      const code = e?.code || "";
-      if (code === "auth/email-already-in-use") {
-        setAccessAuthMode("returning");
-        showAuthMsg("Esta conta já existe. Digite a senha correta ou use Esqueci a senha.", "warn");
-        return;
-      }
-      if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
-        showAuthMsg("Senha incorreta. Tente de novo ou Esqueci a senha.", "warn");
-        return;
-      }
-      if (code !== "auth/too-many-requests") recordAuthFailure();
+      if (e?.code !== "auth/too-many-requests") recordAuthFailure();
       showAuthMsg(friendlyAuthError(e), "error");
     }
   };

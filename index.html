@@ -2034,6 +2034,12 @@ img, svg, video { max-width: 100%; height: auto; }
  font-family: var(--font-body); white-space: nowrap;
 }
 .access-btn-secondary:hover { background: #dbeafe; }
+.access-first-time-link {
+ display: block; width: 100%; margin: 0 0 0.65rem; padding: 0.55rem;
+ border: none; background: none; color: #1d4ed8; font-size: 0.82rem; font-weight: 600;
+ cursor: pointer; text-align: center; font-family: var(--font-body); text-decoration: underline;
+}
+.access-first-time-link:hover { color: #1e40af; }
 .access-password-confirm-wrap[hidden] { display: none !important; }
 .access-btn-primary {
  width: 100%; padding: 0.75rem; border: none; border-radius: 10px; background: #1d4ed8; color: #fff;
@@ -2169,6 +2175,7 @@ body.admin-dash-open { overflow: hidden; }
     <label class="access-remember"><input type="checkbox" id="access-remember"> Lembrar de mim</label>
     <button type="button" class="access-forgot" onclick="accessForgotPassword()">Esqueci a senha</button>
    </div>
+   <button type="button" class="access-first-time-link" id="access-first-time-link" onclick="accessSetFirstAccessMode()">Primeira vez? Criar senha</button>
    <button type="button" class="access-btn-primary" id="access-login-btn" onclick="accessLogin()">Entrar no laboratório</button>
    <div class="access-divider">ou</div>
    <button type="button" class="access-btn-google" onclick="accessLoginWithGoogle()">
