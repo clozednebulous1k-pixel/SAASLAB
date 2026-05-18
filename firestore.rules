@@ -27,7 +27,11 @@ service cloud.firestore {
     }
 
     function authEmailLower() {
-      return request.auth.token.email.lower();
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email != ''
+        ? request.auth.token.email.lower()
+        : '';
     }
 
     function validUserCreate() {
@@ -65,10 +69,8 @@ service cloud.firestore {
     }
 
     match /email_access/{email} {
-      // get (não list): permite checar compra antes do 1º login (doc ID = e-mail)
-      allow get: if request.auth == null
-        || authEmailLower() == email
-        || isPrimaryOwner();
+      // get por ID (e-mail): verificar compra antes do 1º login. list só dono.
+      allow get: if true;
       allow list: if isPrimaryOwner();
       allow create, update, delete: if isPrimaryOwner() && validEmailAccessWrite();
     }

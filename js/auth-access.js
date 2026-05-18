@@ -135,12 +135,14 @@
     } catch (e) {
       console.error("emailHasPurchaseAccess", e);
       if (e?.code === "permission-denied") {
-        console.error(
-          "Publique firestore.rules com allow get em email_access antes do login."
-        );
+        window.__lastFirestorePermError = true;
       }
       return false;
     }
+  }
+
+  function firestorePermHint() {
+    return " Erro de permissão no Firestore: publique as regras em Firebase Console → Firestore → Regras (arquivo firestore.rules do projeto).";
   }
 
   async function ensureUserDoc(user) {
@@ -152,15 +154,26 @@
     const providerId = user.providerData?.[0]?.providerId || "password";
 
     if (!snap.exists) {
-      await ref.set({
-        email,
-        role: "user",
-        libraryAccess: false,
-        authProvider: providerId,
-        createdAt: now,
-        updatedAt: now,
-      });
-      window.__labUserProfile = { email, role: "user", libraryAccess: false };
+      try {
+        await ref.set({
+          email,
+          role: "user",
+          libraryAccess: false,
+          authProvider: providerId,
+          createdAt: now,
+          updatedAt: now,
+        });
+        window.__labUserProfile = { email, role: "user", libraryAccess: false };
+      } catch (e) {
+        console.error("ensureUserDoc create", e);
+        if (e?.code === "permission-denied") {
+          showAuthMsg(
+            "Não foi possível criar seu perfil no Firestore." + firestorePermHint(),
+            "error"
+          );
+        }
+        return;
+      }
       return;
     }
 
@@ -550,8 +563,13 @@
     if (!checkAuthRateLimit()) return;
 
     try {
+      window.__lastFirestorePermError = false;
       showAuthMsg("Verificando compra…", "info");
       const hasAccess = await emailHasPurchaseAccess(email);
+      if (window.__lastFirestorePermError) {
+        showAuthMsg("Permissão negada no Firestore." + firestorePermHint(), "error");
+        return;
+      }
       if (!hasAccess) {
         showAuthMsg(
           "Este e-mail não está liberado. Clique em Verificar ou use o mesmo e-mail da Hotmart.",
