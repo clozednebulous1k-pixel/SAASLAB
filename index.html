@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SaaS Academy — Do Zero ao Deploy</title>
+<title>SaaS Academy: Do Zero ao Deploy</title>
 <link rel="icon" href="assets/logo-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -66,7 +66,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; }
 .mockup-url, .prompt-text, .code-snippet { font-family: var(--font-display); letter-spacing: 0.03em; }
 #platform { font-family: var(--font-body); }
 
-/* Laboratório — fonte legível (site principal mantém Jost/Orbitron/etc.) */
+/* Laboratório, fonte legível (site principal mantém Jost/Orbitron/etc.) */
 #platform {
  --lab-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
  --lab-font-mono: ui-monospace, "Cascadia Code", Consolas, "Courier New", monospace;
@@ -119,7 +119,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 700; }
  font-size: 0.85em;
 }
 
-/* Landing — fundo preto + azul escuro */
+/* Landing, fundo preto + azul escuro */
 #landing {
  background: #000000;
  color: var(--white);
@@ -695,7 +695,7 @@ h1 .highlight {
  align-items: stretch;
 }
 
-/* Dot pattern cards — borda quebrada nos cantos */
+/* Dot pattern cards, borda quebrada nos cantos */
 #landing .dot-card-frame {
  --dot-radius: 20px;
  --bracket-len: 52px;
@@ -1166,19 +1166,36 @@ h1 .highlight {
 .btn-price-ghost:hover { border-color:rgba(255,255,255,0.4); background:rgba(255,255,255,0.04); }
 
 /* ─── PLATFORM AREA ────────────────────────── */
+html.platform-open,
+body.platform-open {
+ overflow: hidden !important;
+ height: 100%;
+ width: 100%;
+}
+body.platform-open {
+ position: fixed;
+ inset: 0;
+}
 #platform {
- display:none;
- min-height:100vh;
- background:var(--learn-bg);
- color:var(--learn-text);
- font-family:var(--font-body);
+ display: none;
+ height: 100vh;
+ height: 100dvh;
+ overflow: hidden;
+ flex-direction: column;
+ background: var(--learn-bg);
+ color: var(--learn-text);
+ font-family: var(--font-body);
+}
+#platform.platform-visible {
+ display: flex !important;
 }
 
 /* Platform Nav */
 .plat-nav {
- position:sticky; top:0; z-index:50;
- background:#fff; border-bottom:1px solid var(--learn-border);
- display:flex; align-items:center; gap:0; padding:0;
+ position: sticky; top: 0; z-index: 50;
+ flex-shrink: 0;
+ background: #fff; border-bottom: 1px solid var(--learn-border);
+ display: flex; align-items: center; gap: 0; padding: 0;
 }
 .plat-logo { padding:0.9rem 1.5rem; font-family:var(--font-accent); font-weight:700; font-size:1.1rem; color:var(--learn-blue); border-right:1px solid var(--learn-border); }
 .plat-logo span { color:var(--learn-accent); }
@@ -1281,16 +1298,42 @@ h1 .highlight {
 .back-btn:hover { background:#1e40af; }
 
 /* Platform Layout */
-.plat-body { display:flex; min-height:calc(100vh - 55px); }
+.plat-body {
+ display: flex;
+ flex: 1;
+ min-height: 0;
+ overflow: hidden;
+}
 
 /* Sidebar */
 .plat-sidebar {
- width:270px; flex-shrink:0; background:#fff;
- border-right:1px solid var(--learn-border);
- position:sticky; top:55px; height:calc(100vh - 55px);
- display:flex; flex-direction:column; overflow:hidden;
+ width: 270px;
+ flex-shrink: 0;
+ align-self: stretch;
+ background: #fff;
+ border-right: 1px solid var(--learn-border);
+ height: 100%;
+ min-height: 0;
+ display: flex;
+ flex-direction: column;
+ overflow: hidden;
 }
-.plat-sidebar-nav { flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.plat-sidebar-nav {
+ flex: 1;
+ min-height: 0;
+ overflow-y: auto;
+ overflow-x: hidden;
+ overscroll-behavior: contain;
+ scrollbar-gutter: stable;
+ -webkit-overflow-scrolling: touch;
+ scrollbar-width: none;
+ -ms-overflow-style: none;
+}
+.plat-sidebar-nav::-webkit-scrollbar {
+ width: 0;
+ height: 0;
+ display: none;
+}
 .plat-sidebar-whatsapp {
  display:flex; align-items:center; gap:0.55rem;
  margin-top:auto; flex-shrink:0;
@@ -1327,11 +1370,25 @@ h1 .highlight {
 
 /* Main Content */
 .plat-main {
- flex:1; padding:2rem 2.5rem; max-width:900px;
- overflow-y:auto; -webkit-overflow-scrolling:touch;
- height:calc(100vh - 55px);
- scroll-behavior:auto;
- position:relative; z-index:1;
+ flex: 1;
+ min-height: 0;
+ padding: 2rem 2.5rem;
+ max-width: 900px;
+ overflow-y: auto;
+ overflow-x: hidden;
+ overscroll-behavior: contain;
+ scrollbar-gutter: stable;
+ -webkit-overflow-scrolling: touch;
+ scroll-behavior: auto;
+ position: relative;
+ z-index: 1;
+ scrollbar-width: none;
+ -ms-overflow-style: none;
+}
+.plat-main::-webkit-scrollbar {
+ width: 0;
+ height: 0;
+ display: none;
 }
 #platform { position:relative; }
 .step-header { margin-bottom:2rem; }
@@ -1361,6 +1418,123 @@ h1 .highlight {
 .content-tag.speed { background:#d1fae5; color:#065f46; }
 .content-tag.deploy { background:#f3e8ff; color:#6b21a8; }
 .content-tag.scale { background:#e0f2fe; color:#075985; }
+.content-tag.design { background:#f1f5f9; color:#334155; }
+
+/* Preview, oficina / app do SaaS (laboratório) */
+#platform .lab-app-preview {
+ display: grid;
+ grid-template-columns: 148px 1fr;
+ gap: 0;
+ margin: 1rem 0 0.5rem;
+ border: 1px solid var(--learn-border);
+ border-radius: 12px;
+ overflow: hidden;
+ background: #f8fafc;
+ box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+ font-family: var(--lab-font);
+}
+#platform .lab-app-preview__side {
+ background: #0f172a;
+ color: #94a3b8;
+ padding: 0.85rem 0.65rem;
+ font-size: 0.68rem;
+}
+#platform .lab-app-preview__logo {
+ color: #f8fafc;
+ font-weight: 700;
+ font-size: 0.78rem;
+ margin-bottom: 0.85rem;
+ letter-spacing: -0.02em;
+}
+#platform .lab-app-preview__nav span {
+ display: block;
+ padding: 0.4rem 0.5rem;
+ border-radius: 6px;
+ margin-bottom: 0.2rem;
+}
+#platform .lab-app-preview__nav span.is-on {
+ background: rgba(59, 130, 246, 0.2);
+ color: #e2e8f0;
+}
+#platform .lab-app-preview__main {
+ padding: 0.85rem 0.9rem;
+ background: #fff;
+}
+#platform .lab-app-preview__top {
+ display: flex;
+ justify-content: space-between;
+ align-items: center;
+ margin-bottom: 0.75rem;
+}
+#platform .lab-app-preview__top h4 {
+ margin: 0;
+ font-size: 0.82rem;
+ font-weight: 600;
+ color: #0f172a;
+}
+#platform .lab-app-preview__pill {
+ font-size: 0.62rem;
+ font-weight: 600;
+ padding: 0.2rem 0.45rem;
+ border-radius: 999px;
+ background: #ecfdf5;
+ color: #047857;
+}
+#platform .lab-app-preview__grid {
+ display: grid;
+ grid-template-columns: repeat(3, 1fr);
+ gap: 0.45rem;
+ margin-bottom: 0.55rem;
+}
+#platform .lab-app-preview__stat {
+ border: 1px solid #e2e8f0;
+ border-radius: 8px;
+ padding: 0.45rem 0.5rem;
+ background: #f8fafc;
+}
+#platform .lab-app-preview__stat strong {
+ display: block;
+ font-size: 0.9rem;
+ color: #1d4ed8;
+ line-height: 1.2;
+}
+#platform .lab-app-preview__stat em {
+ font-style: normal;
+ font-size: 0.62rem;
+ color: #64748b;
+}
+#platform .lab-app-preview__panel {
+ border: 1px dashed #cbd5e1;
+ border-radius: 8px;
+ padding: 0.55rem 0.65rem;
+ font-size: 0.68rem;
+ color: #64748b;
+ line-height: 1.45;
+}
+#platform .lab-design-tips {
+ display: grid;
+ gap: 0.45rem;
+ margin: 0.75rem 0 0;
+ padding: 0;
+ list-style: none;
+}
+#platform .lab-design-tips li {
+ font-size: 0.88rem;
+ color: var(--learn-muted);
+ line-height: 1.55;
+ padding-left: 1rem;
+ position: relative;
+}
+#platform .lab-design-tips li::before {
+ content: "";
+ position: absolute;
+ left: 0;
+ top: 0.55em;
+ width: 5px;
+ height: 5px;
+ border-radius: 50%;
+ background: var(--learn-blue);
+}
 
 #platform .lab-scale-table {
  width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 0.75rem 0 0.5rem;
@@ -1608,7 +1782,15 @@ img, svg, video { max-width: 100%; height: auto; }
  .plat-actions { padding: 0.5rem 0.75rem; flex-shrink: 0; }
  .saas-name-input { width: 110px; font-size: 0.75rem; }
  .plat-body { flex-direction: column; }
- .plat-main { height: auto; min-height: 0; overflow-y: visible; }
+ .plat-main {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+ }
  .plat-sidebar {
   display: flex;
   flex-direction: column;
@@ -2188,7 +2370,7 @@ body.admin-dash-open { overflow: hidden; }
  </div></div>
  <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-4" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-4)"/></svg><div class="pain-card">
 <div class="pain-title">Pagamentos sempre prontos para quebrar</div>
- <div class="pain-text">Integrar Stripe, webhooks, planos e trials sem experiência é arriscado — um erro pode custar caro.</div>
+ <div class="pain-text">Integrar Stripe, webhooks, planos e trials sem experiência é arriscado, um erro pode custar caro.</div>
  </div></div>
  <div class="dot-card-frame"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-5" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-5)"/></svg><div class="pain-card">
 <div class="pain-title">Performance ignorada no início</div>
@@ -2321,7 +2503,7 @@ body.admin-dash-open { overflow: hidden; }
 <!-- PRICING -->
 <section id="pricing">
  <div class="section-label">Investimento</div>
- <div class="section-title">Acesso completo — R$ 50/mês</div>
+ <div class="section-title">Acesso completo: R$ 50/mês</div>
  <div class="pricing-cards pricing-cards--single">
  <div class="dot-card-frame dot-card-frame--lg"><span class="dot-card-corner dot-card-corner--tl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--tr" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--bl" aria-hidden="true"></span><span class="dot-card-corner dot-card-corner--br" aria-hidden="true"></span><svg class="dot-pattern" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="dot-pat-11" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="1" cy="0.5" r="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#dot-pat-11)"/></svg><div class="price-card featured">
  <div class="popular-tag">Plano mensal</div>
@@ -2335,7 +2517,7 @@ body.admin-dash-open { overflow: hidden; }
  <div class="price-feat">Grupo no WhatsApp</div>
  <div class="price-feat">Atualizações por 1 ano</div>
  </div>
- <button class="btn-price-primary" onclick="goToCheckout('pro')">Comprar agora — R$ 50/mês →</button>
+ <button class="btn-price-primary" onclick="goToCheckout('pro')">Comprar agora, R$ 50/mês →</button>
 </div></div>
 
  </div>
@@ -2343,7 +2525,7 @@ body.admin-dash-open { overflow: hidden; }
 
 <footer>
  <div class="footer-doubt">
- <p><strong>Ficou com alguma dúvida?</strong> Fala comigo no WhatsApp — respondo pessoalmente para você ficar tranquilo antes de começar.</p>
+ <p><strong>Ficou com alguma dúvida?</strong> Fala comigo no WhatsApp, respondo pessoalmente para você ficar tranquilo antes de começar.</p>
  <a class="footer-whatsapp" href="https://wa.me/5511952025568?text=Ol%C3%A1!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20SaaS%20Academy." target="_blank" rel="noopener noreferrer">
  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.882 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
  Chamar no WhatsApp
@@ -2396,26 +2578,26 @@ body.admin-dash-open { overflow: hidden; }
  </div>
  <div class="plat-sidebar-nav">
   <div class="sidebar-section">
- <div class="sidebar-section-title">Fase 0 — Do zero</div>
+ <div class="sidebar-section-title">Fase 0: Do zero</div>
  <div class="sidebar-item active" onclick="gotoStep(0)"><div class="step-num" id="sn0">1</div>Bem-vindo</div>
  <div class="sidebar-item" onclick="gotoStep(1)"><div class="step-num" id="sn1">2</div>Preparar o PC</div>
  <div class="sidebar-item" onclick="gotoStep(2)"><div class="step-num" id="sn2">3</div>Programar com IA</div>
  <div class="sidebar-item" onclick="gotoStep(3)"><div class="step-num" id="sn3">4</div>GitHub do zero</div>
  </div>
  <div class="sidebar-section">
- <div class="sidebar-section-title">Fase 1 — Fundação</div>
+ <div class="sidebar-section-title">Fase 1: Fundação</div>
  <div class="sidebar-item" onclick="gotoStep(4)"><div class="step-num" id="sn4">5</div>Setup do Projeto</div>
  <div class="sidebar-item" onclick="gotoStep(5)"><div class="step-num" id="sn5">6</div>Autenticação</div>
  <div class="sidebar-item" onclick="gotoStep(6)"><div class="step-num" id="sn6">7</div>Banco de Dados</div>
  </div>
  <div class="sidebar-section">
- <div class="sidebar-section-title">Fase 2 — Produto</div>
+ <div class="sidebar-section-title">Fase 2: Produto</div>
  <div class="sidebar-item" onclick="gotoStep(7)"><div class="step-num" id="sn7">8</div>Pagamentos</div>
  <div class="sidebar-item" onclick="gotoStep(8)"><div class="step-num" id="sn8">9</div>Segurança</div>
  <div class="sidebar-item" onclick="gotoStep(9)"><div class="step-num" id="sn9">10</div>Performance</div>
  </div>
  <div class="sidebar-section">
- <div class="sidebar-section-title">Fase 3 — Lançamento</div>
+ <div class="sidebar-section-title">Fase 3: Lançamento</div>
  <div class="sidebar-item" onclick="gotoStep(10)"><div class="step-num" id="sn10">11</div>Deploy & CI/CD</div>
  </div>
  </div>
@@ -2449,7 +2631,7 @@ body.admin-dash-open { overflow: hidden; }
  <div class="content-card" style="margin:0;padding:1rem;background:var(--learn-bg);border:1px dashed var(--learn-border)">
  <div class="content-card-title" style="font-size:0.9rem;margin-bottom:0.5rem">Sem ideia ainda? Copie este prompt na IA</div>
  <div class="prompt-box" style="margin:0">
- <div class="prompt-label">Prompt — Nome + visão do SaaS</div>
+ <div class="prompt-label">Prompt: Nome + visão do SaaS</div>
  <div class="prompt-text" id="prompt-saas-vision" style="max-height:140px;overflow-y:auto;font-size:0.8rem">Ajude-me a definir meu SaaS do zero. Sou iniciante absoluto.
 
 1. Sugira 5 nomes curtos e fáceis de lembrar
@@ -2459,7 +2641,7 @@ body.admin-dash-open { overflow: hidden; }
 5. Qual problema real isso resolve e para quem
 
 Minha ideia inicial (pode estar vaga):
-[ESCREVA AQUI — ex: app para personal trainers cobrarem mensalidade online]
+[ESCREVA AQUI: ex. app para personal trainers cobrarem mensalidade online]
 
 No final, me entregue um resumo em formato:
 NOME: ...
@@ -2487,7 +2669,7 @@ MVP: ...</div>
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     Próximo passo: encontrar clientes
    </h4>
-   <p>Seu SaaS está no ar, mas falta quem paga? Eu também tenho um <strong>sistema e método</strong> para ajudar você a conseguir clientes — não é só código, é venda de verdade.</p>
+   <p>Seu SaaS está no ar, mas falta quem paga? Eu também tenho um <strong>sistema e método</strong> para ajudar você a conseguir clientes, não é só código, é venda de verdade.</p>
    <a class="course-complete-wa" id="course-complete-wa-link" href="https://wa.me/5511952025568" target="_blank" rel="noopener noreferrer">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.882 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     Quero ajuda para achar clientes
@@ -2505,6 +2687,7 @@ MVP: ...</div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/owner-config.js"></script>
 <script src="js/checkout-config.js"></script>
 <script src="js/security-rate-limit.js"></script>
 <script src="js/auth-access.js"></script>
@@ -2530,7 +2713,7 @@ let isAnnual = false;
 
 // ─── BILLING TOGGLE ──────────────────────────
 function toggleBilling() {
- /* plano único R$ 50/mês — toggle desativado */
+ /* plano único R$ 50/mês, toggle desativado */
 }
 
 // ─── PLATFORM NAVIGATION ─────────────────────
@@ -2628,9 +2811,18 @@ function maybeShowSaasOnboarding() {
  }
 }
 
+function setPlatformOpen(isOpen) {
+ document.documentElement.classList.toggle('platform-open', isOpen);
+ document.body.classList.toggle('platform-open', isOpen);
+ const plat = document.getElementById('platform');
+ if (plat) plat.classList.toggle('platform-visible', isOpen);
+}
 function enterPlatformCore() {
  document.getElementById('landing').style.display = 'none';
- document.getElementById('platform').style.display = 'block';
+ const plat = document.getElementById('platform');
+ plat.classList.add('platform-visible');
+ plat.style.display = 'flex';
+ setPlatformOpen(true);
  loadSaasProfile();
  renderStep(0);
  scheduleScrollToTop();
@@ -2655,9 +2847,12 @@ function enterPlatform() {
 function exitPlatform() {
  if (typeof window.onLabExited === 'function') window.onLabExited();
  dismissSaasOnboarding();
- document.getElementById('platform').style.display = 'none';
+ setPlatformOpen(false);
+ const plat = document.getElementById('platform');
+ plat.style.display = 'none';
+ plat.classList.remove('platform-visible');
  document.getElementById('landing').style.display = 'block';
- window.scrollTo(0,0);
+ window.scrollTo(0, 0);
  if (typeof ScrollTrigger !== 'undefined') {
  ScrollTrigger.refresh();
  initLandingGSAP();
@@ -2687,27 +2882,18 @@ function saasContextBlock() {
 
 function scrollPlatformToTop() {
  const main = document.getElementById('plat-main');
- const header = main?.querySelector('.step-header');
- if (main) {
+ if (!main) return;
  main.scrollTop = 0;
- try { main.scrollTo({ top: 0, left: 0, behavior: 'instant' }); } catch (_) { main.scrollTo(0, 0); }
- }
- window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
- document.documentElement.scrollTop = 0;
- document.body.scrollTop = 0;
- if (header) {
- try { header.scrollIntoView({ block: 'start', behavior: 'instant' }); } catch (_) { header.scrollIntoView(true); }
+ try {
+  main.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+ } catch (_) {
+  main.scrollTo(0, 0);
  }
 }
 
 function scheduleScrollToTop() {
  scrollPlatformToTop();
- requestAnimationFrame(() => {
- scrollPlatformToTop();
  requestAnimationFrame(scrollPlatformToTop);
- });
- setTimeout(scrollPlatformToTop, 60);
- setTimeout(scrollPlatformToTop, 200);
 }
 
 function gotoStep(n) {
@@ -2803,17 +2989,17 @@ const steps = [
 // STEP 0: BEM-VINDO
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-phase">Fase 0: Do zero</div>
  <div class="step-title">Bem-vindo ao laboratório</div>
- <div class="step-subtitle">Você <strong>não precisa saber programar</strong>. Este passo a passo foi feito para quem está começando do absoluto zero — com IA ao seu lado.</div>
+ <div class="step-subtitle">Você <strong>não precisa saber programar</strong>. Este passo a passo foi feito para quem está começando do absoluto zero, com IA ao seu lado.</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Primeiro: nome e visão do produto</div>
  <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">No topo da tela, troque <strong>MeuSaaS</strong> pelo nome da sua ideia. Se ainda não sabe o que construir, clique em <strong>✎</strong> ao lado do nome ou copie o prompt abaixo na IA.</p>
- ${saasBrief ? `<div class="info-box success"><strong>Seu SaaS:</strong> ${saasName} — ${saasBrief}</div>` : `<div class="info-box warning"><strong>Atenção:</strong> defina a visão do produto no botão ✎ no topo ou use o prompt abaixo.</div>`}
+ ${saasBrief ? `<div class="info-box success"><strong>Seu SaaS:</strong> ${saasName}, ${saasBrief}</div>` : `<div class="info-box warning"><strong>Atenção:</strong> defina a visão do produto no botão ✎ no topo ou use o prompt abaixo.</div>`}
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Nome + como o SaaS funciona</div>
+ <div class="prompt-label">Prompt: Nome + como o SaaS funciona</div>
  <div class="prompt-text" id="prompt-saas-vision-step0">Ajude-me a definir meu SaaS do zero. Sou iniciante.
 
 1. Sugira 5 nomes curtos
@@ -2831,28 +3017,28 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
 
 <div class="content-card">
  <div class="content-card-title">O que é este laboratório?</div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0">Aqui você monta o <strong>${saasName}</strong> em etapas curtas. Em cada etapa explicamos <em>o que fazer</em>, <em>por que fazer</em> e damos textos prontos para colar na IA. Você aprende enquanto constrói — sem pular para código avançado sem entender.</p>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0">Aqui você monta o <strong>${saasName}</strong> em etapas curtas. Em cada etapa explicamos <em>o que fazer</em>, <em>por que fazer</em> e damos textos prontos para colar na IA. Você aprende enquanto constrói, sem pular para código avançado sem entender.</p>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Como usar (bem simples)</div>
  <ol class="guide-steps">
- <li><strong>Leia</strong> o passo com calma — não precisa decorar nada.</li>
+ <li><strong>Leia</strong> o passo com calma, não precisa decorar nada.</li>
  <li><strong>Marque</strong> o checklist quando terminar cada tarefa.</li>
  <li><strong>Copie</strong> os prompts e cole na sua IA (Cursor, Claude, etc.).</li>
  <li><strong>Teste</strong> no navegador: se funcionou, avance. Se travou, volte um passo ou chame no WhatsApp.</li>
  </ol>
- <div class="info-box info"><strong>Dica de ouro:</strong> Erro é normal. Programador profissional também erra — a diferença é saber pesquisar e pedir ajuda à IA com clareza.</div>
+ <div class="info-box info"><strong>Dica de ouro:</strong> Erro é normal. Programador profissional também erra, a diferença é saber pesquisar e pedir ajuda à IA com clareza.</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Ordem certa: localhost primeiro, produção depois</div>
  <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não publique na internet no primeiro dia. O fluxo que usamos no <strong>SaaS Academy</strong> é este:</p>
  <ol class="guide-steps">
- <li><strong>Fase local (localhost)</strong> — rode o projeto na sua máquina, configure Firebase/Hotmart em modo teste e valide login, telas e regras do Firestore.</li>
- <li><strong>Só quando estiver do jeito que você quer</strong> — suba para a Vercel (produção), atualize domínios no Firebase Auth e o link de obrigado na Hotmart.</li>
+ <li><strong>Fase local (localhost)</strong>, rode o projeto na sua máquina, configure Firebase/Hotmart em modo teste e valide login, telas e regras do Firestore.</li>
+ <li><strong>Só quando estiver do jeito que você quer</strong>, suba para a Vercel (produção), atualize domínios no Firebase Auth e o link de obrigado na Hotmart.</li>
  </ol>
- <div class="info-box success"><strong>Regra prática:</strong> se ainda quebra no <code>localhost</code>, não faz sentido colocar no ar — corrija local, depois faça deploy.</div>
+ <div class="info-box success"><strong>Regra prática:</strong> se ainda quebra no <code>localhost</code>, não faz sentido colocar no ar, corrija local, depois faça deploy.</div>
 </div>
 
 <div class="content-card">
@@ -2866,15 +3052,16 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
  <span class="tech-pill">Hotmart</span>
  <span class="tech-pill">Firebase</span>
  <span class="tech-pill">Vercel</span>
+ <span class="tech-pill">Design do app</span>
  </div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Modelo real: como montamos o <strong>SaaS Academy</strong></div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Este curso não é só teoria — você replica o mesmo caminho que usamos aqui:</p>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Este curso não é só teoria, você replica o mesmo caminho que usamos aqui:</p>
  <ol class="guide-steps">
  <li><strong>Landing</strong> em HTML/CSS/JS na <strong>Vercel</strong></li>
- <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo — sem API na Vercel)</li>
+ <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo, sem API na Vercel)</li>
  <li><strong>Login</strong> com <strong>Firebase Auth</strong> (e-mail/senha + Google)</li>
  <li><strong>Banco</strong> <strong>Firestore</strong> com regras que bloqueiam alterações pelo navegador (Spark no início; Blaze ou Postgres se crescer muito)</li>
  <li><strong>Acesso ao produto</strong> só se o e-mail estiver liberado após a compra</li>
@@ -2889,9 +3076,9 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
 // STEP 1: PREPARAR PC
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-phase">Fase 0: Do zero</div>
  <div class="step-title">Preparar o computador</div>
- <div class="step-subtitle">Antes de codar, instalamos as ferramentas básicas. Siga na ordem — leva cerca de 20–30 minutos na primeira vez.</div>
+ <div class="step-subtitle">Antes de codar, instalamos as ferramentas básicas. Siga na ordem, leva cerca de 20 a 30 minutos na primeira vez.</div>
 </div>
 
 <div class="content-card">
@@ -2928,7 +3115,7 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Checklist — PC pronto</div>
+ <div class="content-card-title">Checklist: PC pronto</div>
  <div class="checklist">
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Terminal abre sem erro</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> node -v e npm -v funcionam</label>
@@ -2944,7 +3131,7 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
 // STEP 2: IA
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-phase">Fase 0: Do zero</div>
  <div class="step-title">Programar com IA</div>
  <div class="step-subtitle">Você não precisa decorar código. A IA escreve; você <strong>dirige</strong>: pede, testa, corrige e aprende no caminho.</div>
 </div>
@@ -2973,9 +3160,9 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt inicial — cole na sua IA agora</div>
+ <div class="content-card-title">Prompt inicial: cole na sua IA agora</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Primeiro contato com o projeto</div>
+ <div class="prompt-label">Prompt: Primeiro contato com o projeto</div>
  <div class="prompt-text" id="prompt-ia-start">Sou iniciante absoluto em programação. Vou criar um SaaS chamado "${saasName}".
 
 Regras:
@@ -2992,7 +3179,7 @@ Me guie como se eu nunca tivesse programado.${saasContextBlock()}</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Checklist — IA configurada</div>
+ <div class="content-card-title">Checklist: IA configurada</div>
  <div class="checklist">
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Instalei Cursor (ou outro editor com IA)</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Testei colar o prompt inicial e recebi resposta</label>
@@ -3008,9 +3195,9 @@ Me guie como se eu nunca tivesse programado.${saasContextBlock()}</div>
 // STEP 3: GITHUB
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 0 — Do zero</div>
+ <div class="step-phase">Fase 0: Do zero</div>
  <div class="step-title">GitHub do zero</div>
- <div class="step-subtitle">GitHub guarda seu código na nuvem — como um “Google Drive” do projeto. É essencial para backup, histórico e deploy.</div>
+ <div class="step-subtitle">GitHub guarda seu código na nuvem, como um “Google Drive” do projeto. É essencial para backup, histórico e deploy.</div>
 </div>
 
 <div class="content-card">
@@ -3018,7 +3205,7 @@ Me guie como se eu nunca tivesse programado.${saasContextBlock()}</div>
  <ol class="guide-steps">
  <li>Acesse <strong>https://github.com</strong> e clique em <strong>Sign up</strong>.</li>
  <li>Use um e-mail que você acessa sempre.</li>
- <li>Escolha plano <strong>Free</strong> — é suficiente para começar.</li>
+ <li>Escolha plano <strong>Free</strong>, é suficiente para começar.</li>
  <li>Confirme o e-mail se pedirem.</li>
  </ol>
 </div>
@@ -3052,9 +3239,9 @@ Me guie como se eu nunca tivesse programado.${saasContextBlock()}</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — se travar no GitHub</div>
+ <div class="content-card-title">Prompt: se travar no GitHub</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Ajuda com Git</div>
+ <div class="prompt-label">Prompt: Ajuda com Git</div>
  <div class="prompt-text" id="prompt-git-help">Sou iniciante. Estou no Windows tentando enviar meu projeto "${saasName}" para o GitHub.
 
 Meu erro ou dúvida:
@@ -3069,7 +3256,7 @@ Explique em português simples:
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Checklist — GitHub ok</div>
+ <div class="content-card-title">Checklist: GitHub ok</div>
  <div class="checklist">
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Conta GitHub criada</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> git --version funciona no terminal</label>
@@ -3086,25 +3273,79 @@ Explique em português simples:
 // STEP 4: SETUP
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-phase">Fase 1: Fundação</div>
  <div class="step-title">Setup do Projeto</div>
- <div class="step-subtitle">Agora que você já tem <strong>PC, IA e GitHub</strong>, vamos criar a base do <strong>${saasName}</strong>. Use os prompts — não precisa digitar tudo na mão.</div>
+ <div class="step-subtitle">Agora que você já tem <strong>PC, IA e GitHub</strong>, vamos criar a base do <strong>${saasName}</strong>. Use os prompts, não precisa digitar tudo na mão.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Caminho A — Igual ao SaaS Academy (HTML + Vercel + Firebase + Hotmart)</div>
+ <div class="content-card-title">Caminho A: Igual ao SaaS Academy (HTML + Vercel + Firebase + Hotmart)</div>
  <ol class="guide-steps">
- <li><strong>index.html</strong> — landing + laboratório protegido por login</li>
- <li><strong>js/</strong> — firebase-config.js, auth-access.js, checkout-config.js, admin-dashboard.js</li>
- <li><strong>firestore.rules</strong> — publicar no Firebase Console</li>
- <li><strong>Vercel</strong> — deploy estático (sem build)</li>
- <li><strong>Hotmart</strong> — link de pagamento + retorno <code>?acesso=1</code></li>
+ <li><strong>index.html</strong>, landing + laboratório protegido por login</li>
+ <li><strong>js/</strong>, firebase-config.js, auth-access.js, checkout-config.js, admin-dashboard.js</li>
+ <li><strong>firestore.rules</strong>, publicar no Firebase Console</li>
+ <li><strong>Vercel</strong>, deploy estático (sem build)</li>
+ <li><strong>Hotmart</strong>, link de pagamento + retorno <code>?acesso=1</code></li>
  </ol>
- <div class="info-box success">É o modelo deste site. Passos 5–10 têm o tutorial completo com caminhos no console.</div>
+ <div class="info-box success">É o modelo deste site. Passos 5 a 10 têm o tutorial completo com caminhos no console.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Caminho B — Stack recomendada <span class="content-tag">Padrão 2025</span></div>
+ <div class="content-card-title">Oficina do seu SaaS: visual do software <span class="content-tag design">Design</span></div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Além da landing de venda, seu <strong>${saasName}</strong> precisa de uma <strong>área logada</strong> (oficina, painel, app) com cara de produto profissional, limpa e genérica o suficiente para qualquer nicho, sem parecer template de IA nem site de guru.</p>
+ <div class="lab-app-preview" aria-hidden="true">
+  <aside class="lab-app-preview__side">
+   <div class="lab-app-preview__logo">${saasName}</div>
+   <nav class="lab-app-preview__nav">
+    <span class="is-on">Início</span>
+    <span>Projetos</span>
+    <span>Clientes</span>
+    <span>Config</span>
+   </nav>
+  </aside>
+  <div class="lab-app-preview__main">
+   <div class="lab-app-preview__top">
+    <h4>Visão geral</h4>
+    <span class="lab-app-preview__pill">online</span>
+   </div>
+   <div class="lab-app-preview__grid">
+    <div class="lab-app-preview__stat"><strong>24</strong><em>ativos</em></div>
+    <div class="lab-app-preview__stat"><strong>3</strong><em>pendentes</em></div>
+    <div class="lab-app-preview__stat"><strong>98%</strong><em>uptime</em></div>
+   </div>
+   <div class="lab-app-preview__panel">Área principal do produto, listas, formulários e ações do seu SaaS. Layout estável, sem animação pesada.</div>
+  </div>
+ </div>
+ <ul class="lab-design-tips">
+  <li><strong>Paleta neutra</strong>, fundo claro, texto escuro, um azul só para botão e links (evite roxo degradê genérico).</li>
+  <li><strong>Tipografia legível</strong>, system-ui ou Inter; títulos claros, corpo 15 a 16px.</li>
+  <li><strong>Sidebar + conteúdo</strong>, padrão de dashboard que todo mundo reconhece.</li>
+  <li><strong>Pouca animação</strong>, hover suave no máximo; sem parallax nem efeitos em tudo.</li>
+  <li><strong>Componentes repetíveis</strong>, cards, tabelas e botões iguais em todas as telas.</li>
+ </ul>
+ <div class="info-box info"><strong>Não precisa ser único no dia 1.</strong> Um design genérico bem feito passa mais confiança que visual caprichado que quebra no celular.</div>
+ <div class="prompt-box" style="margin-top:1rem">
+  <div class="prompt-label">Prompt: UI da oficina / app (HTML ou Next.js)</div>
+  <div class="prompt-text" id="prompt-saas-ui-design">Crie a interface logada do SaaS "<span class="prompt-saas-name">${saasName}</span>" (área após login, oficina/painel).
+
+Requisitos de design:
+1. Visual profissional e genérico (qualquer nicho), NÃO parecer template Bootstrap padrão nem landing AI slop (roxo/rosa genérico, glassmorphism excessivo)
+2. Layout: sidebar fixa escura + área principal clara com cards de métricas e uma tabela ou lista
+3. CSS: variáveis --bg, --surface, --text, --muted, --accent (um azul só)
+4. Tipografia system-ui ou Inter; espaçamento generoso; bordas 8 a 12px
+5. Animações: no máximo opacity/transform 0.2s em hover, sem bibliotecas pesadas
+6. Mobile: sidebar vira menu ou empilha; cards em 1 coluna
+7. Telas mínimas: Dashboard, uma lista (clientes ou itens), Configurações (placeholder)
+8. Botão primário sólido; secundário outline; focus visível (acessibilidade)
+
+Stack: [HTML+CSS+JS OU Next.js+Tailwind]
+Entregue arquivos completos.${saasContextBlock()}</div>
+  <button class="copy-btn" onclick="copyPrompt('prompt-saas-ui-design')">Copiar</button>
+ </div>
+</div>
+
+<div class="content-card">
+ <div class="content-card-title">Caminho B: Stack recomendada <span class="content-tag">Padrão 2025</span></div>
  <div class="tech-pills">
  <span class="tech-pill">Next.js 15</span>
  <span class="tech-pill">TypeScript</span>
@@ -3120,7 +3361,7 @@ Explique em português simples:
 <div class="content-card">
  <div class="content-card-title">Prompt para criar o projeto</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Cole no Cursor, Claude ou ChatGPT</div>
+ <div class="prompt-label">Prompt: Cole no Cursor, Claude ou ChatGPT</div>
  <div class="prompt-text" id="prompt-setup">Crie um projeto Next.js 15 com TypeScript para o SaaS chamado "<span class="prompt-saas-name">${saasName}</span>".
 
 Inclua:
@@ -3165,6 +3406,7 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> .gitignore incluindo .env*</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Repositório criado no GitHub</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto abrindo sem erros no localhost:3000</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Área logada (oficina) com layout sidebar + dashboard genérico e limpo</label>
  </div>
 </div>
 
@@ -3176,16 +3418,16 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 // STEP 5: AUTH
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-phase">Fase 1: Fundação</div>
  <div class="step-title">Autenticação (login)</div>
- <div class="step-subtitle">Crie logins no <strong>${saasName}</strong> com <strong>Firebase Authentication</strong> — tutorial no console, chaves na Vercel, depois prompt na IA.</div>
+ <div class="step-subtitle">Crie logins no <strong>${saasName}</strong> com <strong>Firebase Authentication</strong>, tutorial no console, chaves na Vercel, depois prompt na IA.</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Como fazer login?</div>
  <div class="option-grid">
  <div class="option-btn opt-auth selected" data-val="firebase" onclick="selectAuth('firebase')"><div class="option-name">Firebase Auth</div>
- <div class="option-desc">Email/senha + Google — recomendado</div></div>
+ <div class="option-desc">Email/senha + Google, recomendado</div></div>
  <div class="option-btn opt-auth" data-val="nextauth" onclick="selectAuth('nextauth')"><div class="option-name">NextAuth</div>
  <div class="option-desc">Alternativa para Next.js</div></div>
  </div>
@@ -3201,19 +3443,19 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 // STEP 6: DATABASE
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 1 — Fundação</div>
+ <div class="step-phase">Fase 1: Fundação</div>
  <div class="step-title">Banco de Dados</div>
- <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. O plano certo depende de <strong>quantas pessoas vão usar</strong> — leia a escala abaixo e escolha Firebase, Supabase ou PlanetScale.</div>
+ <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. O plano certo depende de <strong>quantas pessoas vão usar</strong>, leia a escala abaixo e escolha Firebase, Supabase ou PlanetScale.</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Escolha o banco de dados</div>
  <div class="option-grid">
  <div class="option-btn opt-db selected" data-val="firebase" onclick="selectDb('firebase')"><div class="option-name">Firebase</div>
- <div class="option-desc">Recomendado no SaaS Academy — NoSQL + regras</div>
+ <div class="option-desc">Recomendado no SaaS Academy (NoSQL + regras</div>
  </div>
  <div class="option-btn opt-db" data-val="supabase" onclick="selectDb('supabase')"><div class="option-name">Supabase</div>
- <div class="option-desc">Postgres + RLS — melhor para muitos usuários</div>
+ <div class="option-desc">Postgres + RLS, melhor para muitos usuários</div>
  </div>
  <div class="option-btn opt-db" data-val="planetscale" onclick="selectDb('planetscale')"><div class="option-name">PlanetScale</div>
  <div class="option-desc">MySQL serverless</div>
@@ -3231,7 +3473,7 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 // STEP 7: PAYMENTS
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-phase">Fase 2: Produto</div>
  <div class="step-title">Pagamentos e liberação de acesso</div>
  <div class="step-subtitle">Como no <strong>SaaS Academy</strong>: venda na <strong>Hotmart</strong>, cliente volta ao seu site e entra com o e-mail da compra.</div>
 </div>
@@ -3240,7 +3482,7 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
  <div class="content-card-title">Escolha como cobrar</div>
  <div class="option-grid">
  <div class="option-btn opt-payment selected" data-val="hotmart" onclick="selectPayment('hotmart')"><div class="option-name">Hotmart</div>
- <div class="option-desc">Recomendado BR — sem API na Vercel</div></div>
+ <div class="option-desc">Recomendado BR, sem API na Vercel</div></div>
  <div class="option-btn opt-payment" data-val="stripe" onclick="selectPayment('stripe')"><div class="option-name">Stripe</div>
  <div class="option-desc">Checkout + webhook (Next.js)</div></div>
  </div>
@@ -3256,7 +3498,7 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 // STEP 8: SECURITY
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-phase">Fase 2: Produto</div>
  <div class="step-title">Segurança (não confie no front)</div>
  <div class="step-subtitle">No <strong>SaaS Academy</strong> a segurança real está no <strong>Firestore Rules</strong> + <strong>Firebase Auth</strong>. O F12 não pode liberar acesso nem virar admin.</div>
 </div>
@@ -3269,21 +3511,33 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 <div class="content-card">
  <div class="content-card-title">Coleções do SaaS Academy</div>
  <ol class="guide-steps">
- <li><strong>users/{uid}</strong> — perfil: <code>email</code>, <code>role</code> (user/admin), <code>libraryAccess</code> (true/false). O cliente <strong>não pode</strong> se auto-liberar nem virar admin.</li>
- <li><strong>email_access/{email}</strong> — liberação da compra: <code>active: true</code>. Só <strong>admin</strong> escreve aqui (painel ou Console).</li>
+ <li><strong>users/{uid}</strong>, perfil: <code>email</code>, <code>role</code> (user/admin), <code>libraryAccess</code> (true/false). O cliente <strong>não pode</strong> se auto-liberar nem virar admin.</li>
+ <li><strong>email_access/{email}</strong>, liberação da compra: <code>active: true</code>. Só o <strong>dono</strong> (seu UID) grava aqui, F12 não altera.</li>
  </ol>
  <div class="lab-path"><strong>Caminho no Console:</strong> Firebase → <code>Build → Firestore Database → Regras</code> → cole o arquivo <code>firestore.rules</code> do projeto → <strong>Publicar</strong>.</div>
 </div>
 
 <div class="content-card">
+ <div class="content-card-title">Só você altera valores (dono do sistema)</div>
+ <ol class="guide-steps">
+ <li>Authentication → Users → copie seu <strong>User UID</strong></li>
+ <li><code>js/owner-config.js</code> → <code>PRIMARY_ADMIN_UID</code></li>
+ <li><code>firestore.rules</code> → <code>ownerUid()</code> (mesmo UID) → Publicar</li>
+ <li><code>users/{uid}</code> → <code>role: admin</code> só no Console</li>
+ </ol>
+ <div class="info-box success"><strong>F12 não altera</strong> libraryAccess, email_access nem role, o Firestore recusa.</div>
+</div>
+
+<div class="content-card">
  <div class="content-card-title">Arquivo firestore.rules (modelo SaaS Academy)</div>
+ <div class="info-box info">Use o arquivo <code>firestore.rules</code> da raiz do projeto (com <code>ownerUid()</code>). O trecho abaixo é resumo, a versão completa está no repositório.</div>
  <div class="code-snippet">rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /email_access/{email} {
       allow read: if request.auth != null
-        && (request.auth.token.email.lower() == email || isAdmin());
-      allow write: if isAdmin();
+        && (request.auth.token.email.lower() == email || isPrimaryOwner());
+      allow write: if isPrimaryOwner();
     }
     match /users/{userId} {
       allow get: if isSelf(userId) || isAdmin();
@@ -3308,7 +3562,7 @@ service cloud.firestore {
  <li>Cliente compra na Hotmart → você libera o e-mail em <code>email_access</code> (manual ou automação futura).</li>
  <li>Cliente clica <strong>Entrar</strong> no site (sem aba “Criar conta” pública).</li>
  <li>Primeira vez: mesmo e-mail da compra + senha (ou Google).</li>
- <li><code>userHasLabAccess()</code> lê o Firestore — se não tiver compra, <strong>logout</strong>.</li>
+ <li><code>userHasLabAccess()</code> lê o Firestore, se não tiver compra, <strong>logout</strong>.</li>
  <li>Admin: só quem tem <code>role: admin</code> no Firestore (definido por você no Console).</li>
  </ol>
 </div>
@@ -3319,7 +3573,7 @@ service cloud.firestore {
  <li>Faça login uma vez no seu site para criar <code>users/{uid}</code>.</li>
  <li>Firebase Console → Firestore → coleção <strong>users</strong> → seu documento (uid).</li>
  <li>Edite o campo <code>role</code> para <strong>admin</strong> (string).</li>
- <li>Recarregue o site — aparece o <strong>Painel admin</strong> para liberar clientes.</li>
+ <li>Recarregue o site, aparece o <strong>Painel admin</strong> para liberar clientes.</li>
  </ol>
  <div class="info-box danger"><strong>Nunca</strong> coloque lista de e-mails admin no JavaScript. Qualquer um veria no código-fonte.</div>
 </div>
@@ -3329,7 +3583,7 @@ service cloud.firestore {
  <div class="checklist">
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> firestore.rules publicadas no Console</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Cliente não consegue alterar role/libraryAccess pelo F12</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sem cadastro público — só entrar após compra</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Sem cadastro público, só entrar após compra</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Domínios autorizados no Firebase Auth (localhost + Vercel)</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Chave privada Admin SDK NUNCA no GitHub</label>
  </div>
@@ -3343,7 +3597,7 @@ service cloud.firestore {
 // STEP 9: PERFORMANCE
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 2 — Produto</div>
+ <div class="step-phase">Fase 2: Produto</div>
  <div class="step-title">Performance & Velocidade</div>
  <div class="step-subtitle">Faça o <strong>${saasName}</strong> carregar rápido, escalar com usuários e nunca cair.</div>
 </div>
@@ -3355,10 +3609,10 @@ service cloud.firestore {
 
 <div class="content-card">
  <div class="content-card-title">Escala conforme o número de usuários <span class="content-tag scale">Escala</span></div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Performance não é só “site rápido” — é <strong>aguentar mais gente sem cair nem explodir a fatura</strong>. Quanto mais usuários simultâneos, mais você precisa de banco robusto, cache e monitoramento.</p>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Performance não é só “site rápido”, é <strong>aguentar mais gente sem cair nem explodir a fatura</strong>. Quanto mais usuários simultâneos, mais você precisa de banco robusto, cache e monitoramento.</p>
  <ul class="lab-scale-actions" style="margin-top:0">
   <li><strong>Poucos usuários (até ~100):</strong> Firebase Spark ou Supabase Free + Vercel Hobby costumam bastar. Foque em código limpo e regras de segurança.</li>
-  <li><strong>Crescimento (100–1.000):</strong> Ative plano pago no Firebase (Blaze) ou Supabase Pro; use paginação em listas; evite carregar o dashboard inteiro de uma vez.</li>
+  <li><strong>Crescimento (100 a 1.000):</strong> Ative plano pago no Firebase (Blaze) ou Supabase Pro; use paginação em listas; evite carregar o dashboard inteiro de uma vez.</li>
   <li><strong>Alto volume (1.000+):</strong> Postgres com índices, Redis para cache, CDN para assets, alertas no Sentry/UptimeRobot. Considere migrar do Firestore se precisar de relatórios SQL complexos.</li>
  </ul>
  <div class="info-box warning" style="margin-top:0.85rem"><strong>Sinais de que precisa subir de nível:</strong> lentidão em horário de pico, e-mails do Firebase/Vercel sobre cota, erros <code>resource-exhausted</code> ou <code>too many connections</code>, conta de infraestrutura subindo todo mês sem mais vendas.</div>
@@ -3366,9 +3620,9 @@ service cloud.firestore {
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — Cache com Redis</div>
+ <div class="content-card-title">Prompt: Cache com Redis</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Cache Strategy</div>
+ <div class="prompt-label">Prompt: Cache Strategy</div>
  <div class="prompt-text" id="prompt-cache">Implemente estratégia de cache para o SaaS "<span class="prompt-saas-name">${saasName}</span>" com Upstash Redis.
 
 1. Cache de queries pesadas (dados do dashboard, listas, relatórios)
@@ -3384,9 +3638,9 @@ Mostre o wrapper de cache reutilizável e exemplos de uso em Server Components.<
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — Otimização de banco de dados</div>
+ <div class="content-card-title">Prompt: Otimização de banco de dados</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Database Performance</div>
+ <div class="prompt-label">Prompt: Database Performance</div>
  <div class="prompt-text" id="prompt-db-perf">Otimize as queries do banco de dados do SaaS "<span class="prompt-saas-name">${saasName}</span>".
 
 1. Identifique e adicione indexes nos campos:
@@ -3397,7 +3651,7 @@ Mostre o wrapper de cache reutilizável e exemplos de uso em Server Components.<
 
 2. Paginação eficiente com cursor-based pagination (não offset)
 3. Select apenas os campos necessários (evitar SELECT *)
-4. Queries N+1 — mostre como detectar e corrigir com Prisma
+4. Queries N+1, mostre como detectar e corrigir com Prisma
 5. Connection pooling com PgBouncer no Supabase
 
 Mostre o EXPLAIN ANALYZE das queries antes e depois das otimizações.</div>
@@ -3406,9 +3660,9 @@ Mostre o EXPLAIN ANALYZE das queries antes e depois das otimizações.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — Monitoramento e alertas</div>
+ <div class="content-card-title">Prompt: Monitoramento e alertas</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Monitoring Setup</div>
+ <div class="prompt-label">Prompt: Monitoring Setup</div>
  <div class="prompt-text" id="prompt-monitor">Configure monitoramento completo para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
 
 1. Sentry para rastreamento de erros (frontend + backend)
@@ -3431,14 +3685,14 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
 // STEP 10: DEPLOY
 ()=>`
 <div class="step-header">
- <div class="step-phase">Fase 3 — Lançamento</div>
+ <div class="step-phase">Fase 3: Lançamento</div>
  <div class="step-title">Deploy & CI/CD</div>
  <div class="step-subtitle">Primeiro teste tudo no <strong>localhost</strong>; quando estiver redondo, coloque o <strong>${saasName}</strong> em produção na Vercel.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Fase 1 — Desenvolvimento local (localhost)</div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Antes de GitHub e Vercel, rode na sua máquina. O Firebase Auth <strong>não funciona</strong> abrindo o arquivo com duplo clique — use um servidor local.</p>
+ <div class="content-card-title">Fase 1: Desenvolvimento local (localhost)</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Antes de GitHub e Vercel, rode na sua máquina. O Firebase Auth <strong>não funciona</strong> abrindo o arquivo com duplo clique, use um servidor local.</p>
  <ol class="guide-steps">
  <li>Na pasta do projeto, no terminal: <code>npx serve -p 3000</code> (ou extensão <strong>Live Server</strong> no Cursor/VS Code)</li>
  <li>Abra <code>http://localhost:3000</code> (ou a porta que o Live Server mostrar, ex.: 5500)</li>
@@ -3450,7 +3704,7 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Fase 2 — Produção (quando estiver pronto)</div>
+ <div class="content-card-title">Fase 2: Produção (quando estiver pronto)</div>
  <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Só faça deploy quando login, pagamento e telas principais funcionarem no localhost.</p>
  <ol class="guide-steps">
  <li>Commit no GitHub → importe na Vercel → pegue <code>https://seu-projeto.vercel.app</code></li>
@@ -3478,7 +3732,7 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Deploy estático — caminho exato (SaaS Academy)</div>
+ <div class="content-card-title">Deploy estático: caminho exato (SaaS Academy)</div>
  <ol class="guide-steps">
  <li><strong>github.com</strong> → New repository → envie index.html, pasta js/, assets/, firestore.rules</li>
  <li><strong>vercel.com</strong> → Add New → Project → importe o repositório</li>
@@ -3493,9 +3747,9 @@ Mostre a configuração completa e os thresholds de alerta recomendados.</div>
 <div id="deploy-prompt-area"></div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — GitHub Actions CI/CD</div>
+ <div class="content-card-title">Prompt: GitHub Actions CI/CD</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Pipeline CI/CD completo</div>
+ <div class="prompt-label">Prompt: Pipeline CI/CD completo</div>
  <div class="prompt-text" id="prompt-cicd">Crie um pipeline CI/CD completo com GitHub Actions para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
 
 Workflow para Pull Requests:
@@ -3518,9 +3772,9 @@ Mostre os arquivos .github/workflows/ completos.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Prompt — Domínio + SSL + DNS</div>
+ <div class="content-card-title">Prompt: Domínio + SSL + DNS</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Domain Setup</div>
+ <div class="prompt-label">Prompt: Domain Setup</div>
  <div class="prompt-text" id="prompt-domain">Configure domínio personalizado e SSL para o SaaS "<span class="prompt-saas-name">${saasName}</span>".
 
 1. Como apontar DNS do domínio para Vercel/VPS
@@ -3550,7 +3804,7 @@ Mostre passo a passo para Namecheap/GoDaddy + Vercel/DigitalOcean.</div>
 
 <div class="content-card course-complete-inline">
  <div class="content-card-title">Depois do deploy: clientes</div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.85rem">Quando clicar em <strong>Concluir curso</strong>, vamos celebrar — e, se quiser, você pode falar comigo no WhatsApp: tenho um <strong>sistema para ajudar a encontrar clientes</strong> para o seu SaaS.</p>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.85rem">Quando clicar em <strong>Concluir curso</strong>, vamos celebrar, e, se quiser, você pode falar comigo no WhatsApp: tenho um <strong>sistema para ajudar a encontrar clientes</strong> para o seu SaaS.</p>
  <a class="course-complete-wa" style="max-width:320px" href="https://wa.me/5511952025568" id="course-complete-wa-inline" target="_blank" rel="noopener noreferrer">Falar sobre conseguir clientes</a>
 </div>
 
@@ -3571,7 +3825,7 @@ function renderPaymentContent() {
  if (selectedPayment === 'hotmart') {
   area.innerHTML = `
 <div class="content-card">
- <div class="content-card-title">Tutorial — Hotmart do zero (conta + produto + link)</div>
+ <div class="content-card-title">Tutorial: Hotmart do zero (conta + produto + link)</div>
  <div class="info-box success"><strong>Modelo SaaS Academy:</strong> o pagamento acontece na Hotmart. Seu site só redireciona para o link de checkout e, depois da compra, o cliente volta para <code>?acesso=1</code> para entrar.</div>
 
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Criar conta na Hotmart</strong></p>
@@ -3615,14 +3869,14 @@ window.goToCheckout = function goToCheckout(plan) {
 
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>5. Liberar acesso no Firestore</strong></p>
  <ol class="guide-steps">
- <li>Opção A — <strong>Painel admin</strong> do seu site (você com <code>role: admin</code>) → Liberar cliente.</li>
- <li>Opção B — Console: Firestore → coleção <strong>email_access</strong> → documento ID = e-mail em minúsculas → campo <code>active: true</code>.</li>
+ <li>Opção A, <strong>Painel admin</strong> do seu site (você com <code>role: admin</code>) → Liberar cliente.</li>
+ <li>Opção B, Console: Firestore → coleção <strong>email_access</strong> → documento ID = e-mail em minúsculas → campo <code>active: true</code>.</li>
  </ol>
  <div class="info-box warning"><strong>Sem liberar o e-mail</strong>, o login até funciona no Firebase Auth, mas o laboratório nega acesso e faz logout.</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Checklist — Hotmart + acesso</div>
+ <div class="content-card-title">Checklist: Hotmart + acesso</div>
  <div class="checklist">
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Conta Hotmart criada e produto publicado</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Link pay.hotmart.com em checkout-config.js</label>
@@ -3635,10 +3889,10 @@ window.goToCheckout = function goToCheckout(plan) {
 
  area.innerHTML = `
 <div class="content-card">
- <div class="content-card-title">Stripe (avançado — Next.js com API)</div>
+ <div class="content-card-title">Stripe (avançado: Next.js com API)</div>
  <div class="info-box info">Use Stripe se quiser checkout embutido + webhooks na Vercel. Exige rotas <code>/api</code> e validação de assinatura do webhook.</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Stripe completo</div>
+ <div class="prompt-label">Prompt: Stripe completo</div>
  <div class="prompt-text" id="prompt-stripe">Implemente Stripe no SaaS "${name}": produtos, Checkout, webhook com stripe-signature, atualizar plano no Firestore/Supabase.</div>
  <button class="copy-btn" onclick="copyPrompt('prompt-stripe')">Copiar</button>
  </div>
@@ -3649,9 +3903,9 @@ function renderDeployPrompt() {
  const area = document.getElementById('deploy-prompt-area');
  if (!area) return;
  const prompts = {
- vercel: { title: '▲ Deploy na Vercel — SaaS Academy (HTML estático)', text: `Deploy do "${saasName}" na Vercel (site estático como o SaaS Academy).
+ vercel: { title: '▲ Deploy na Vercel: SaaS Academy (HTML estático)', text: `Deploy do "${saasName}" na Vercel (site estático como o SaaS Academy).
 
-ANTES (localhost — obrigatório):
+ANTES (localhost, obrigatório):
 1. npx serve -p 3000 ou Live Server → testar login, Firestore e Hotmart em sandbox
 2. Só avance para produção quando tudo funcionar localmente
 
@@ -3691,7 +3945,7 @@ Mostre o railway.json e como configurar o pipeline de deploy.` }
  <div class="content-card">
  <div class="content-card-title">${p.title} <span class="content-tag deploy">Deploy</span></div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — Deploy Completo</div>
+ <div class="prompt-label">Prompt: Deploy Completo</div>
  <div class="prompt-text" id="prompt-deploy-dynamic">${p.text}</div>
  <button class="copy-btn" onclick="copyPrompt('prompt-deploy-dynamic')">Copiar</button>
  </div>
@@ -3708,7 +3962,7 @@ function renderAuthContent() {
  if (selectedAuth === 'firebase') {
   area.innerHTML = `
 <div class="content-card">
- <div class="content-card-title">Tutorial — Firebase Auth (passo a passo no Console)</div>
+ <div class="content-card-title">Tutorial: Firebase Auth (passo a passo no Console)</div>
  <div class="info-box warning"><strong>Modelo SaaS Academy:</strong> não há aba Criar conta pública. O cliente só <strong>entra</strong> depois da compra (Hotmart).</div>
  <div class="lab-path"><strong>Caminho:</strong> console.firebase.google.com → seu projeto → Build → Authentication</div>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Começar Authentication</strong></p>
@@ -3733,9 +3987,9 @@ function renderAuthContent() {
 <div class="content-card">
  <div class="content-card-title">Arquivos de referência (SaaS Academy)</div>
  <ul class="guide-steps" style="list-style:disc">
- <li><strong>js/auth-access.js</strong> — login, Google, verifica Firestore</li>
- <li><strong>js/admin-dashboard.js</strong> — liberar clientes após Hotmart</li>
- <li><strong>firestore.rules</strong> — publicar no Console</li>
+ <li><strong>js/auth-access.js</strong>, login, Google, verifica Firestore</li>
+ <li><strong>js/admin-dashboard.js</strong>, liberar clientes após Hotmart</li>
+ <li><strong>firestore.rules</strong>, publicar no Console</li>
  </ul>
 </div>`;
   return;
@@ -3747,9 +4001,9 @@ function renderAuthContent() {
  <div class="info-box info">Use se preferir não usar Firebase Auth.</div>
 </div>
 <div class="content-card">
- <div class="content-card-title">Prompt — NextAuth</div>
+ <div class="content-card-title">Prompt: NextAuth</div>
  <div class="prompt-box">
- <div class="prompt-label">Prompt — NextAuth v5</div>
+ <div class="prompt-label">Prompt: NextAuth v5</div>
  <div class="prompt-text" id="prompt-auth">Implemente NextAuth v5 no SaaS "${name}".${ctx} Google, GitHub, email/senha, middleware /dashboard.</div>
  <button class="copy-btn" onclick="copyPrompt('prompt-auth')">Copiar</button>
  </div>
@@ -3765,26 +4019,26 @@ function getScaleGuideHtml(db) {
  return `
 <div class="content-card" id="lab-scale-guide">
  <div class="content-card-title">Quantos usuários? Qual banco e infraestrutura? <span class="content-tag scale">Escala</span></div>
- <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não existe “um banco para sempre”. O <strong>${saasName}</strong> pode começar simples e ficar mais robusto conforme cresce. Use esta tabela como guia — números são ordem de grandeza (usuários que usam o produto de verdade, não só visitantes na landing).</p>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não existe “um banco para sempre”. O <strong>${saasName}</strong> pode começar simples e ficar mais robusto conforme cresce. Use esta tabela como guia, números são ordem de grandeza (usuários que usam o produto de verdade, não só visitantes na landing).</p>
  <table class="lab-scale-table" aria-label="Guia de escala por número de usuários">
   <thead>
    <tr><th>Usuários ativos</th><th>Cenário</th><th>Banco / infra</th><th>O que você pode fazer</th></tr>
   </thead>
   <tbody>
    <tr>
-    <td><strong>1 – 100</strong></td>
+    <td><strong>1 a 100</strong></td>
     <td>MVP, curso, primeiros clientes pagantes</td>
     <td>Firebase <strong>Spark</strong> (grátis) ou Supabase <strong>Free</strong></td>
     <td>Regras Firestore/RLS certas; poucas leituras por login; deploy na Vercel grátis</td>
    </tr>
    <tr>
-    <td><strong>100 – 1.000</strong></td>
+    <td><strong>100 a 1.000</strong></td>
     <td>SaaS com tráfego real, suporte, dashboard</td>
     <td>Firebase <strong>Blaze</strong> (pago sob uso) ou Supabase <strong>Pro</strong></td>
     <td>Monitorar cotas no console; paginação; evitar listeners em listas gigantes; cache de telas pesadas</td>
    </tr>
    <tr>
-    <td><strong>1.000 – 10.000</strong></td>
+    <td><strong>1.000 a 10.000</strong></td>
     <td>Produto em crescimento, relatórios, equipe</td>
     <td><strong>Postgres</strong> (Supabase/RDS) + Redis (Upstash) + CDN</td>
     <td>Índices; queries só com campos necessários; jobs em background; separar leitura pesada (relatórios)</td>
@@ -3801,9 +4055,9 @@ function getScaleGuideHtml(db) {
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.85rem 0 0"><strong>Dica para o banco escolhido agora (${db === 'firebase' ? 'Firebase' : db === 'supabase' ? 'Supabase' : 'PlanetScale'}):</strong> ${dbTip}</p>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.5rem 0 0"><strong>O que mais pesa na conta (além do banco):</strong> Vercel (banda e funções), Hotmart (taxa por venda), envio de e-mail (Resend/SendGrid), armazenamento de arquivos (Firebase Storage / S3).</p>
  <ul class="lab-scale-actions">
-  <li><strong>Você não precisa</strong> comprar servidor caro no dia 1 — comece grátis e suba de plano quando o console mostrar uso alto.</li>
+  <li><strong>Você não precisa</strong> comprar servidor caro no dia 1, comece grátis e suba de plano quando o console mostrar uso alto.</li>
   <li><strong>Você precisa</strong> medir: Firebase → Uso e faturamento; Supabase → Database → Reports; Vercel → Analytics.</li>
-  <li><strong>Antes de migrar de banco</strong>, otimize: paginação, índices, menos leituras por tela, cache. Migração é projeto — faça só com necessidade clara.</li>
+  <li><strong>Antes de migrar de banco</strong>, otimize: paginação, índices, menos leituras por tela, cache. Migração é projeto, faça só com necessidade clara.</li>
  </ul>
 </div>`;
 }
@@ -3816,15 +4070,15 @@ function renderDbPrompt() {
 
  const prompts = {
   supabase: {
-   label: 'Prompt — Banco Supabase + Prisma',
+   label: 'Prompt: Banco Supabase + Prisma',
    text: `Configure o banco de dados Supabase com Prisma para o SaaS "${name}".${ctx}\n\nSchema necessário:\n- User: id, email, name, image, plan, createdAt\n- Subscription: id, userId, stripeCustomerId, status, currentPeriodEnd\n\nInclua:\n1. schema.prisma completo\n2. Configuração do Prisma Client (lib/db.ts)\n3. Row Level Security (RLS) no Supabase\n4. Indexes otimizados\n5. Seed script para dados de teste`
   },
   firebase: {
-   label: 'Prompt — Firebase Firestore + Next.js',
-   text: `Implemente Firebase Firestore no SaaS "${name}" com Next.js App Router.${ctx}\n\nJá configurei no console: projeto Firebase, Firestore ativo, app Web registrado e variáveis no .env.local e na Vercel.\n\nInclua:\n1. lib/firebase/client.ts (SDK web — só chaves NEXT_PUBLIC_*)\n2. lib/firebase/admin.ts (Admin SDK — só no servidor)\n3. Coleções: users/{uid}, subscriptions/{uid}, [dados do produto]\n4. Regras Firestore: usuário só lê/escreve o próprio uid\n5. Funções server-side para criar/atualizar documentos com Admin SDK\n6. Tipos TypeScript para cada documento\n7. Checklist do que testar localmente e em produção`
+   label: 'Prompt: Firebase Firestore + Next.js',
+   text: `Implemente Firebase Firestore no SaaS "${name}" com Next.js App Router.${ctx}\n\nJá configurei no console: projeto Firebase, Firestore ativo, app Web registrado e variáveis no .env.local e na Vercel.\n\nInclua:\n1. lib/firebase/client.ts (SDK web, só chaves NEXT_PUBLIC_*)\n2. lib/firebase/admin.ts (Admin SDK, só no servidor)\n3. Coleções: users/{uid}, subscriptions/{uid}, [dados do produto]\n4. Regras Firestore: usuário só lê/escreve o próprio uid\n5. Funções server-side para criar/atualizar documentos com Admin SDK\n6. Tipos TypeScript para cada documento\n7. Checklist do que testar localmente e em produção`
   },
   planetscale: {
-   label: 'Prompt — PlanetScale + Prisma',
+   label: 'Prompt: PlanetScale + Prisma',
    text: `Configure PlanetScale com Prisma para o SaaS "${name}".${ctx}\n\nInclua:\n1. Schema Prisma para MySQL\n2. Branching do PlanetScale para migrations seguras\n3. Connection string com @planetscale/database\n4. Deploy de schema sem downtime\n5. Indexes e queries otimizadas`
   }
  };
@@ -3833,8 +4087,8 @@ function renderDbPrompt() {
 
  const firebaseTutorial = selectedDb === 'firebase' ? `
 <div class="content-card">
- <div class="content-card-title">Tutorial — Firebase do zero (console + chaves + Vercel)</div>
- <div class="info-box warning"><strong>Não é só comando no terminal.</strong> No Firebase você cria o projeto no site, copia as chaves e cola nas variáveis de ambiente — no seu PC e na Vercel.</div>
+ <div class="content-card-title">Tutorial: Firebase do zero (console + chaves + Vercel)</div>
+ <div class="info-box warning"><strong>Não é só comando no terminal.</strong> No Firebase você cria o projeto no site, copia as chaves e cola nas variáveis de ambiente, no seu PC e na Vercel.</div>
 
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>1. Criar o projeto</strong></p>
  <ol class="guide-steps">
@@ -3849,7 +4103,7 @@ function renderDbPrompt() {
  <li>No menu lateral: <strong>Build → Firestore Database</strong>.</li>
  <li>Clique em <strong>Criar banco de dados</strong>.</li>
  <li>Modo <strong>Produção</strong> (recomendado) → escolha região próxima (ex.: <strong>southamerica-east1</strong>).</li>
- <li>Confirme. O banco fica vazio — a IA vai criar as coleções no código.</li>
+ <li>Confirme. O banco fica vazio, a IA vai criar as coleções no código.</li>
  </ol>
 
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>3. Registrar app Web e pegar chaves públicas</strong></p>
@@ -3877,7 +4131,7 @@ function renderDbPrompt() {
 <span class="var">NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID</span>=<span class="str">123456789</span>
 <span class="var">NEXT_PUBLIC_FIREBASE_APP_ID</span>=<span class="str">1:123:web:abc</span>
 
-<span class="cm"># Servidor (JSON da conta de serviço — NÃO commitar)</span>
+<span class="cm"># Servidor (JSON da conta de serviço, NÃO commitar)</span>
 <span class="var">FIREBASE_ADMIN_PROJECT_ID</span>=<span class="str">seu-projeto-id</span>
 <span class="var">FIREBASE_ADMIN_CLIENT_EMAIL</span>=<span class="str">firebase-adminsdk@...</span>
 <span class="var">FIREBASE_ADMIN_PRIVATE_KEY</span>=<span class="str">"-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n"</span></div>
@@ -3904,15 +4158,15 @@ function renderDbPrompt() {
  <li><strong>Armazenamento:</strong> ~1 GB · <strong>Banda:</strong> ~10 GB/mês</li>
  </ul>
  <div class="info-box warning" style="margin-top:0.75rem"><strong>Exemplo real:</strong> 150 alunos entrando 1x por dia, cada um com 10 leituras no Firestore = ~1.500 leituras/dia (ok no Spark). O mesmo público com dashboard que lê 200 documentos por visita = ~30.000 leituras/dia (perto do limite). <strong>O código manda no custo.</strong></div>
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>Quando migrar para Blaze (pago):</strong> console avisa que está perto do limite, ou você precisa de mais de ~50 mil leituras/dia. Blaze cobra só o que passar — não precisa mudar o código no dia 1.</p>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.75rem 0 0"><strong>Quando migrar para Blaze (pago):</strong> console avisa que está perto do limite, ou você precisa de mais de ~50 mil leituras/dia. Blaze cobra só o que passar, não precisa mudar o código no dia 1.</p>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.5rem 0 0"><strong>Quando pensar em Postgres (Supabase):</strong> relatórios complexos, muitos joins, milhares de usuários com dados grandes por conta, ou equipe pedindo SQL. Até lá, Firestore + regras bem feitas resolve.</p>
  <div class="lab-path"><strong>Caminho:</strong> Configurações do projeto → Uso e faturamento → Cotas do projeto</div>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:1rem 0 0"><strong>9. Vercel (HTML estático)</strong></p>
- <ol class="guide-steps"><li>Chaves em js/firebase-config.js — sem env vars na Vercel</li><li>Next.js: NEXT_PUBLIC_FIREBASE_* na Vercel</li></ol>
+ <ol class="guide-steps"><li>Chaves em js/firebase-config.js, sem env vars na Vercel</li><li>Next.js: NEXT_PUBLIC_FIREBASE_* na Vercel</li></ol>
 </div>` : '';
  const supabaseTutorial = selectedDb === 'supabase' ? `
 <div class="content-card">
- <div class="content-card-title">Tutorial — Supabase do zero (console + chaves + Vercel)</div>
+ <div class="content-card-title">Tutorial: Supabase do zero (console + chaves + Vercel)</div>
  <ol class="guide-steps">
  <li>Acesse <strong>https://supabase.com</strong> → <strong>New project</strong> → escolha nome e senha do banco.</li>
  <li>Em <strong>Project Settings → API</strong>, copie <strong>Project URL</strong>, <strong>anon key</strong> (pública) e <strong>service_role</strong> (só servidor).</li>
@@ -3924,7 +4178,7 @@ function renderDbPrompt() {
 
  const planetTutorial = selectedDb === 'planetscale' ? `
 <div class="content-card">
- <div class="content-card-title">Tutorial — PlanetScale (console + connection string)</div>
+ <div class="content-card-title">Tutorial: PlanetScale (console + connection string)</div>
  <ol class="guide-steps">
  <li>Crie banco em <strong>planetscale.com</strong> → copie a <strong>connection string</strong>.</li>
  <li>Coloque em DATABASE_URL no .env.local e na Vercel.</li>
@@ -3948,13 +4202,13 @@ function renderDbPrompt() {
 
  const checklist = `
 <div class="content-card">
- <div class="content-card-title">Checklist — banco configurado</div>
+ <div class="content-card-title">Checklist: banco configurado</div>
  <div class="checklist">
  ${selectedDb === 'firebase' ? `
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto criado no Firebase Console</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Firestore ativado</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> App Web registrado e chaves NEXT_PUBLIC_* no .env.local</label>
- <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Chave Admin no .env.local — sem commit no Git</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Chave Admin no .env.local, sem commit no Git</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Mesmas variáveis na Vercel + redeploy feito</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Regras Firestore publicadas</label>
  ` : selectedDb === 'supabase' ? `

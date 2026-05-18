@@ -71,7 +71,7 @@
       .toLowerCase();
   }
 
-  /** UI rápida — decisões críticas usam assertLabAdminFromServer (Firestore). */
+  /** UI rápida, decisões críticas usam assertLabAdminFromServer (Firestore). */
   window.isLabAdmin = function isLabAdmin(user) {
     if (!user?.uid) return false;
     return normalizeRole(window.__labUserProfile?.role) === "admin";
@@ -162,6 +162,7 @@
     const data = snap.data() || {};
     const patch = { updatedAt: now };
     if (!data.email && email) patch.email = email;
+    // Nunca enviar role nem libraryAccess no merge, regras do Firestore bloqueiam; F12 não adianta.
     if (Object.keys(patch).length > 1) await ref.set(patch, { merge: true });
     await refreshLabUserProfile(user);
   }
@@ -191,7 +192,7 @@
     setNavVisible(platAdminBtn, isAdmin);
 
     if (adminFab) {
-      if (isAdmin) {
+      if (isOwner) {
         adminFab.hidden = false;
         adminFab.classList.add("is-visible");
       } else {
@@ -200,11 +201,11 @@
       }
     }
 
-    if (adminLink) adminLink.style.display = isAdmin ? "block" : "none";
+    if (adminLink) adminLink.style.display = isOwner ? "block" : "none";
 
     if (userBtn) {
       const name = user?.email ? user.email.split("@")[0] : "Conta";
-      userBtn.textContent = isAdmin ? name + " (admin)" : name;
+      userBtn.textContent = isOwner ? name + " (dono)" : isAdmin ? name + " (admin)" : name;
     }
   }
 

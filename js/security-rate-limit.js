@@ -1,6 +1,6 @@
 /**
  * Limite de tentativas no navegador (complementa o rate limit do Firebase Auth).
- * Não substitui regras do Firestore — só reduz abuso/brute force pela UI.
+ * Não substitui regras do Firestore, só reduz abuso/brute force pela UI.
  */
 (function () {
   const STORE_KEY = "saaslab_rate_v1";

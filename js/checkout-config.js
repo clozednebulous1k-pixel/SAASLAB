@@ -1,4 +1,4 @@
-// Hotmart — links de checkout (Produtos → Links de divulgação)
+// Hotmart, links de checkout (Produtos → Links de divulgação)
 // Página de obrigado na Hotmart: https://SEU-DOMINIO.vercel.app/?acesso=1
 window.CHECKOUT_LINKS = {
   starter: "https://pay.hotmart.com/R105874305C",

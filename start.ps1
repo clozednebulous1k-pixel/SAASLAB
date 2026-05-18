@@ -1,4 +1,4 @@
-# SaaS Lab — servidor local
+# SaaS Lab, servidor local
 $ErrorActionPreference = "Stop"
 $port = 8765
 $root = $PSScriptRoot
@@ -22,7 +22,7 @@ if (-not $python) {
 
 $url = "http://127.0.0.1:$port/index.html"
 Write-Host ""
-Write-Host "  SaaS Lab — servidor local" -ForegroundColor Cyan
+Write-Host "  SaaS Lab, servidor local" -ForegroundColor Cyan
 Write-Host "  $url" -ForegroundColor Green
 Write-Host "  Pasta: $root" -ForegroundColor DarkGray
 Write-Host "  Ctrl+C para parar" -ForegroundColor DarkGray

@@ -1,159 +1,92 @@
 rules_version = '2';
 
 service cloud.firestore {
-
   match /databases/{database}/documents {
 
+    // ⚠️ Cole o MESMO UID de js/owner-config.js (Authentication → Users → User UID)
+    function ownerUid() {
+      return 'COLE_SEU_UID_AQUI';
+    }
 
+    function isPrimaryOwner() {
+      return request.auth != null && request.auth.uid == ownerUid();
+    }
 
     function userDoc() {
-
       return get(/databases/$(database)/documents/users/$(request.auth.uid));
-
     }
-
-
 
     function isAdmin() {
-
       return request.auth != null
-
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-
         && userDoc().data.role == 'admin';
-
     }
-
-
 
     function isSelf(userId) {
-
       return request.auth != null && request.auth.uid == userId;
-
     }
-
-
 
     function authEmailLower() {
-
       return request.auth.token.email.lower();
-
     }
-
-
 
     function validUserCreate() {
-
       return request.resource.data.keys().hasOnly(
-
           ['email', 'role', 'libraryAccess', 'authProvider', 'createdAt', 'updatedAt']
-
         )
-
         && request.resource.data.role == 'user'
-
         && request.resource.data.libraryAccess == false
-
         && request.resource.data.email == authEmailLower()
-
         && request.resource.data.libraryAccess is bool;
-
     }
 
-
-
+    // Usuário comum: NUNCA altera role, libraryAccess nem e-mail de outro
     function validUserSelfPatch() {
-
       return request.resource.data.role == resource.data.role
-
         && request.resource.data.libraryAccess == resource.data.libraryAccess
-
         && request.resource.data.email == resource.data.email
-
         && request.resource.data.diff(resource.data).affectedKeys()
-
             .hasOnly(['email', 'authProvider', 'updatedAt']);
-
     }
-
-
 
     function validEmailAccessWrite() {
-
       return request.resource.data.keys().hasOnly(['active', 'email', 'updatedAt'])
-
         && request.resource.data.active is bool
-
         && request.resource.data.email == email;
-
     }
 
-
-
-    function validAdminUserPatch() {
-
-      return request.resource.data.role in ['user', 'admin']
-
+    // Dono pode mudar libraryAccess, role NUNCA muda pelo app (só Console Firebase)
+    function validOwnerUserPatch() {
+      return request.resource.data.role == resource.data.role
         && request.resource.data.libraryAccess is bool
-
+        && request.resource.data.email == resource.data.email
         && request.resource.data.diff(resource.data).affectedKeys()
-
-            .hasOnly(['libraryAccess', 'role', 'email', 'authProvider', 'updatedAt']);
-
+            .hasOnly(['libraryAccess', 'updatedAt']);
     }
-
-
 
     match /email_access/{email} {
-
       allow read: if request.auth != null
-
-        && (authEmailLower() == email || isAdmin());
-
-      allow create, update: if isAdmin() && validEmailAccessWrite();
-
-      allow delete: if isAdmin();
-
+        && (authEmailLower() == email || isPrimaryOwner());
+      allow create, update, delete: if isPrimaryOwner() && validEmailAccessWrite();
     }
 
-
-
     match /users/{userId} {
-
-      allow get: if isSelf(userId) || isAdmin();
-
-      allow list: if isAdmin();
-
-
+      allow get: if isSelf(userId) || isPrimaryOwner();
+      allow list: if isPrimaryOwner();
 
       allow create: if isSelf(userId) && validUserCreate();
 
-
-
       allow update: if isSelf(userId) && validUserSelfPatch();
 
-
-
-      allow update: if isAdmin()
-        && validAdminUserPatch()
-        && (!isSelf(userId) || request.resource.data.role == resource.data.role);
-
-
+      allow update: if isPrimaryOwner()
+        && !isSelf(userId)
+        && validOwnerUserPatch();
 
       allow delete: if false;
-
     }
-
-
 
     match /{document=**} {
-
       allow read, write: if false;
-
     }
-
   }
-
 }
-
-

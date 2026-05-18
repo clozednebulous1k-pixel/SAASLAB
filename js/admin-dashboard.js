@@ -1,6 +1,6 @@
 /**
 
- * Painel admin — somente role "admin" em users/{uid}
+ * Painel admin, somente role "admin" em users/{uid}
 
  */
 
@@ -8,7 +8,7 @@
 
   function formatDate(ts) {
 
-    if (!ts) return "—";
+    if (!ts) return ": ";
 
     try {
 
@@ -18,7 +18,7 @@
 
     } catch (_) {
 
-      return "—";
+      return ": ";
 
     }
 
@@ -70,6 +70,21 @@
     return window.isLabAdmin?.(user);
   }
 
+  async function requirePrimaryOwner() {
+    const auth = window.getFirebaseAuth?.();
+    const user = auth?.currentUser;
+    if (!user) return false;
+    if (typeof window.isPrimaryOwner === "function" && window.isPrimaryOwner(user)) {
+      return true;
+    }
+    alert(
+      "Só o dono do sistema pode alterar acessos.\n\n" +
+        "Configure js/owner-config.js (PRIMARY_ADMIN_UID) e firestore.rules (ownerUid) com o mesmo UID:\n" +
+        (user.uid || "?")
+    );
+    return false;
+  }
+
   function checkAdminWriteRateLimit() {
     const rl = window.saasLabRateLimit;
     if (!rl) return true;
@@ -88,9 +103,9 @@
 
     const user = auth?.currentUser;
 
-    if (!user || !(await requireServerAdmin())) {
+    if (!user || !(await requireServerAdmin()) || !(await requirePrimaryOwner())) {
 
-      alert("Acesso restrito ao administrador.");
+      alert("Acesso restrito ao dono do sistema.");
 
       return;
 
@@ -140,7 +155,7 @@
 
   async function loadAdminDashboard() {
 
-    if (!(await requireServerAdmin())) {
+    if (!(await requireServerAdmin()) || !(await requirePrimaryOwner())) {
 
       closeAdminDashboard();
 
@@ -193,11 +208,11 @@
 
         if (role === "admin") admins++;
 
-        const email = d.email || "—";
+        const email = d.email || ": ";
 
         let emailActive = false;
 
-        if (email && email !== "—") {
+        if (email && email !== ": ") {
 
           try {
 
@@ -241,7 +256,7 @@
 
                    <button type="button" class="admin-btn admin-btn--revoke" data-uid="${uid}" data-email="${em}" onclick="adminRevokeAccess(this.dataset.uid, this.dataset.email)">Revogar</button>`
 
-                : '<span class="admin-muted">—</span>'
+                : '<span class="admin-muted">: </span>'
 
             }
 
@@ -297,11 +312,11 @@
 
     const auth = window.getFirebaseAuth?.();
 
-    if (!db || !auth?.currentUser || !(await requireServerAdmin())) return;
+    if (!db || !auth?.currentUser || !(await requirePrimaryOwner())) return;
 
     if (!checkAdminWriteRateLimit()) return;
 
-    if (!email || email === "—") {
+    if (!email || email === ": ") {
 
       alert("E-mail inválido.");
 
@@ -317,7 +332,7 @@
 
       await db.collection("users").doc(uid).set(
 
-        { libraryAccess: true, role: "user", updatedAt: now },
+        { libraryAccess: true, updatedAt: now },
 
         { merge: true }
 
@@ -349,7 +364,7 @@
 
     const auth = window.getFirebaseAuth?.();
 
-    if (!db || !auth?.currentUser || !(await requireServerAdmin())) return;
+    if (!db || !auth?.currentUser || !(await requirePrimaryOwner())) return;
 
     if (!checkAdminWriteRateLimit()) return;
 

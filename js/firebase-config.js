@@ -8,6 +8,7 @@ window.FIREBASE_CONFIG = {
   appId: "1:627408482482:web:4bba0444b9c71c174919ab",
 };
 
-// Admin: defina SOMENTE no Firestore Console → users/{uid} → role: "admin"
-// Não use lista de e-mails admin no front — regras do Firestore são a proteção real.
-// Recomendado no Console: Authentication → App Check (bloqueia scripts não autorizados).
+// Admin: Firestore Console → users/{uid} → role: "admin" (só para você)
+// Dono: js/owner-config.js PRIMARY_ADMIN_UID + firestore.rules ownerUid(), MESMO UID
+// Valores (acesso, compra, libraryAccess): só o dono altera; F12 não consegue gravar no Firestore.
+// Recomendado: Authentication → App Check
