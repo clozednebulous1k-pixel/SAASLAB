@@ -1630,6 +1630,7 @@ body.platform-open {
 
 /* Selector buttons */
 .option-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem; margin:1rem 0; }
+.option-grid.option-grid-db { grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); }
 .option-btn {
  border: 2px solid var(--learn-border);
  background: #fff;
@@ -2721,6 +2722,8 @@ function loadSaasProfile() {
  const savedName = localStorage.getItem(SAAS_STORAGE_NAME);
  const savedBrief = localStorage.getItem(SAAS_STORAGE_BRIEF);
  const savedAuth = localStorage.getItem(SAAS_STORAGE_AUTH);
+ const savedDb = localStorage.getItem('saaslab_db');
+ if (savedDb) selectedDb = savedDb;
  if (savedName) saasName = savedName;
  if (savedBrief) saasBrief = savedBrief;
  if (savedAuth) selectedAuth = savedAuth;
@@ -3445,22 +3448,27 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 <div class="step-header">
  <div class="step-phase">Fase 1: Fundação</div>
  <div class="step-title">Banco de Dados</div>
- <div class="step-subtitle">Configure um banco para o <strong>${saasName}</strong>. O plano certo depende de <strong>quantas pessoas vão usar</strong>, leia a escala abaixo e escolha Firebase, Supabase ou PlanetScale.</div>
+ <div class="step-subtitle">Escolha o banco para o <strong>${saasName}</strong>. Antes de produção em massa, teste no <strong>localhost</strong> (Firebase, Postgres no Docker, Prisma, etc.).</div>
 </div>
 
 <div class="content-card">
  <div class="content-card-title">Escolha o banco de dados</div>
- <div class="option-grid">
+ <div class="option-grid option-grid-db">
  <div class="option-btn opt-db selected" data-val="firebase" onclick="selectDb('firebase')"><div class="option-name">Firebase</div>
- <div class="option-desc">Recomendado no SaaS Academy (NoSQL + regras</div>
- </div>
+ <div class="option-desc">SaaS Academy · NoSQL + regras</div></div>
  <div class="option-btn opt-db" data-val="supabase" onclick="selectDb('supabase')"><div class="option-name">Supabase</div>
- <div class="option-desc">Postgres + RLS, melhor para muitos usuários</div>
+ <div class="option-desc">Postgres na nuvem + RLS</div>
  </div>
+ <div class="option-btn opt-db" data-val="postgres-docker" onclick="selectDb('postgres-docker')"><div class="option-name">Postgres + Docker</div>
+ <div class="option-desc">Simula produção no PC</div></div>
+ <div class="option-btn opt-db" data-val="neon" onclick="selectDb('neon')"><div class="option-name">Neon</div>
+ <div class="option-desc">Postgres serverless</div></div>
  <div class="option-btn opt-db" data-val="planetscale" onclick="selectDb('planetscale')"><div class="option-name">PlanetScale</div>
- <div class="option-desc">MySQL serverless</div>
+ <div class="option-desc">MySQL serverless</div></div>
+ <div class="option-btn opt-db" data-val="mongodb" onclick="selectDb('mongodb')"><div class="option-name">MongoDB</div>
+ <div class="option-desc">NoSQL · Atlas ou Docker</div></div>
  </div>
- </div>
+ <div class="info-box info" style="margin-top:0.75rem"><strong>ORM com SQL:</strong> use <strong>Prisma</strong> (schema, migrations, tipos) com Supabase, Postgres local, Neon ou PlanetScale.</div>
 </div>
 
 <div id="db-content-area"></div>
@@ -3518,12 +3526,14 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 </div>
 
 <div class="content-card">
- <div class="content-card-title">Só você altera valores (dono do sistema)</div>
+ <div class="content-card-title">Passo a passo: configurar o dono (só você)</div>
  <ol class="guide-steps">
- <li>Authentication → Users → copie seu <strong>User UID</strong></li>
- <li><code>js/owner-config.js</code> → <code>PRIMARY_ADMIN_UID</code></li>
- <li><code>firestore.rules</code> → <code>ownerUid()</code> (mesmo UID) → Publicar</li>
- <li><code>users/{uid}</code> → <code>role: admin</code> só no Console</li>
+ <li><strong>Firebase Console</strong> → Authentication → Users → copie seu <strong>User UID</strong> (dono).</li>
+ <li><code>js/owner-config.js</code> → <code>PRIMARY_ADMIN_UID = "SEU_UID"</code></li>
+ <li><code>firestore.rules</code> → <code>ownerUid()</code> com o mesmo UID → Firestore → Regras → <strong>Publicar</strong></li>
+ <li>Firestore → <code>users/{seu-uid}</code> → <code>role: admin</code> (só no Console)</li>
+ <li>Deploy na Vercel com <code>owner-config.js</code> atualizado</li>
+ <li>Teste com outra conta: painel admin não deve aparecer</li>
  </ol>
  <div class="info-box success"><strong>F12 não altera</strong> libraryAccess, email_access nem role, o Firestore recusa.</div>
 </div>
@@ -4010,11 +4020,43 @@ function renderAuthContent() {
 </div>`;
 }
 
+function getPreProdDatabaseGuideHtml() {
+ return `
+<div class="content-card" id="lab-preprod-db">
+ <div class="content-card-title">Antes da produção em massa: teste no localhost</div>
+ <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Não suba direto para milhares de usuários. Valide no <strong>seu PC</strong> com o mesmo fluxo de login, banco e deploy que usará depois.</p>
+ <ol class="guide-steps">
+ <li><strong>HTML estático (este projeto):</strong> Live Server ou <code>npx serve .</code> na pasta do repo.</li>
+ <li><strong>Next.js / API:</strong> <code>npm run dev</code> em <code>http://localhost:3000</code> com <code>.env.local</code> de desenvolvimento.</li>
+ <li><strong>Postgres no Docker:</strong> simule produção SQL sem pagar nuvem no dia 1.</li>
+ <li><strong>Prisma:</strong> <code>npx prisma migrate dev</code> no localhost; em produção <code>prisma migrate deploy</code>.</li>
+ <li>Depois de testar: variáveis na Vercel, domínio, Hotmart em produção.</li>
+ </ol>
+ <div class="code-snippet"><span class="cm"># docker-compose.yml (Postgres + Adminer)</span>
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: saas
+      POSTGRES_PASSWORD: saas
+      POSTGRES_DB: saas_dev
+    ports: ["5432:5432"]
+  adminer:
+    image: adminer
+    ports: ["8080:8080"]</div>
+ <div class="info-box info"><strong>DATABASE_URL local:</strong> <code>postgresql://saas:saas@localhost:5432/saas_dev</code>. Na Vercel use Neon, Supabase ou RDS.</div>
+</div>`;
+}
+
 function getScaleGuideHtml(db) {
+ const dbLabels = { firebase: 'Firebase', supabase: 'Supabase', 'postgres-docker': 'Postgres + Docker', neon: 'Neon', planetscale: 'PlanetScale', mongodb: 'MongoDB' };
+ const dbLabel = dbLabels[db] || 'Banco escolhido';
  const dbTip = db === 'firebase'
   ? 'No Firebase, cada login e cada tela que lê o Firestore consome <strong>leituras</strong>. Com 200 alunos ativos por dia, dá para estourar o Spark se o código listar coleções inteiras.'
-  : db === 'supabase'
-  ? 'No Supabase/Postgres, o limite costuma ser <strong>conexões simultâneas</strong> e queries pesadas. Use pooler (PgBouncer) e índices quando passar de centenas de usuários online.'
+  : (db === 'supabase' || db === 'neon' || db === 'postgres-docker')
+  ? 'No Postgres (local, Neon ou Supabase), o limite costuma ser <strong>conexões simultâneas</strong> e queries pesadas. Use pooler, Prisma e índices quando passar de centenas de usuários online.'
+  : db === 'mongodb'
+  ? 'No MongoDB, monitore <strong>storage</strong> e índices em coleções grandes. Atlas Free serve para MVP; Docker local evita custo enquanto desenvolve.'
   : 'No PlanetScale/MySQL, foque em <strong>índices</strong> e migrations sem travar a tabela em produção.';
  return `
 <div class="content-card" id="lab-scale-guide">
@@ -4052,7 +4094,7 @@ function getScaleGuideHtml(db) {
   </tbody>
  </table>
  <div class="info-box info" style="margin-top:0.85rem"><strong>Modelo SaaS Academy (HTML + Firestore):</strong> centenas de alunos costumam caber no Spark se cada usuário gera poucas leituras (só <code>users</code> e <code>email_access</code>). Milhares de usuários ativos por dia → planeje <strong>Blaze</strong> ou migração para Postgres.</div>
- <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.85rem 0 0"><strong>Dica para o banco escolhido agora (${db === 'firebase' ? 'Firebase' : db === 'supabase' ? 'Supabase' : 'PlanetScale'}):</strong> ${dbTip}</p>
+ <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.85rem 0 0"><strong>Dica para o banco escolhido agora (${dbLabel}):</strong> ${dbTip}</p>
  <p style="color:var(--learn-muted);font-size:0.92rem;line-height:1.7;margin:0.5rem 0 0"><strong>O que mais pesa na conta (além do banco):</strong> Vercel (banda e funções), Hotmart (taxa por venda), envio de e-mail (Resend/SendGrid), armazenamento de arquivos (Firebase Storage / S3).</p>
  <ul class="lab-scale-actions">
   <li><strong>Você não precisa</strong> comprar servidor caro no dia 1, comece grátis e suba de plano quando o console mostrar uso alto.</li>
@@ -4080,6 +4122,18 @@ function renderDbPrompt() {
   planetscale: {
    label: 'Prompt: PlanetScale + Prisma',
    text: `Configure PlanetScale com Prisma para o SaaS "${name}".${ctx}\n\nInclua:\n1. Schema Prisma para MySQL\n2. Branching do PlanetScale para migrations seguras\n3. Connection string com @planetscale/database\n4. Deploy de schema sem downtime\n5. Indexes e queries otimizadas`
+  },
+  'postgres-docker': {
+   label: 'Prompt: Postgres local (Docker) + Prisma',
+   text: `Configure Postgres em Docker para desenvolvimento do SaaS "${name}" e Prisma para produção depois.${ctx}\n\nInclua:\n1. docker-compose.yml com postgres:16\n2. DATABASE_URL localhost e Neon/Supabase na Vercel\n3. schema.prisma + migrations\n4. lib/db.ts singleton\n5. Seed de teste\n6. Checklist localhost antes do deploy`
+  },
+  neon: {
+   label: 'Prompt: Neon (Postgres serverless) + Prisma',
+   text: `Configure Neon Postgres com Prisma para o SaaS "${name}".${ctx}\n\nInclua:\n1. Projeto Neon e connection string SSL\n2. schema.prisma postgresql\n3. DATABASE_URL .env.local e Vercel\n4. migrate deploy no CI\n5. Índices users/subscriptions`
+  },
+  mongodb: {
+   label: 'Prompt: MongoDB (Atlas ou Docker) + Mongoose',
+   text: `Configure MongoDB para o SaaS "${name}".${ctx}\n\nInclua:\n1. docker mongo:7 OU Atlas M0\n2. Schemas User, Subscription\n3. MONGODB_URI local vs produção\n4. Índices email/userId\n5. URI só no servidor`
   }
  };
 
@@ -4186,6 +4240,36 @@ function renderDbPrompt() {
  </ol>
 </div>` : '';
 
+
+ const postgresDockerTutorial = selectedDb === 'postgres-docker' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial: Postgres + Docker + Prisma</div>
+ <ol class="guide-steps">
+ <li>Instale Docker Desktop → <code>docker-compose.yml</code> com <code>postgres:16</code>.</li>
+ <li><code>docker compose up -d</code> → <code>localhost:5432</code>.</li>
+ <li><code>npm i prisma @prisma/client</code> → <code>npx prisma init</code>.</li>
+ <li><code>DATABASE_URL=postgresql://saas:saas@localhost:5432/saas_dev</code> no .env.local.</li>
+ <li><code>npx prisma migrate dev</code> → teste no localhost antes da nuvem.</li>
+ </ol>
+</div>` : '';
+ const neonTutorial = selectedDb === 'neon' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial: Neon (Postgres serverless)</div>
+ <ol class="guide-steps">
+ <li>https://neon.tech → copie connection string com SSL.</li>
+ <li>DATABASE_URL no .env.local e Vercel.</li>
+ <li><code>npx prisma migrate deploy</code> no deploy.</li>
+ </ol>
+</div>` : '';
+ const mongoTutorial = selectedDb === 'mongodb' ? `
+<div class="content-card">
+ <div class="content-card-title">Tutorial: MongoDB (Docker ou Atlas)</div>
+ <ol class="guide-steps">
+ <li>Local: <code>docker run -d -p 27017:27017 mongo:7</code></li>
+ <li>Nuvem: Atlas M0 → MONGODB_URI na Vercel.</li>
+ <li>Driver/Mongoose só no servidor.</li>
+ </ol>
+</div>` : '';
  const supabaseExtra = selectedDb === 'supabase' ? `
 <div class="content-card">
  <div class="content-card-title">Código: Prisma Client singleton</div>
@@ -4216,6 +4300,13 @@ function renderDbPrompt() {
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> URL e keys no .env.local</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Variáveis na Vercel</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Prisma schema + migration rodados</label>
+ ` : selectedDb === 'postgres-docker' ? `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Docker Postgres rodando (5432)</label>
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Prisma migrate dev OK</label>
+ ` : selectedDb === 'neon' ? `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Projeto Neon + DATABASE_URL na Vercel</label>
+ ` : selectedDb === 'mongodb' ? `
+ <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Mongo Docker ou Atlas configurado</label>
  ` : `
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> Banco PlanetScale criado</label>
  <label class="check-item"><input type="checkbox" onchange="this.parentElement.classList.toggle('checked',this.checked)"> DATABASE_URL no .env.local e Vercel</label>
@@ -4225,7 +4316,7 @@ function renderDbPrompt() {
 </div>`;
 
  const p = prompts[selectedDb] || prompts.supabase;
- area.innerHTML = getScaleGuideHtml(selectedDb) + firebaseTutorial + supabaseTutorial + planetTutorial + `
+ area.innerHTML = getPreProdDatabaseGuideHtml() + getScaleGuideHtml(selectedDb) + firebaseTutorial + supabaseTutorial + planetTutorial + postgresDockerTutorial + neonTutorial + mongoTutorial + `
 <div class="content-card">
  <div class="content-card-title">Prompt para a IA montar o código <span class="content-tag speed">Depois do tutorial</span></div>
  <div class="prompt-box">
@@ -4245,7 +4336,7 @@ function renderStep(n) {
  main.innerHTML = steps[n]();
  if (n === 10) { renderDeployPrompt(); initWaClientLinks(); }
  if (n === 5) renderAuthContent();
- if (n === 6) renderDbPrompt();
+ if (n === 6) { document.querySelectorAll('.opt-db').forEach(b => b.classList.toggle('selected', b.dataset.val === selectedDb)); renderDbPrompt(); }
  if (n === 7) renderPaymentContent();
  requestAnimationFrame(() => {
  animatePlatformStep();
