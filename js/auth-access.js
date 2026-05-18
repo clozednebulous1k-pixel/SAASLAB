@@ -134,6 +134,11 @@
       return snap.exists && snap.data()?.active === true;
     } catch (e) {
       console.error("emailHasPurchaseAccess", e);
+      if (e?.code === "permission-denied") {
+        console.error(
+          "Publique firestore.rules com allow get em email_access antes do login."
+        );
+      }
       return false;
     }
   }
@@ -185,6 +190,7 @@
     const adminFab = document.getElementById("admin-fab");
     const platAdminBtn = document.getElementById("plat-admin-btn");
     const isAdmin = user && window.isLabAdmin(user);
+    const isOwner = user && window.isPrimaryOwner?.(user);
 
     setNavVisible(loginBtn, !user);
     setNavVisible(userBtn, !!user);
@@ -290,6 +296,108 @@
     return true;
   };
 
+  function setAccessAuthMode(mode) {
+    window.__accessAuthMode = mode;
+    const passLabel = document.getElementById("access-password-label");
+    const passConfirm = document.getElementById("access-password-confirm-wrap");
+    const btn = document.getElementById("access-login-btn");
+    const passInput = document.getElementById("access-password");
+    const forgot = document.querySelector(".access-forgot");
+    if (mode === "first") {
+      if (passLabel) passLabel.textContent = "Crie sua senha (mín. 6 caracteres)";
+      if (passConfirm) passConfirm.hidden = false;
+      if (btn) btn.textContent = "Criar senha e entrar";
+      if (passInput) passInput.autocomplete = "new-password";
+      if (forgot) forgot.hidden = true;
+    } else if (mode === "returning") {
+      if (passLabel) passLabel.textContent = "Sua senha";
+      if (passConfirm) passConfirm.hidden = true;
+      if (btn) btn.textContent = "Entrar no laboratório";
+      if (passInput) passInput.autocomplete = "current-password";
+      if (forgot) forgot.hidden = false;
+    } else if (mode === "google-only") {
+      if (passLabel) passLabel.textContent = "Senha";
+      if (passConfirm) passConfirm.hidden = true;
+      if (btn) btn.textContent = "Entrar no laboratório";
+      if (forgot) forgot.hidden = true;
+    } else {
+      if (passLabel) passLabel.textContent = "Senha";
+      if (passConfirm) passConfirm.hidden = true;
+      if (btn) btn.textContent = "Entrar no laboratório";
+      if (passInput) passInput.autocomplete = "current-password";
+      if (forgot) forgot.hidden = false;
+    }
+  }
+
+  async function fetchAuthMethodsForEmail(email) {
+    const key = normalizeEmail(email);
+    return auth.fetchSignInMethodsForEmail(key);
+  }
+
+  window.accessResetEmailCheck = function accessResetEmailCheck() {
+    window.__accessAuthMode = "unknown";
+    const passConfirm = document.getElementById("access-password-confirm-wrap");
+    if (passConfirm) passConfirm.hidden = true;
+    const passLabel = document.getElementById("access-password-label");
+    if (passLabel) passLabel.textContent = "Senha";
+    const btn = document.getElementById("access-login-btn");
+    if (btn) btn.textContent = "Entrar no laboratório";
+  };
+
+  window.accessCheckEmail = async function accessCheckEmail() {
+    initFirebaseAccess();
+    if (!auth) {
+      showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
+      return;
+    }
+    const email = document.getElementById("access-email")?.value?.trim();
+    if (!email) {
+      showAuthMsg("Digite o e-mail usado na compra.", "warn");
+      return;
+    }
+    if (!checkAuthRateLimit()) return;
+
+    try {
+      showAuthMsg("Verificando compra liberada…", "info");
+      const hasAccess = await emailHasPurchaseAccess(email);
+      if (!hasAccess) {
+        setAccessAuthMode("unknown");
+        showAuthMsg(
+          "Este e-mail não está liberado. Use o mesmo e-mail da Hotmart ou aguarde a confirmação.",
+          "warn"
+        );
+        return;
+      }
+
+      const methods = await fetchAuthMethodsForEmail(email);
+      if (!methods || methods.length === 0) {
+        setAccessAuthMode("first");
+        showAuthMsg(
+          "Primeiro acesso! Crie sua senha abaixo (não enviamos senha por e-mail).",
+          "success"
+        );
+        document.getElementById("access-password")?.focus();
+        return;
+      }
+      if (methods.includes("password")) {
+        setAccessAuthMode("returning");
+        showAuthMsg("E-mail liberado. Digite sua senha ou use Esqueci a senha.", "info");
+        document.getElementById("access-password")?.focus();
+        return;
+      }
+      if (methods.includes("google.com")) {
+        setAccessAuthMode("google-only");
+        showAuthMsg("Esta conta foi criada com Google. Clique em Entrar com Google.", "info");
+        return;
+      }
+      setAccessAuthMode("returning");
+      showAuthMsg("E-mail liberado. Continue o login.", "info");
+    } catch (e) {
+      recordAuthFailure();
+      showAuthMsg(friendlyAuthError(e), "error");
+    }
+  };
+
   window.openAccessGate = function openAccessGate() {
     const gate = document.getElementById("access-gate");
     if (!gate) return;
@@ -297,6 +405,7 @@
     gate.setAttribute("aria-hidden", "false");
     requestAnimationFrame(() => gate.classList.add("is-open"));
     showAuthMsg("");
+    setAccessAuthMode("unknown");
     initFirebaseAccess();
     loadRememberedEmail();
   };
@@ -417,52 +526,86 @@
 
   window.accessLogin = async function accessLogin() {
     initFirebaseAccess();
-    const email = document.getElementById("access-email")?.value?.trim();
-    const pass = document.getElementById("access-password")?.value;
-
-    if (!email || !pass) {
-      showAuthMsg("Preencha e-mail e senha.", "warn");
+    if (!auth) {
+      showAuthMsg("Firebase não carregou. Recarregue a página.", "error");
       return;
     }
 
+    const email = document.getElementById("access-email")?.value?.trim();
+    const pass = document.getElementById("access-password")?.value;
+    const passConfirm = document.getElementById("access-password-confirm")?.value;
+
+    if (!email) {
+      showAuthMsg("Digite o e-mail da compra.", "warn");
+      return;
+    }
+    if (!pass) {
+      showAuthMsg("Digite sua senha.", "warn");
+      return;
+    }
     if (pass.length < 6) {
       showAuthMsg("Senha com no mínimo 6 caracteres.", "warn");
       return;
     }
-
     if (!checkAuthRateLimit()) return;
 
     try {
+      showAuthMsg("Verificando compra…", "info");
+      const hasAccess = await emailHasPurchaseAccess(email);
+      if (!hasAccess) {
+        showAuthMsg(
+          "Este e-mail não está liberado. Clique em Verificar ou use o mesmo e-mail da Hotmart.",
+          "warn"
+        );
+        return;
+      }
+
+      if (window.__accessAuthMode === "google-only") {
+        showAuthMsg("Use Entrar com Google para este e-mail.", "warn");
+        return;
+      }
+
+      let methods = [];
+      try {
+        methods = await fetchAuthMethodsForEmail(email);
+      } catch (e) {
+        recordAuthFailure();
+        showAuthMsg(friendlyAuthError(e), "error");
+        return;
+      }
+
+      const isFirstAccess = !methods.length || window.__accessAuthMode === "first";
+
+      if (isFirstAccess) {
+        if (pass !== passConfirm) {
+          setAccessAuthMode("first");
+          showAuthMsg("Confirme a senha (clique em Verificar se ainda não fez).", "warn");
+          return;
+        }
+        showAuthMsg("Criando sua conta…", "info");
+        await auth.createUserWithEmailAndPassword(normalizeEmail(email), pass);
+        saveRememberedEmail(email);
+        const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
+        if (ok) clearAuthFailures();
+        return;
+      }
+
       showAuthMsg("Entrando…", "info");
-      await auth.signInWithEmailAndPassword(email, pass);
+      await auth.signInWithEmailAndPassword(normalizeEmail(email), pass);
       saveRememberedEmail(email);
       const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
       if (ok) clearAuthFailures();
     } catch (e) {
       const code = e?.code || "";
-
-      if (
-        (code === "auth/user-not-found" || code === "auth/invalid-credential") &&
-        (await emailHasPurchaseAccess(email))
-      ) {
-        try {
-          showAuthMsg("Primeiro acesso: criando senha com e-mail da compra…", "info");
-          await auth.createUserWithEmailAndPassword(email, pass);
-          saveRememberedEmail(email);
-          const ok = await afterAuthSuccess(auth.currentUser, { signOutIfDenied: true });
-          if (ok) clearAuthFailures();
-          return;
-        } catch (e2) {
-          if (e2?.code === "auth/email-already-in-use") {
-            showAuthMsg("Senha incorreta para este e-mail. Tente de novo ou use Esqueci a senha.", "warn");
-            return;
-          }
-          recordAuthFailure();
-          showAuthMsg(friendlyAuthError(e2), "error");
-          return;
-        }
+      if (code === "auth/email-already-in-use") {
+        setAccessAuthMode("returning");
+        showAuthMsg("Esta conta já existe. Digite a senha correta ou use Esqueci a senha.", "warn");
+        return;
       }
-
+      if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+        showAuthMsg("Senha incorreta. Tente de novo ou Esqueci a senha.", "warn");
+        return;
+      }
       if (code !== "auth/too-many-requests") recordAuthFailure();
       showAuthMsg(friendlyAuthError(e), "error");
     }

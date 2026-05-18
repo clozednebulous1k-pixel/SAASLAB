@@ -5,7 +5,7 @@ service cloud.firestore {
 
     // ⚠️ Cole o MESMO UID de js/owner-config.js (Authentication → Users → User UID)
     function ownerUid() {
-      return 'COLE_SEU_UID_AQUI';
+      return 'MIeIJUA1ASPyBugizErLH98OIvR2';
     }
 
     function isPrimaryOwner() {
@@ -65,8 +65,11 @@ service cloud.firestore {
     }
 
     match /email_access/{email} {
-      allow read: if request.auth != null
-        && (authEmailLower() == email || isPrimaryOwner());
+      // get (não list): permite checar compra antes do 1º login (doc ID = e-mail)
+      allow get: if request.auth == null
+        || authEmailLower() == email
+        || isPrimaryOwner();
+      allow list: if isPrimaryOwner();
       allow create, update, delete: if isPrimaryOwner() && validEmailAccessWrite();
     }
 
