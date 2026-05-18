@@ -1,27 +1,65 @@
 # Testar compra (Hotmart → Apps Script → Firestore)
 
-## Opção A — Reenviar na Hotmart (mais fácil)
+## O erro 404 que você viu
 
-1. [app-postback.hotmart.com](https://app-postback.hotmart.com) → **Histórico**
-2. Abra o POST **Compra aprovada** com status **200**
-3. Clique em **Reenviar**
-4. Firebase → Firestore → `email_access` → confira o e-mail do comprador
+Significa que a URL ainda era **texto de exemplo** (`SEU_DEPLOY_ID`), não a URL real do Apps Script.
 
-## Opção B — Script local (simula compra)
+O `POST cd?hottok=c:\Users\...` aconteceu porque a variável `HOTMART_WEBHOOK_URL` ficou como `cd` (comando do terminal), não a URL do Google.
 
-1. Copie `webhook-secrets.example.ps1` → `webhook-secrets.ps1`
-2. Preencha URL `/exec` do Apps Script e o **Hottok**
-3. No PowerShell, na pasta do projeto:
+---
+
+## Onde pegar a URL real (Apps Script)
+
+1. [script.google.com](https://script.google.com) → projeto **Hotmart SaaS Academy**
+2. **Implantar** → **Gerenciar implantações**
+3. Copie a URL que termina em **`/exec`** (ex.: `https://script.google.com/macros/s/AKfycbz.../exec`)
+4. Abra no navegador → deve aparecer `OK Hotmart webhook`
+
+---
+
+## Onde pegar o Hottok
+
+1. [app-postback.hotmart.com](https://app-postback.hotmart.com)
+2. Aba **Autenticação** → copie o token
+3. Na configuração do webhook, a URL pode ser:  
+   `https://script.google.com/macros/s/SEU_ID/exec?hottok=SEU_TOKEN`
+
+---
+
+## Rodar o teste (PowerShell)
+
+Na pasta do projeto (`c:\Users\User\APRENDASAAS`):
 
 ```powershell
-. .\scripts\webhook-secrets.ps1
+.\scripts\test-hotmart-webhook.ps1 `
+  -WebhookUrl "COLE_A_URL_EXEC_AQUI" `
+  -Hottok "COLE_O_HOTTOK_AQUI" `
+  -Email "teste.compra@example.com"
+```
+
+**Resposta certa:** HTTP 200 e `{"ok":true,"action":"granted","email":"teste.compra@example.com"}`
+
+**Não use** o arquivo `webhook-secrets.example.ps1` sem editar — ele tem placeholders de propósito.
+
+Opcional: copie para `webhook-secrets.ps1`, edite com valores reais, depois:
+
+```powershell
+. "$PSScriptRoot\webhook-secrets.ps1"
 .\scripts\test-hotmart-webhook.ps1 -Email "teste.compra@example.com"
 ```
 
-4. Resposta esperada: `{"ok":true,"action":"granted","email":"teste.compra@example.com"}`
-5. Firestore → `email_access/teste.compra@example.com` → `active: true`
+---
 
-## Opção C — Testar login no site
+## Opção mais fácil — Reenviar na Hotmart
 
-1. Após `email_access` criado, abra https://saasacademy.vercel.app
-2. **Entrar** → e-mail do teste → **Verificar** → senha → **Entrar no laboratório**
+1. Hotmart → Webhook → **Histórico**
+2. POST **Compra aprovada** com **200**
+3. **Reenviar**
+4. Lupa → corpo com `"action":"granted"`
+5. Firestore → `email_access` → e-mail do comprador
+
+---
+
+## Depois: testar login
+
+https://saasacademy.vercel.app → Entrar → mesmo e-mail → Verificar → Entrar no laboratório
