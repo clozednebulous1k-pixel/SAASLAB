@@ -74,11 +74,17 @@
   /** UI rápida, decisões críticas usam assertLabAdminFromServer (Firestore). */
   window.isLabAdmin = function isLabAdmin(user) {
     if (!user?.uid) return false;
+    if (typeof window.isPrimaryOwner === "function" && window.isPrimaryOwner(user)) {
+      return true;
+    }
     return normalizeRole(window.__labUserProfile?.role) === "admin";
   };
 
   async function assertLabAdminFromServer(user) {
     if (!user?.uid || !db) return false;
+    if (typeof window.isPrimaryOwner === "function" && window.isPrimaryOwner(user)) {
+      return true;
+    }
     try {
       const snap = await db.collection("users").doc(user.uid).get();
       const data = snap.exists ? snap.data() : null;
@@ -230,6 +236,10 @@
 
   window.userHasLabAccess = async function userHasLabAccess(user) {
     if (!user?.email || !db) return false;
+
+    if (typeof window.isPrimaryOwner === "function" && window.isPrimaryOwner(user)) {
+      return true;
+    }
 
     try {
       const snap = await db.collection("users").doc(user.uid).get();

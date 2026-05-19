@@ -103,9 +103,13 @@
 
     const user = auth?.currentUser;
 
-    if (!user || !(await requireServerAdmin()) || !(await requirePrimaryOwner())) {
+    if (!user || !(await requirePrimaryOwner())) {
 
-      alert("Acesso restrito ao dono do sistema.");
+      alert(
+        "Acesso restrito ao dono do sistema.\n\n" +
+          "Confira js/owner-config.js (PRIMARY_ADMIN_UID) e firestore.rules (ownerUid) com o UID:\n" +
+          (user?.uid || "?")
+      );
 
       return;
 
