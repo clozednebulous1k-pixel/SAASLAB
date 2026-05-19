@@ -2748,6 +2748,7 @@ MVP: ...</div>
 <script src="js/security-rate-limit.js"></script>
 <script src="js/auth-access.js"></script>
 <script src="js/lab-progress.js"></script>
+<script src="js/lab-payment-guides.js"></script>
 <script src="js/admin-dashboard.js"></script>
 <script>
 // ─── STATE ───────────────────────────────────
@@ -3153,7 +3154,7 @@ Formato final: NOME / VISÃO / PÚBLICO / MVP</div>
  <p style="color:var(--learn-muted);line-height:1.75;font-size:0.95rem;margin:0 0 0.75rem">Este curso não é só teoria, você replica o mesmo caminho que usamos aqui:</p>
  <ol class="guide-steps">
  <li><strong>Landing</strong> em HTML/CSS/JS na <strong>Vercel</strong></li>
- <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo, sem API na Vercel)</li>
+ <li><strong>Pagamento</strong> na <strong>Hotmart</strong> (link externo; automação opcional via Apps Script, sem API na Vercel)</li>
  <li><strong>Login</strong> com <strong>Firebase Auth</strong> (e-mail/senha + Google)</li>
  <li><strong>Banco</strong> <strong>Firestore</strong> com regras que bloqueiam alterações pelo navegador (Spark no início; Blaze ou Postgres se crescer muito)</li>
  <li><strong>Acesso ao produto</strong> só se o e-mail estiver liberado após a compra</li>
@@ -3578,10 +3579,12 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 <div class="content-card">
  <div class="content-card-title">Escolha como cobrar</div>
  <div class="option-grid">
- <div class="option-btn opt-payment selected" data-val="hotmart" onclick="selectPayment('hotmart')"><div class="option-name">Hotmart</div>
- <div class="option-desc">Recomendado BR, sem API na Vercel</div></div>
+ <div class="option-btn opt-payment selected" data-val="hotmart" onclick="selectPayment('hotmart')"><div class="option-name">Hotmart (manual)</div>
+ <div class="option-desc">Link + você libera o e-mail</div></div>
+ <div class="option-btn opt-payment" data-val="hotmart-gas" onclick="selectPayment('hotmart-gas')"><div class="option-name">Hotmart + Apps Script</div>
+ <div class="option-desc">Sem API na Vercel · baixa escala</div></div>
  <div class="option-btn opt-payment" data-val="stripe" onclick="selectPayment('stripe')"><div class="option-name">Stripe</div>
- <div class="option-desc">Checkout + webhook (Next.js)</div></div>
+ <div class="option-desc">Alta escala · exige API (Next.js)</div></div>
  </div>
 </div>
 
@@ -3658,7 +3661,7 @@ service cloud.firestore {
 <div class="content-card">
  <div class="content-card-title">Fluxo de acesso seguro</div>
  <ol class="guide-steps">
- <li>Cliente compra na Hotmart → você libera o e-mail em <code>email_access</code> (manual ou automação futura).</li>
+ <li>Cliente compra na Hotmart → <code>email_access</code> (manual, painel admin, ou <strong>Hotmart + Apps Script</strong> no passo Pagamentos — baixa escala).</li>
  <li>Cliente clica <strong>Entrar</strong> no site (sem aba “Criar conta” pública).</li>
  <li>Primeira vez: mesmo e-mail da compra + senha (ou Google).</li>
  <li><code>userHasLabAccess()</code> lê o Firestore, se não tiver compra, <strong>logout</strong>.</li>
@@ -3971,6 +3974,7 @@ window.goToCheckout = function goToCheckout(plan) {
  <li>Opção A, <strong>Painel admin</strong> do seu site (você com <code>role: admin</code>) → Liberar cliente.</li>
  <li>Opção B, Console: Firestore → coleção <strong>email_access</strong> → documento ID = e-mail em minúsculas → campo <code>active: true</code>.</li>
  </ol>
+ <div class="info-box info"><strong>Automatizar?</strong> Use a opção <strong>Hotmart + Apps Script</strong> acima (sem API na Vercel; <strong>baixa escalabilidade</strong>).</div>
  <div class="info-box warning"><strong>Sem liberar o e-mail</strong>, o login até funciona no Firebase Auth, mas o laboratório nega acesso e faz logout.</div>
 </div>
 
@@ -3986,10 +3990,15 @@ window.goToCheckout = function goToCheckout(plan) {
   return;
  }
 
+ if (selectedPayment === 'hotmart-gas' && typeof window.renderHotmartGasPaymentGuide === 'function') {
+  area.innerHTML = window.renderHotmartGasPaymentGuide();
+  return;
+ }
+
  area.innerHTML = `
 <div class="content-card">
  <div class="content-card-title">Stripe (avançado: Next.js com API)</div>
- <div class="info-box info">Use Stripe se quiser checkout embutido + webhooks na Vercel. Exige rotas <code>/api</code> e validação de assinatura do webhook.</div>
+ <div class="info-box info">Use Stripe se quiser checkout embutido + webhooks na Vercel. Exige rotas <code>/api</code> e validação de assinatura do webhook. <strong>Alta escalabilidade.</strong></div>
  <div class="prompt-box">
  <div class="prompt-label">Prompt: Stripe completo</div>
  <div class="prompt-text" id="prompt-stripe">Implemente Stripe no SaaS "${name}": produtos, Checkout, webhook com stripe-signature, atualizar plano no Firestore/Supabase.</div>
