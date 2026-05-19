@@ -44,13 +44,31 @@ service cloud.firestore {
         && request.resource.data.libraryAccess is bool;
     }
 
-    // Usuário comum: NUNCA altera role, libraryAccess nem e-mail de outro
+    function validLabFieldTypes() {
+      let d = request.resource.data;
+      return (!('labSaasName' in d) || (d.labSaasName is string && d.labSaasName.size() <= 120))
+        && (!('labSaasBrief' in d) || (d.labSaasBrief is string && d.labSaasBrief.size() <= 2000))
+        && (!('labOnboarded' in d) || d.labOnboarded is bool)
+        && (!('labCurrentStep' in d) || d.labCurrentStep is int)
+        && (!('labCompletedSteps' in d) || d.labCompletedSteps is list)
+        && (!('labSelectedDb' in d) || d.labSelectedDb is string)
+        && (!('labSelectedAuth' in d) || d.labSelectedAuth is string)
+        && (!('labSelectedDeploy' in d) || d.labSelectedDeploy is string)
+        && (!('labSelectedPayment' in d) || d.labSelectedPayment is string)
+        && (!('labCourseDone' in d) || d.labCourseDone is bool);
+    }
+
+    // Usuário comum: progresso do lab só no próprio doc; nunca altera role nem libraryAccess
     function validUserSelfPatch() {
       return request.resource.data.role == resource.data.role
         && request.resource.data.libraryAccess == resource.data.libraryAccess
         && request.resource.data.email == resource.data.email
-        && request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['email', 'authProvider', 'updatedAt']);
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'email', 'authProvider', 'updatedAt',
+            'labSaasName', 'labSaasBrief', 'labOnboarded', 'labCurrentStep', 'labCompletedSteps',
+            'labSelectedDb', 'labSelectedAuth', 'labSelectedDeploy', 'labSelectedPayment', 'labCourseDone'
+          ])
+        && validLabFieldTypes();
     }
 
     function validEmailAccessWrite() {

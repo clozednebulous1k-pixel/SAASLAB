@@ -15,6 +15,8 @@ O `POST cd?hottok=c:\Users\...` aconteceu porque a variável `HOTMART_WEBHOOK_UR
 3. Copie a URL que termina em **`/exec`** (ex.: `https://script.google.com/macros/s/AKfycbz.../exec`)
 4. Abra no navegador → deve aparecer `OK Hotmart webhook`
 
+Se aparecer **"Função de script não encontrada: doGet"** ou **doPost**, o projeto no script.google.com está **vazio ou sem o código** — cole o script completo (com `doGet` e `doPost`), salve e faça **Nova implantação** de novo.
+
 ---
 
 ## Onde pegar o Hottok
@@ -28,9 +30,11 @@ O `POST cd?hottok=c:\Users\...` aconteceu porque a variável `HOTMART_WEBHOOK_UR
 
 ## Rodar o teste (PowerShell)
 
-Na pasta do projeto (`c:\Users\User\APRENDASAAS`):
+**Importante:** rode a partir da **raiz** do projeto (`APRENDASAAS`), não de dentro de `scripts/`.
 
 ```powershell
+cd c:\Users\User\APRENDASAAS
+
 .\scripts\test-hotmart-webhook.ps1 `
   -WebhookUrl "COLE_A_URL_EXEC_AQUI" `
   -Hottok "COLE_O_HOTTOK_AQUI" `

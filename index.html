@@ -2747,6 +2747,7 @@ MVP: ...</div>
 <script src="js/checkout-config.js"></script>
 <script src="js/security-rate-limit.js"></script>
 <script src="js/auth-access.js"></script>
+<script src="js/lab-progress.js"></script>
 <script src="js/admin-dashboard.js"></script>
 <script>
 // ─── STATE ───────────────────────────────────
@@ -2875,6 +2876,7 @@ function confirmSaasOnboarding() {
  dismissSaasOnboarding();
  renderStep(currentStep);
  scrollPlatformToTop();
+ window.saveLabProgress?.();
 }
 
 function maybeShowSaasOnboarding() {
@@ -2891,14 +2893,18 @@ function setPlatformOpen(isOpen) {
  const plat = document.getElementById('platform');
  if (plat) plat.classList.toggle('platform-visible', isOpen);
 }
-function enterPlatformCore() {
+async function enterPlatformCore() {
  document.getElementById('landing').style.display = 'none';
  const plat = document.getElementById('platform');
  plat.classList.add('platform-visible');
  plat.style.display = 'flex';
  setPlatformOpen(true);
- loadSaasProfile();
- renderStep(0);
+ if (typeof window.loadLabProgress === 'function') {
+  await window.loadLabProgress();
+ } else {
+  loadSaasProfile();
+  renderStep(0);
+ }
  initLabWaGroupLinks();
  scheduleScrollToTop();
  maybeShowSaasOnboarding();
@@ -2920,6 +2926,7 @@ function enterPlatform() {
  else enterPlatformCore();
 }
 function exitPlatform() {
+ if (typeof window.flushLabProgress === 'function') window.flushLabProgress();
  if (typeof window.onLabExited === 'function') window.onLabExited();
  dismissSaasOnboarding();
  setPlatformOpen(false);
@@ -2939,6 +2946,7 @@ function updateSaasProfile() {
  localStorage.setItem(SAAS_STORAGE_NAME, saasName);
  applySaasToMockup();
  renderStep(currentStep);
+ window.saveLabProgress?.();
 }
 function updateSaasName() { updateSaasProfile(); }
 
@@ -2979,6 +2987,7 @@ function gotoStep(n) {
  document.querySelectorAll('.sidebar-item').forEach((t, i) => t.classList.toggle('active', i === n));
  renderStep(n);
  scheduleScrollToTop();
+ window.saveLabProgress?.();
 }
 function updateProgress() {
  const pct = Math.round((completedSteps.size/steps.length)*100);
@@ -2993,6 +3002,7 @@ function completeStep(n) {
  dismissSaasOnboarding();
  completedSteps.add(n);
  updateProgress();
+ window.saveLabProgress?.();
  if (n < steps.length - 1) gotoStep(n + 1);
  else showCourseComplete();
 }
@@ -3007,6 +3017,7 @@ function showCourseComplete() {
  overlay.setAttribute('aria-hidden', 'false');
  overlay.classList.add('is-open');
  try { localStorage.setItem(SAAS_STORAGE_COURSE_DONE, '1'); } catch (e) {}
+ window.saveLabProgress?.();
 }
 function closeCourseComplete() {
  const overlay = document.getElementById('course-complete-overlay');
@@ -3038,17 +3049,20 @@ function selectDeploy(t) {
  selectedDeployTarget = t;
  document.querySelectorAll('.opt-deploy').forEach(b=>b.classList.toggle('selected',b.dataset.val===t));
  renderDeployPrompt();
+ window.saveLabProgress?.();
 }
 function selectDb(t) {
  selectedDb = t;
  localStorage.setItem('saaslab_db', t);
  document.querySelectorAll('.opt-db').forEach(b=>b.classList.toggle('selected',b.dataset.val===t));
  renderDbPrompt();
+ window.saveLabProgress?.();
 }
 function selectPayment(t) {
  selectedPayment = t;
  document.querySelectorAll('.opt-payment').forEach(b => b.classList.toggle('selected', b.dataset.val === t));
  renderPaymentContent();
+ window.saveLabProgress?.();
 }
 
 function selectAuth(t) {
@@ -3056,6 +3070,7 @@ function selectAuth(t) {
  localStorage.setItem(SAAS_STORAGE_AUTH, t);
  document.querySelectorAll('.opt-auth').forEach(b=>b.classList.toggle('selected', b.dataset.val === t));
  renderAuthContent();
+ window.saveLabProgress?.();
 }
 
 // ─── STEP CONTENT ─────────────────────────────
@@ -3593,7 +3608,7 @@ Mostre o código completo de cada arquivo.${saasContextBlock()}</div>
 <div class="content-card">
  <div class="content-card-title">Coleções do SaaS Academy</div>
  <ol class="guide-steps">
- <li><strong>users/{uid}</strong>, perfil: <code>email</code>, <code>role</code> (user/admin), <code>libraryAccess</code> (true/false). O cliente <strong>não pode</strong> se auto-liberar nem virar admin.</li>
+ <li><strong>users/{uid}</strong>, perfil: <code>email</code>, <code>role</code>, <code>libraryAccess</code> + progresso do lab (<code>labSaasName</code>, <code>labCurrentStep</code>, <code>labCompletedSteps</code>, etc.) — <strong>cada aluno só lê/escreve o próprio</strong>.</li>
  <li><strong>email_access/{email}</strong>, liberação da compra: <code>active: true</code>. Só o <strong>dono</strong> (seu UID) grava aqui, F12 não altera.</li>
  </ol>
  <div class="lab-path"><strong>Caminho no Console:</strong> Firebase → <code>Build → Firestore Database → Regras</code> → cole o arquivo <code>firestore.rules</code> do projeto → <strong>Publicar</strong>.</div>

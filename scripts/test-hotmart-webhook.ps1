@@ -43,8 +43,11 @@ if (-not $Hottok) {
   Fail "Defina o Hottok (Hotmart -> Webhook -> aba Autenticacao)."
 }
 
-if ($Hottok -match 'seu_hottok|exemplo|placeholder' -or $Hottok.Length -lt 10) {
-  Fail "Hottok invalido ou ainda e o texto de exemplo. Copie o token da aba Autenticacao na Hotmart."
+if ($Hottok -match 'seu_hottok|exemplo|placeholder|TOKEN_DA|COLE_O|ABA_AUTENTICACAO|script\.google') {
+  Fail "Voce colou o TEXTO DE EXEMPLO, nao o token real. Hotmart -> Webhook -> Autenticacao -> copie o codigo longo (ex: f2sF97S4-...)."
+}
+if ($Hottok.Length -lt 20) {
+  Fail "Hottok muito curto. O token da Hotmart e longo (UUID). Nao use URL do Apps Script no campo HOTTOK."
 }
 
 $uri = $WebhookUrl
@@ -71,6 +74,24 @@ try {
   $resp = Invoke-WebRequest -Uri $uri -Method POST -Body $body -ContentType "application/json" -UseBasicParsing
   Write-Host "HTTP $($resp.StatusCode)" -ForegroundColor Green
   Write-Host $resp.Content
+  if ($resp.Content -match 'doPost|doGet|script n.o encontrada') {
+    Write-Host ""
+    Write-Host "BLOQUEIO: Apps Script sem codigo ativo na URL /exec." -ForegroundColor Red
+    Write-Host "Abra a URL no navegador - deve mostrar: OK Hotmart webhook" -ForegroundColor Yellow
+    Write-Host "Guia: scripts/CONSERTAR-APPS-SCRIPT.md" -ForegroundColor Yellow
+    exit 1
+  }
+  if ($resp.Content -match 'invalid hottok') {
+    Write-Host ""
+    Write-Host "HOTTOK diferente: copie o token da Hotmart (Autenticacao) para Propriedades do script HOTTOK no Apps Script." -ForegroundColor Yellow
+    Write-Host "Use o MESMO valor no -Hottok deste comando e na URL do webhook." -ForegroundColor Yellow
+    exit 1
+  }
+  if ($resp.Content -match 'SERVICE_ACCOUNT_JSON missing') {
+    Write-Host ""
+    Write-Host "Cole o JSON da conta de servico em Propriedades do script -> SERVICE_ACCOUNT_JSON" -ForegroundColor Yellow
+    exit 1
+  }
   if ($resp.Content -notmatch '"ok"\s*:\s*true') {
     Write-Host ""
     Write-Host "Resposta nao indica sucesso. Veja o JSON acima (email not found, Firestore 403, etc.)." -ForegroundColor Yellow
@@ -94,4 +115,4 @@ try {
 }
 
 Write-Host ""
-Write-Host "Confira: Firebase -> Firestore -> email_access -> $Email (active: true)" -ForegroundColor Cyan
+Write-Host ("Confira Firestore: email_access / " + $Email + " / active=true") -ForegroundColor Cyan
